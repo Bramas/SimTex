@@ -11,3 +11,6 @@
 *.lai
 *.la
 *.a
+
+SimTex_Debug_Qt_5_0_2/*
+SimTex_Debug_Qt5_0_2/

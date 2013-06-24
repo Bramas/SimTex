@@ -110,13 +110,16 @@ void MainWindow::open(QString filename)
     if(filename.isEmpty())
     {
         filename = QFileDialog::getOpenFileName(this,tr("Ouvrir un fichier"));
+
         if(filename.isEmpty())
         {
             return;
         }
     }
+    QString basename(filename);
+    qDebug()<<"Open : "<<filename;
     //window title
-    this->setWindowTitle(filename.replace(QRegExp("^.*[\\\\\\/]([^\\\\\\/]*)$"),"\\1")+" - SimTex");
+    this->setWindowTitle(basename.replace(QRegExp("^.*[\\\\\\/]([^\\\\\\/]*)$"),"\\1")+" - SimTex");
     //udpate the settings
     {
         QSettings settings;
