@@ -2,6 +2,7 @@
 #include <QTextCharFormat>
 #include <QDebug>
 #include "blockdata.h"
+#include "configmanager.h"
 
 SyntaxHighlighter::SyntaxHighlighter(QObject *parent) :
     QSyntaxHighlighter(parent)
@@ -66,28 +67,24 @@ void SyntaxHighlighter::highlightBlock(const QString &text)
 
 
 
+    QTextCharFormat formatNormal = ConfigManager::Instance.getTextCharFormats()->value("normal");
+    QTextCharFormat formatCommand = ConfigManager::Instance.getTextCharFormats()->value("command");
+    QTextCharFormat formatComment = ConfigManager::Instance.getTextCharFormats()->value("comment");
+    QTextCharFormat formatMath = ConfigManager::Instance.getTextCharFormats()->value("math");
+    QTextCharFormat formatStructure = ConfigManager::Instance.getTextCharFormats()->value("structure");
+
+
+     setFormat(0, text.size(), formatNormal);
 
 
 
-
-
-
-
-
-
-
-
-    QTextCharFormat formatCommand;
-    formatCommand.setFontWeight(QFont::Bold);
-    formatCommand.setForeground(Qt::darkMagenta);
-
-    QTextCharFormat formatComment;
-    formatComment.setFontWeight(QFont::Bold);
-    formatComment.setForeground(QColor(160,160,160));
-
-    QString patternCommand = "\\\\[a-zA-Z]+";
+     QString patternCommand = "\\\\[a(-zA-Z]+";
+     QString patternStructure = "\\\\(sub){0,3}section\\{[^\\}]*\\}";
 
     this->highlightExpression(text,patternCommand,formatCommand);
+     this->highlightExpression(text,patternStructure,formatStructure);
+
+
 
     int length=0;
     int lastindex = 0;
@@ -106,9 +103,6 @@ void SyntaxHighlighter::highlightBlock(const QString &text)
     }
 
 
-    QTextCharFormat formatMath;
-    formatMath.setFontWeight(QFont::Bold);
-    formatMath.setForeground(Qt::darkGreen);
 
     length=0;
     lastindex = 0;

@@ -17,6 +17,7 @@
 #include <QPushButton>
 #include <QDebug>
 #include <QMimeData>
+#include "configmanager.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dialogConfig(new DialogConfig(this))
 {
     ui->setupUi(this);
+    ConfigManager::Instance.setMainWindow(this);
     //setWindowFlags(Qt::FramelessWindowHint);
     widgetLineNumber->setWidgetTextEdit(widgetTextEdit);
     widgetScroller->setWidgetTextEdit(widgetTextEdit);
@@ -60,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     connect(this->ui->actionPdfLatex,SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getBuilder(),SLOT(pdflatex()));
+    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
 
     ui->gridLayout->addWidget(widgetLineNumber,0,0);
     ui->gridLayout->addWidget(widgetTextEdit,0,1);

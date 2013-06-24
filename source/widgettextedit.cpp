@@ -1,4 +1,5 @@
 #include "widgettextedit.h"
+#include "configmanager.h"
 #include "file.h"
 #include <QScrollBar>
 #include <QDebug>
@@ -11,6 +12,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QMimeData>
+#include <QPalette>
 
 #define max(a,b) ((a) < (b) ? (b) : (a))
 #define min(a,b) ((a) > (b) ? (b) : (a))
@@ -33,9 +35,8 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
 
     this->setCurrentFont(QFont("Consolas", 12));
 
-
-
-
+    this->setPalette(QPalette(Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,ConfigManager::Instance.getTextCharFormats()->value("normal").background().color()));
+    //this->setStyleSheet("QTextEdit { background-color: rgb(0, 255, 0) }");
 }
 
 void WidgetTextEdit::scrollTo(int p)
@@ -64,12 +65,12 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     painter.translate(15,0);
     painter.rotate(-90);
 
-    painter.setBrush(QBrush(QColor(255,0,0,50)));
+    painter.setBrush(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").background());
+    painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").foreground().color()));
 
-    QFont font("Consolas", 12);
-    font.setBold(QFont::Bold);
-    painter.setFont(font);
+    QFont font(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").font());
     QFontMetrics fm(font);
+    painter.setFont(font);
 
     QListIterator<FileStructureInfo*> iterator(*this->fileStructure->info());
     FileStructureInfo * value;
@@ -93,9 +94,15 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
             top = value->top + value->height -30 -height - this->verticalScrollBar()->value();
             //qDebug()<<"pas assez "<<(value->height + value->top - this->verticalScrollBar()->value())<<" > "<<(height + 30);
         }
+
+        painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").background().color()));
         painter.drawRect(- value->top - value->height + -10 + this->verticalScrollBar()->value(),25*(value->level-2)+5,value->height,25);
+
+        painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").foreground().color()));
         painter.drawText(-top-height-20,25*(value->level-1),value->name);
     }
+
+
 
     if(this->blocksInfo[0].height != -1)
     {

@@ -11,6 +11,7 @@ INPUT(
 ./debug/builder.o
 ./debug/dialogwelcome.o
 ./debug/dialogconfig.o
+./debug/configmanager.o
 ./debug/moc_mainwindow.o
 ./debug/moc_widgetlinenumber.o
 ./debug/moc_widgettextedit.o

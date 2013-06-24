@@ -11,6 +11,7 @@ INPUT(
 ./release/builder.o
 ./release/dialogwelcome.o
 ./release/dialogconfig.o
+./release/configmanager.o
 ./release/moc_mainwindow.o
 ./release/moc_widgetlinenumber.o
 ./release/moc_widgettextedit.o

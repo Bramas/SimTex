@@ -15,9 +15,11 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
@@ -33,6 +35,9 @@ public:
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
     QTableWidget *tableWidget;
+    QHBoxLayout *horizontalLayout;
+    QRadioButton *radioButton_2;
+    QRadioButton *radioButton;
     QWidget *page_2;
     QPushButton *pushButton;
     QPushButton *pushButton_2;
@@ -73,7 +78,23 @@ public:
         tableWidget->setItem(1, 0, __qtablewidgetitem4);
         tableWidget->setObjectName(QStringLiteral("tableWidget"));
 
-        gridLayout->addWidget(tableWidget, 0, 0, 1, 1);
+        gridLayout->addWidget(tableWidget, 2, 0, 1, 1);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        radioButton_2 = new QRadioButton(gridLayoutWidget);
+        radioButton_2->setObjectName(QStringLiteral("radioButton_2"));
+        radioButton_2->setChecked(true);
+
+        horizontalLayout->addWidget(radioButton_2);
+
+        radioButton = new QRadioButton(gridLayoutWidget);
+        radioButton->setObjectName(QStringLiteral("radioButton"));
+
+        horizontalLayout->addWidget(radioButton);
+
+
+        gridLayout->addLayout(horizontalLayout, 0, 0, 1, 1);
 
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
@@ -109,6 +130,8 @@ public:
         ___qtablewidgetitem4->setText(QApplication::translate("DialogConfig", "#000000", 0));
         tableWidget->setSortingEnabled(__sortingEnabled);
 
+        radioButton_2->setText(QApplication::translate("DialogConfig", "Theme sombre", 0));
+        radioButton->setText(QApplication::translate("DialogConfig", "Theme Clair", 0));
         pushButton->setText(QApplication::translate("DialogConfig", "Valider", 0));
         pushButton_2->setText(QApplication::translate("DialogConfig", "Annler", 0));
     } // retranslateUi

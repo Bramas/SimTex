@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     file.cpp \
     builder.cpp \
     dialogwelcome.cpp \
-    dialogconfig.cpp
+    dialogconfig.cpp \
+    configmanager.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -35,7 +36,8 @@ HEADERS  += mainwindow.h \
     file.h \
     builder.h \
     dialogwelcome.h \
-    dialogconfig.h
+    dialogconfig.h \
+    configmanager.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
