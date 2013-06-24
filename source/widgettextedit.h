@@ -37,6 +37,7 @@ signals:
 public slots:
     void scrollTo(int);
     void updateIndentation(void);
+    void onCursorPositionChange(void);
 protected:
     void insertFromMimeData(const QMimeData * source);
 

@@ -5,6 +5,8 @@
 #include <QDir>
 #include <QDebug>
 #include <QRegExp>
+
+class Viewer;
 class Builder;
 
 class File
@@ -29,12 +31,14 @@ public:
         return this->getPath()+".simtex";//+dir.separator();
     }
 
-    Builder * getBuilder() { return builder; }
+    Builder * getBuilder() { return this->builder; }
+    Viewer * getViewer() { return this->viewer; }
 
 private:
     QString filename;
     QString data;
     Builder * builder;
+    Viewer * viewer;
     
 };
 

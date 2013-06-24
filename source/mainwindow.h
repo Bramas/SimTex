@@ -26,7 +26,8 @@ public slots:
     void save(void);
     void saveAs(void);
     void open(QString filename = "");
-    void openLast();
+    void openLast(void);
+    void focus(void);
 
     
 private:

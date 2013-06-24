@@ -24,7 +24,7 @@ void DialogConfig::saveAndClose()
 {
     QSettings settings;
     settings.beginGroup("theme");
-    if(this->ui->radioButton_2->isChecked())
+    if(this->ui->radioButtonLightTheme->isChecked())
     {
         settings.setValue("theme",QString("light"));
     }

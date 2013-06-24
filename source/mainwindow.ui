@@ -38,6 +38,8 @@
      <string>Build</string>
     </property>
     <addaction name="actionPdfLatex"/>
+    <addaction name="separator"/>
+    <addaction name="actionView"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -73,6 +75,11 @@
   <action name="actionSettings">
    <property name="text">
     <string>Préférences</string>
+   </property>
+  </action>
+  <action name="actionView">
+   <property name="text">
+    <string>Voir le Pdf</string>
    </property>
   </action>
  </widget>

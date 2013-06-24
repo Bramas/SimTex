@@ -1,12 +1,14 @@
 #include "file.h"
 #include "builder.h"
+#include "viewer.h"
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
 
 File::File(QString filename) :
     filename(filename),
-    builder(new Builder(this))
+    builder(new Builder(this)),
+    viewer(new Viewer(this))
 {
 }
 void File::save(QString filename)

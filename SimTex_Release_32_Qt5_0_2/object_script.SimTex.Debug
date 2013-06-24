@@ -12,6 +12,7 @@ INPUT(
 ./debug/dialogwelcome.o
 ./debug/dialogconfig.o
 ./debug/configmanager.o
+./debug/viewer.o
 ./debug/moc_mainwindow.o
 ./debug/moc_widgetlinenumber.o
 ./debug/moc_widgettextedit.o
@@ -20,4 +21,5 @@ INPUT(
 ./debug/moc_builder.o
 ./debug/moc_dialogwelcome.o
 ./debug/moc_dialogconfig.o
+./debug/moc_viewer.o
 );

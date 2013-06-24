@@ -75,7 +75,7 @@
       <item row="0" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QRadioButton" name="radioButton_2">
+         <widget class="QRadioButton" name="radioButtonDarkTheme">
           <property name="text">
            <string>Theme sombre</string>
           </property>
@@ -85,7 +85,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioButton">
+         <widget class="QRadioButton" name="radioButtonLightTheme">
           <property name="text">
            <string>Theme Clair</string>
           </property>

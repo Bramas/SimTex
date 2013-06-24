@@ -1,6 +1,7 @@
 #include "widgettextedit.h"
 #include "configmanager.h"
 #include "file.h"
+#include "viewer.h"
 #include <QScrollBar>
 #include <QDebug>
 #include <QPainter>
@@ -30,6 +31,7 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
 {
     blocksInfo[0].height = -1;
     connect(this,SIGNAL(textChanged()),this,SLOT(updateIndentation()));
+    connect(this,SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
     //connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(update()));
     connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this->viewport(),SLOT(update()));
 
@@ -120,6 +122,14 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     }
 
 }
+
+void WidgetTextEdit::onCursorPositionChange()
+{
+
+    this->currentFile->getViewer()->setLine(this->textCursor().blockNumber()+1);
+    //this->currentFile->getViewer()->view();
+}
+
 void WidgetTextEdit::resizeEvent(QResizeEvent *event)
 {
     QTextEdit::resizeEvent(event);
@@ -230,7 +240,7 @@ void WidgetTextEdit::updateIndentation(void)
 
     this->firstVisibleBlock = -1;
     //qDebug()<<"block Count "<<this->document()->blockCount();
-    for(int i=1; i< this->document()->blockCount(); ++i)
+    for(int i=1; i < this->document()->blockCount(); ++i)
     {
         blocksInfo[i].top = blocksInfo[i-1].top + blocksInfo[i-1].height;
         blocksInfo[i].position = blocksInfo[i-1].position + textBlock.text().length()+1;
@@ -252,12 +262,14 @@ void WidgetTextEdit::updateIndentation(void)
 
     }
     BlockIndentation * indentation = this->fileStructure->indentations();
-    for(int i = this->textCursor().blockNumber(); i < indentation[this->textCursor().blockNumber()].next; ++i)
-    {
-        myClassFormat.setLeftMargin(25*indentation[i].level);
-        cursor.setPosition(blocksInfo[i].position);
-        cursor.setBlockFormat(myClassFormat);
-    }
+
+    if(this->textCursor().block().blockFormat().leftMargin() != 25*indentation[this->textCursor().blockNumber()].level)
+        for(int i = this->textCursor().blockNumber(); i < indentation[this->textCursor().blockNumber()].next; ++i)
+        {
+            myClassFormat.setLeftMargin(25*indentation[i].level);
+            cursor.setPosition(blocksInfo[i].position);
+            cursor.setBlockFormat(myClassFormat);
+        }
     this->updatingIndentation = false;
 
 }

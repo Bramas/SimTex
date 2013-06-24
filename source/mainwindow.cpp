@@ -9,6 +9,7 @@
 #include "builder.h"
 #include "dialogwelcome.h"
 #include "dialogconfig.h"
+#include "viewer.h"
 
 #include <QList>
 #include <QScrollBar>
@@ -62,7 +63,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     connect(this->ui->actionPdfLatex,SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getBuilder(),SLOT(pdflatex()));
+    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)),this->widgetTextEdit->getCurrentFile()->getViewer(),SLOT(view(QString)));
+    connect(this->ui->actionView, SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getViewer(),SLOT(view()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
+    //connect(this->widgetTextEdit->getCurrentFile()->getViewer(), SIGNAL(finished()), this, SLOT(focus()));
 
     ui->gridLayout->addWidget(widgetLineNumber,0,0);
     ui->gridLayout->addWidget(widgetTextEdit,0,1);
@@ -78,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->dialogWelcome->getActionOpenLast(),SIGNAL(clicked()), this->dialogWelcome, SLOT(close()));
     connect(this->dialogWelcome->getActionOpen(),SIGNAL(clicked()), this, SLOT(open()));
     connect(this->dialogWelcome->getActionOpenLast(),SIGNAL(clicked()), this, SLOT(openLast()));
+
     this->dialogWelcome->show();
 
     connect(this->ui->actionSettings,SIGNAL(triggered()),this->dialogConfig,SLOT(show()));
@@ -94,6 +99,11 @@ MainWindow::~MainWindow()
         settings.endGroup();
     }
     delete ui;
+}
+
+void MainWindow::focus()
+{
+    this->activateWindow();
 }
 
 void MainWindow::openLast()
