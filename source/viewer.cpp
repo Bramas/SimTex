@@ -1,13 +1,15 @@
 #include "viewer.h"
 #include "file.h"
 #include <QDebug>
-#include "poppler/poppler-qt4.h"
 
 Viewer::Viewer(File * file) :
     file(file),
     process(new QProcess)
 {
     connect(this->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(onFinished(int,QProcess::ExitStatus)));
+
+
+
 }
 
 void Viewer::view(QString)

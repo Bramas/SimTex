@@ -1,7 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.0.2
+** Created: Tue 25. Jun 04:07:21 2013
+**      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -10,16 +11,16 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QHeaderView>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QWidget>
+#include <QtGui/QAction>
+#include <QtGui/QApplication>
+#include <QtGui/QButtonGroup>
+#include <QtGui/QGridLayout>
+#include <QtGui/QHeaderView>
+#include <QtGui/QMainWindow>
+#include <QtGui/QMenu>
+#include <QtGui/QMenuBar>
+#include <QtGui/QStatusBar>
+#include <QtGui/QWidget>
 
 QT_BEGIN_NAMESPACE
 
@@ -43,39 +44,39 @@ public:
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
-            MainWindow->setObjectName(QStringLiteral("MainWindow"));
+            MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(991, 633);
         actionOpen = new QAction(MainWindow);
-        actionOpen->setObjectName(QStringLiteral("actionOpen"));
+        actionOpen->setObjectName(QString::fromUtf8("actionOpen"));
         actionSaveAs = new QAction(MainWindow);
-        actionSaveAs->setObjectName(QStringLiteral("actionSaveAs"));
+        actionSaveAs->setObjectName(QString::fromUtf8("actionSaveAs"));
         actionSave = new QAction(MainWindow);
-        actionSave->setObjectName(QStringLiteral("actionSave"));
+        actionSave->setObjectName(QString::fromUtf8("actionSave"));
         actionPdfLatex = new QAction(MainWindow);
-        actionPdfLatex->setObjectName(QStringLiteral("actionPdfLatex"));
+        actionPdfLatex->setObjectName(QString::fromUtf8("actionPdfLatex"));
         actionSettings = new QAction(MainWindow);
-        actionSettings->setObjectName(QStringLiteral("actionSettings"));
+        actionSettings->setObjectName(QString::fromUtf8("actionSettings"));
         actionView = new QAction(MainWindow);
-        actionView->setObjectName(QStringLiteral("actionView"));
+        actionView->setObjectName(QString::fromUtf8("actionView"));
         gridLayoutWidget = new QWidget(MainWindow);
-        gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
+        gridLayoutWidget->setObjectName(QString::fromUtf8("gridLayoutWidget"));
         gridLayout = new QGridLayout(gridLayoutWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         MainWindow->setCentralWidget(gridLayoutWidget);
         menuBar = new QMenuBar(MainWindow);
-        menuBar->setObjectName(QStringLiteral("menuBar"));
+        menuBar->setObjectName(QString::fromUtf8("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 991, 21));
         menuFichier = new QMenu(menuBar);
-        menuFichier->setObjectName(QStringLiteral("menuFichier"));
+        menuFichier->setObjectName(QString::fromUtf8("menuFichier"));
         menuBuild = new QMenu(menuBar);
-        menuBuild->setObjectName(QStringLiteral("menuBuild"));
+        menuBuild->setObjectName(QString::fromUtf8("menuBuild"));
         menuOptions = new QMenu(menuBar);
-        menuOptions->setObjectName(QStringLiteral("menuOptions"));
+        menuOptions->setObjectName(QString::fromUtf8("menuOptions"));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
+        statusBar->setObjectName(QString::fromUtf8("statusBar"));
         MainWindow->setStatusBar(statusBar);
 
         menuBar->addAction(menuFichier->menuAction());
@@ -96,16 +97,16 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
-        actionOpen->setText(QApplication::translate("MainWindow", "Ouvrir", 0));
-        actionSaveAs->setText(QApplication::translate("MainWindow", "Enregistrer Sous", 0));
-        actionSave->setText(QApplication::translate("MainWindow", "Enregistrer", 0));
-        actionPdfLatex->setText(QApplication::translate("MainWindow", "PdfLatex", 0));
-        actionSettings->setText(QApplication::translate("MainWindow", "Pr\303\251f\303\251rences", 0));
-        actionView->setText(QApplication::translate("MainWindow", "Voir le Pdf", 0));
-        menuFichier->setTitle(QApplication::translate("MainWindow", "Fichier", 0));
-        menuBuild->setTitle(QApplication::translate("MainWindow", "Build", 0));
-        menuOptions->setTitle(QApplication::translate("MainWindow", "Options", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0, QApplication::UnicodeUTF8));
+        actionOpen->setText(QApplication::translate("MainWindow", "Ouvrir", 0, QApplication::UnicodeUTF8));
+        actionSaveAs->setText(QApplication::translate("MainWindow", "Enregistrer Sous", 0, QApplication::UnicodeUTF8));
+        actionSave->setText(QApplication::translate("MainWindow", "Enregistrer", 0, QApplication::UnicodeUTF8));
+        actionPdfLatex->setText(QApplication::translate("MainWindow", "PdfLatex", 0, QApplication::UnicodeUTF8));
+        actionSettings->setText(QApplication::translate("MainWindow", "Pr\303\251f\303\251rences", 0, QApplication::UnicodeUTF8));
+        actionView->setText(QApplication::translate("MainWindow", "Voir le Pdf", 0, QApplication::UnicodeUTF8));
+        menuFichier->setTitle(QApplication::translate("MainWindow", "Fichier", 0, QApplication::UnicodeUTF8));
+        menuBuild->setTitle(QApplication::translate("MainWindow", "Build", 0, QApplication::UnicodeUTF8));
+        menuOptions->setTitle(QApplication::translate("MainWindow", "Options", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

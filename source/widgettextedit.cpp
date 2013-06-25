@@ -276,12 +276,12 @@ void WidgetTextEdit::updateIndentation(void)
 
 void WidgetTextEdit::insertFromMimeData(const QMimeData *source)
 {
-    if(source->hasUrls())
+   /* if(source->hasUrls())
     {
         this->currentFile->open(source->urls().first().toLocalFile());//this->currentFile->open()
         this->setText(this->currentFile->getData());
         return;
     }
-    this->append(source->text());
+    this->append(source->text());*/
 }
 

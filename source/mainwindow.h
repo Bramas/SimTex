@@ -2,10 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 class QMimeData;
 class WidgetTextEdit;
 class WidgetLineNumber;
 class WidgetScroller;
+class WidgetViewer;
 class DialogWelcome;
 class DialogConfig;
 
@@ -36,6 +38,7 @@ private:
     WidgetLineNumber * widgetLineNumber;
     WidgetTextEdit * widgetTextEdit;
     WidgetScroller * widgetScroller;
+    WidgetViewer * _widgetViewer;
     DialogWelcome * dialogWelcome;
     DialogConfig * dialogConfig;
 };

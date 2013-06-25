@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "widgetlinenumber.h"
+#include "widgetviewer.h"
 #include "widgettextedit.h"
 #include "widgetscroller.h"
 #include "syntaxhighlighter.h"
@@ -27,7 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
     widgetLineNumber(new WidgetLineNumber(this)),
     widgetScroller(new WidgetScroller),
     dialogWelcome(new DialogWelcome(this)),
-    dialogConfig(new DialogConfig(this))
+    dialogConfig(new DialogConfig(this)),
+    _widgetViewer(new WidgetViewer(this))
 {
     ui->setupUi(this);
     ConfigManager::Instance.setMainWindow(this);
@@ -71,9 +73,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gridLayout->addWidget(widgetLineNumber,0,0);
     ui->gridLayout->addWidget(widgetTextEdit,0,1);
     //ui->gridLayout->addWidget(widgetScroller,0,2);
+    ui->gridLayout->addWidget(_widgetViewer,0,2);
 
     ui->gridLayout->addWidget(widgetScroller,0,2);
     ui->gridLayout->setColumnMinimumWidth(0,40);
+    ui->gridLayout->setColumnMinimumWidth(2,300);
     //ui->gridLayout->setColumnMinimumWidth(2,100);
 
 
@@ -140,6 +144,7 @@ void MainWindow::open(QString filename)
     }
     //open
     this->widgetTextEdit->getCurrentFile()->open(filename);
+    this->_widgetViewer->setFile(this->widgetTextEdit->getCurrentFile());
 
     //udpate the widget
     this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData().toLocal8Bit());
