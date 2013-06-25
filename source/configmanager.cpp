@@ -2,7 +2,12 @@
 #include <QFont>
 #include <QColor>
 #include <QSettings>
-#include <QStandardPaths>
+#if QT_VERSION < 0x050000
+    #include <QDesktopServices>
+#else
+    #include <QStandardPaths>
+#endif
+
 #include <QMapIterator>
 #include <QDir>
 #include <QMessageBox>
@@ -136,17 +141,23 @@ QString ConfigManager::textCharFormatToString(QTextCharFormat charFormat)
 void ConfigManager::save()
 {
     QDir dir;
-    if(QStandardPaths::writableLocation(QStandardPaths::DataLocation).isEmpty())
+    QString dataLocation("");
+#if QT_VERSION < 0x050000
+    dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#else
+    dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+#endif
+    if(dataLocation.isEmpty())
     {
             QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
     }
-    if(!dir.exists(QStandardPaths::writableLocation(QStandardPaths::DataLocation)))
+    if(!dir.exists(dataLocation))
     {
-        dir.mkpath(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
+        dir.mkpath(dataLocation);
     }
     //qDebug()<<QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     //return;
-    QSettings file(QStandardPaths::writableLocation(QStandardPaths::DataLocation)+dir.separator()+"theme.txt",QSettings::IniFormat);
+    QSettings file(dataLocation+dir.separator()+"theme.txt",QSettings::IniFormat);
     file.beginGroup("Theme");
 
     QMapIterator<QString,QTextCharFormat> it(*this->textCharFormats);

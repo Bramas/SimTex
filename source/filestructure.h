@@ -12,8 +12,10 @@ struct FileStructureInfo
     int startBlock;
     int endBlock;
     int level;
-    int top=0;
-    int height=0;
+    int top;
+    int height;
+
+    FileStructureInfo() : top(0), height(0) {}
 };
 
 struct BlockIndentation
