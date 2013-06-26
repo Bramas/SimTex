@@ -16,11 +16,14 @@ INPUT(
 ./debug\widgetviewer.o
 ./debug\pdfDocument.o
 ./debug\widgetpdfdocument.o
+./debug\synctex_parser.o
+./debug\synctex_parser_utils.o
 ./debug\moc_mainwindow.o
 ./debug\moc_widgetlinenumber.o
 ./debug\moc_widgettextedit.o
 ./debug\moc_widgetscroller.o
 ./debug\moc_filestructure.o
+./debug\moc_file.o
 ./debug\moc_builder.o
 ./debug\moc_dialogwelcome.o
 ./debug\moc_dialogconfig.o

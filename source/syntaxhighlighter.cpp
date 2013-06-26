@@ -4,14 +4,13 @@
 #include "blockdata.h"
 #include "configmanager.h"
 
-SyntaxHighlighter::SyntaxHighlighter(QObject *parent) :
+SyntaxHighlighter::SyntaxHighlighter(QTextEdit *parent) :
     QSyntaxHighlighter(parent)
 {
 }
 
 void SyntaxHighlighter::highlightBlock(const QString &text)
 {
-
 
 
     BlockData *blockData = new BlockData;

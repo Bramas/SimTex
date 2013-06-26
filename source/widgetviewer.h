@@ -7,7 +7,7 @@ namespace Ui {
 class WidgetViewer;
 }
 class File;
-class Document;
+class WidgetPdfDocument;
 
 class WidgetViewer : public QWidget
 {
@@ -17,18 +17,15 @@ public:
     explicit WidgetViewer(QWidget *parent = 0);
     ~WidgetViewer();
 
-    void setFile(File * file) { this->_file = file; this->initDocument(); }
+    WidgetPdfDocument * widgetPdfDocument() { return this->_widgetPdfDocument; }
+
     
 protected:
-    void paintEvent(QPaintEvent * event);
 
 private:
-    void initDocument();
 
+    WidgetPdfDocument * _widgetPdfDocument;
     Ui::WidgetViewer *ui;
-
-    File* _file;
-    Document* _document;
 
 };
 

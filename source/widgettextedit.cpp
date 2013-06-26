@@ -23,13 +23,15 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     QTextEdit(parent),
     fileStructure(new FileStructure(this)),
     updatingIndentation(false),
-    currentFile(new File()),
+    currentFile(new File(this)),
     textHeight(0),
     firstVisibleBlock(0),
-    blocksInfo(new BlockInfo[1])
+    blocksInfo(new BlockInfo[1]),
+    _lineCount(0)
 
 {
     blocksInfo[0].height = -1;
+    connect(this,SIGNAL(textChanged()),this->currentFile,SLOT(setModified()));
     connect(this,SIGNAL(textChanged()),this,SLOT(updateIndentation()));
     connect(this,SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
     //connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(update()));
@@ -108,6 +110,7 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
 
     if(this->blocksInfo[0].height != -1)
     {
+        int lastFirstVisibleBlock = this->firstVisibleBlock;
         this->firstVisibleBlock = -1;
         for(int i=1; i< this->document()->blockCount(); ++i)
         {
@@ -118,9 +121,23 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
             }
 
         }
-        emit updateFirstVisibleBlock(this->firstVisibleBlock,blocksInfo[this->firstVisibleBlock].top);
+        if(lastFirstVisibleBlock != this->firstVisibleBlock)
+        {
+            emit updateFirstVisibleBlock(this->firstVisibleBlock,blocksInfo[this->firstVisibleBlock].top);
+        }
+        else
+        {
+            emit updatedWithSameFirstVisibleBlock();
+        }
     }
 
+}
+
+bool WidgetTextEdit::isCursorVisible()
+{
+    bool down = this->blockBottom(this->textCursor().block()) > this->verticalScrollBar()->value();
+    bool up = this->blockTop(this->textCursor().block()) < this->verticalScrollBar()->value()+this->height();
+    return up && down;
 }
 
 void WidgetTextEdit::onCursorPositionChange()
@@ -142,13 +159,11 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
 {
 
     QTextEdit::keyPressEvent(e);
-    //qDebug()<<"ok"<<e->key()<<"  "<<Qt::Key_Enter;
-    //if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Enter - 1)
-    //{
-    //    qDebug()<<"ok2";
+    /*//qDebug()<<"ok"<<e->key()<<"  "<<Qt::Key_Enter;
+    if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Enter - 1)
+    {
 
-
-    //}
+    }*/
 }
 void WidgetTextEdit::initIndentation(void)
 {
@@ -166,6 +181,9 @@ void WidgetTextEdit::initIndentation(void)
     }
     delete this->blocksInfo;
     this->blocksInfo = new BlockInfo[this->document()->blockCount()];
+
+
+
 
     QTextCursor cursor(this->textCursor());
     QTextBlock textBlock = this->document()->begin();
@@ -227,6 +245,14 @@ void WidgetTextEdit::updateIndentation(void)
     }
     delete blocksInfo;
     blocksInfo = new BlockInfo[this->document()->blockCount()];
+
+    qDebug()<<"line count "<<this->document()->blockCount()<<" "<<_lineCount;
+    if(this->document()->blockCount() != _lineCount)
+    {
+        this->currentFile->insertLine(this->textCursor().blockNumber(), this->document()->blockCount() - _lineCount);
+    }
+    _lineCount = this->document()->blockCount();
+
 
     QTextCursor cursor(this->textCursor());
     QTextBlock textBlock = this->document()->begin();

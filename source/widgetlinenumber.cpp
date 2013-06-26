@@ -21,6 +21,7 @@ void WidgetLineNumber::setWidgetTextEdit(WidgetTextEdit *widgetTextEdit)
 {
     this->widgetTextEdit = widgetTextEdit;
     connect(this->widgetTextEdit,SIGNAL(updateFirstVisibleBlock(int,int)), this, SLOT(updateFirstVisibleBlock(int,int)));
+    connect(this->widgetTextEdit,SIGNAL(updatedWithSameFirstVisibleBlock()), this, SLOT(update()));
 }
 
 void WidgetLineNumber::updateFirstVisibleBlock(int block, int top)

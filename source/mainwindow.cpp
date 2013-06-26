@@ -11,6 +11,7 @@
 #include "dialogwelcome.h"
 #include "dialogconfig.h"
 #include "viewer.h"
+#include "widgetpdfdocument.h"
 
 #include <QList>
 #include <QScrollBar>
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //setWindowFlags(Qt::FramelessWindowHint);
     widgetLineNumber->setWidgetTextEdit(widgetTextEdit);
     widgetScroller->setWidgetTextEdit(widgetTextEdit);
+    _widgetViewer->widgetPdfDocument()->setWidgetTextEdit(widgetTextEdit);
     SyntaxHighlighter * syntaxHighlighter = new SyntaxHighlighter(widgetTextEdit);
 
     // Load settings
@@ -55,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(widgetTextEdit,SIGNAL(textChanged()),widgetScroller,SLOT(updateText()));
     //connect(widgetTextEdit->verticalScrollBar(),SIGNAL(valueChanged(int)),widgetScroller,SLOT(update()));
 
+    connect(widgetTextEdit,SIGNAL(updateFirstVisibleBlock(int,int)), _widgetViewer->widgetPdfDocument(),SLOT(jumpToPdfFromSourceView(int,int)));
+
     connect(widgetScroller,SIGNAL(changed(int)),widgetTextEdit,SLOT(scrollTo(int)));
 
     // Connect menubar Actions
@@ -65,8 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     connect(this->ui->actionPdfLatex,SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getBuilder(),SLOT(pdflatex()));
-    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)),this->widgetTextEdit->getCurrentFile()->getViewer(),SLOT(view(QString)));
-    connect(this->ui->actionView, SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getViewer(),SLOT(view()));
+    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(pdfChanged()),this->_widgetViewer->widgetPdfDocument(),SLOT(updatePdf()));
+    connect(this->ui->actionView, SIGNAL(triggered()),this->_widgetViewer->widgetPdfDocument(),SLOT(updatePdf()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
     //connect(this->widgetTextEdit->getCurrentFile()->getViewer(), SIGNAL(finished()), this, SLOT(focus()));
 
@@ -75,9 +79,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->gridLayout->addWidget(widgetScroller,0,2);
     ui->gridLayout->addWidget(_widgetViewer,0,2);
 
-    ui->gridLayout->addWidget(widgetScroller,0,2);
     ui->gridLayout->setColumnMinimumWidth(0,40);
-    ui->gridLayout->setColumnMinimumWidth(2,300);
+    ui->gridLayout->setColumnMinimumWidth(2,600);
     //ui->gridLayout->setColumnMinimumWidth(2,100);
 
 
@@ -88,7 +91,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->dialogWelcome->getActionOpenLast(),SIGNAL(clicked()), this, SLOT(openLast()));
 
     this->dialogWelcome->show();
-
     connect(this->ui->actionSettings,SIGNAL(triggered()),this->dialogConfig,SLOT(show()));
 
 }
@@ -144,7 +146,7 @@ void MainWindow::open(QString filename)
     }
     //open
     this->widgetTextEdit->getCurrentFile()->open(filename);
-    this->_widgetViewer->setFile(this->widgetTextEdit->getCurrentFile());
+    this->_widgetViewer->widgetPdfDocument()->setFile(this->widgetTextEdit->getCurrentFile());
 
     //udpate the widget
     this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData().toLocal8Bit());

@@ -12,6 +12,7 @@ TARGET = SimTex
 TEMPLATE = app
 
 INCLUDEPATH += C:/dev/Tools/poppler/include/poppler/qt4
+INCLUDEPATH += C:/dev/Qt/Tools/zlib/include
 LIBS += -LC:/dev/Tools/poppler/lib -lpoppler-qt4
 
 SOURCES += main.cpp\
@@ -29,7 +30,10 @@ SOURCES += main.cpp\
     configmanager.cpp \
     viewer.cpp \
     widgetviewer.cpp \
-    document.cpp
+    pdfDocument.cpp \
+    widgetpdfdocument.cpp \
+    synctex_parser.c \
+    synctex_parser_utils.c
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -45,7 +49,11 @@ HEADERS  += mainwindow.h \
     configmanager.h \
     viewer.h \
     widgetviewer.h \
-    document.h
+    pdfDocument.h \
+    widgetpdfdocument.h \
+    synctex_parser.h \
+    synctex_parser_utils.h \
+    synctex_parser_local.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \

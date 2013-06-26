@@ -22,8 +22,8 @@ class WidgetTextEdit : public QTextEdit
 public:
     explicit WidgetTextEdit(QWidget *parent);
     int blockHeight(QTextBlock &textBlock) { return textBlock.layout()->boundingRect().height(); }
-    int blockTop(QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top; }
-    int blockBottom(QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top + this->blocksInfo[textBlock.blockNumber()].height; }
+    int blockTop(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top; }
+    int blockBottom(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top + this->blocksInfo[textBlock.blockNumber()].height; }
     QRectF blockGeometry(QTextBlock &textBlock) { return textBlock.layout()->boundingRect(); }
 
     int getTextHeight() { return this->textHeight; }
@@ -31,9 +31,12 @@ public:
     void setText(const QString &text);
     int getFirstVisibleBlock() { return this->firstVisibleBlock; }
     BlockInfo * getBlocksInfo() { return this->blocksInfo; }
+
+    bool isCursorVisible();
     
 signals:
     void updateFirstVisibleBlock(int,int);
+    void updatedWithSameFirstVisibleBlock();
 public slots:
     void scrollTo(int);
     void updateIndentation(void);
@@ -53,6 +56,7 @@ private:
     File * currentFile;
     int textHeight;
     int firstVisibleBlock;
+    int _lineCount;
 };
 
 #endif // WIDGETTEXTEDIT_H

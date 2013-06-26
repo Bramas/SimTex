@@ -17,6 +17,7 @@ public slots:
 
 signals:
     void statusChanged(QString);
+    void pdfChanged();
 
 private:
     File * file;
