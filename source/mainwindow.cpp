@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "widgetlinenumber.h"
-#include "widgetviewer.h"
+#include "widgetpdfviewer.h"
 #include "widgettextedit.h"
 #include "widgetscroller.h"
 #include "syntaxhighlighter.h"
@@ -20,6 +20,7 @@
 #include <QPushButton>
 #include <QDebug>
 #include <QMimeData>
+#include <QString>
 #include "configmanager.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -30,14 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
     widgetScroller(new WidgetScroller),
     dialogWelcome(new DialogWelcome(this)),
     dialogConfig(new DialogConfig(this)),
-    _widgetViewer(new WidgetViewer(this))
+    _widgetPdfViewer(new WidgetPdfViewer(this))
 {
     ui->setupUi(this);
     ConfigManager::Instance.setMainWindow(this);
     //setWindowFlags(Qt::FramelessWindowHint);
     widgetLineNumber->setWidgetTextEdit(widgetTextEdit);
     widgetScroller->setWidgetTextEdit(widgetTextEdit);
-    _widgetViewer->widgetPdfDocument()->setWidgetTextEdit(widgetTextEdit);
+    _widgetPdfViewer->widgetPdfDocument()->setWidgetTextEdit(widgetTextEdit);
     SyntaxHighlighter * syntaxHighlighter = new SyntaxHighlighter(widgetTextEdit);
     widgetTextEdit->setSyntaxHighlighter(syntaxHighlighter);
 
@@ -58,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(widgetTextEdit,SIGNAL(textChanged()),widgetScroller,SLOT(updateText()));
     //connect(widgetTextEdit->verticalScrollBar(),SIGNAL(valueChanged(int)),widgetScroller,SLOT(update()));
 
-    connect(widgetTextEdit,SIGNAL(updateFirstVisibleBlock(int,int)), _widgetViewer->widgetPdfDocument(),SLOT(jumpToPdfFromSourceView(int,int)));
+    connect(widgetTextEdit,SIGNAL(updateFirstVisibleBlock(int,int)), _widgetPdfViewer->widgetPdfDocument(),SLOT(jumpToPdfFromSourceView(int,int)));
 
     connect(widgetScroller,SIGNAL(changed(int)),widgetTextEdit,SLOT(scrollTo(int)));
 
@@ -70,15 +71,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     connect(this->ui->actionPdfLatex,SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getBuilder(),SLOT(pdflatex()));
-    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(pdfChanged()),this->_widgetViewer->widgetPdfDocument(),SLOT(updatePdf()));
-    connect(this->ui->actionView, SIGNAL(triggered()),this->_widgetViewer->widgetPdfDocument(),SLOT(updatePdf()));
+    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(pdfChanged()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(updatePdf()));
+    connect(this->ui->actionView, SIGNAL(triggered()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(updatePdf()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
     //connect(this->widgetTextEdit->getCurrentFile()->getViewer(), SIGNAL(finished()), this, SLOT(focus()));
 
     ui->gridLayout->addWidget(widgetLineNumber,0,0);
     ui->gridLayout->addWidget(widgetTextEdit,0,1);
     //ui->gridLayout->addWidget(widgetScroller,0,2);
-    ui->gridLayout->addWidget(_widgetViewer,0,2);
+    ui->gridLayout->addWidget(_widgetPdfViewer,0,2);
 
     ui->gridLayout->setColumnMinimumWidth(0,40);
     ui->gridLayout->setColumnMinimumWidth(2,600);
@@ -138,7 +139,6 @@ void MainWindow::open(QString filename)
         }
     }
     QString basename(filename);
-    qDebug()<<"Open : "<<filename;
     //window title
     this->setWindowTitle(basename.replace(QRegExp("^.*[\\\\\\/]([^\\\\\\/]*)$"),"\\1")+" - SimTex");
     //udpate the settings
@@ -148,10 +148,10 @@ void MainWindow::open(QString filename)
     }
     //open
     this->widgetTextEdit->getCurrentFile()->open(filename);
-    this->_widgetViewer->widgetPdfDocument()->setFile(this->widgetTextEdit->getCurrentFile());
+    this->_widgetPdfViewer->widgetPdfDocument()->setFile(this->widgetTextEdit->getCurrentFile());
 
     //udpate the widget
-    this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData().toLocal8Bit());
+    this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData());
 
 }
 void MainWindow::save()
@@ -162,6 +162,7 @@ void MainWindow::save()
     }
     this->widgetTextEdit->getCurrentFile()->setData(this->widgetTextEdit->toPlainText());
     this->widgetTextEdit->getCurrentFile()->save();
+    this->ui->statusBar->showMessage(tr(QString::fromUtf8("Sauvegardé").toLatin1()),2000);
 }
 
 void MainWindow::saveAs()

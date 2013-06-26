@@ -30,11 +30,11 @@ SOURCES += main.cpp\
     dialogconfig.cpp \
     configmanager.cpp \
     viewer.cpp \
-    widgetviewer.cpp \
     pdfDocument.cpp \
     widgetpdfdocument.cpp \
     synctex_parser.c \
-    synctex_parser_utils.c
+    synctex_parser_utils.c \
+    widgetpdfviewer.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -49,17 +49,17 @@ HEADERS  += mainwindow.h \
     dialogconfig.h \
     configmanager.h \
     viewer.h \
-    widgetviewer.h \
     pdfDocument.h \
     widgetpdfdocument.h \
     synctex_parser.h \
     synctex_parser_utils.h \
-    synctex_parser_local.h
+    synctex_parser_local.h \
+    widgetpdfviewer.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
     dialogconfig.ui \
-    widgetviewer.ui
+    widgetpdfviewer.ui
 
 #LIBS         += -LG:\poppler -lpoppler-qt4
 #LIBS         += -LG:\poppler\cpp\bin -lpoppler-cpp
@@ -72,3 +72,6 @@ target.path = SimTexwin32
 INSTALLS = target
 
 SUBDIRS += poppler
+
+RESOURCES += \
+    data.qrc

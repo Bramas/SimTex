@@ -9,6 +9,7 @@
 
 #include "pdfdocument.h"
 #include "synctex_parser.h"
+#include <QPoint>
 
 class File;
 class QImage;
@@ -27,6 +28,9 @@ signals:
 public slots:
     void jumpToPdfFromSourceView(int firstVisibleBlock, int);
     void jumpToPdfFromSource(QString sourceFile, int source_line);
+    void zoomIn();
+    void zoomOut();
+    void zoom(qreal factor, QPoint target = QPoint(0,0));
     void updatePdf(void);
 
 protected:

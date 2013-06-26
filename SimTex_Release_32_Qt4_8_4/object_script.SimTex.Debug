@@ -13,11 +13,11 @@ INPUT(
 ./debug\dialogconfig.o
 ./debug\configmanager.o
 ./debug\viewer.o
-./debug\widgetviewer.o
 ./debug\pdfDocument.o
 ./debug\widgetpdfdocument.o
 ./debug\synctex_parser.o
 ./debug\synctex_parser_utils.o
+./debug\widgetpdfviewer.o
 ./debug\moc_mainwindow.o
 ./debug\moc_widgetlinenumber.o
 ./debug\moc_widgettextedit.o
@@ -28,6 +28,7 @@ INPUT(
 ./debug\moc_dialogwelcome.o
 ./debug\moc_dialogconfig.o
 ./debug\moc_viewer.o
-./debug\moc_widgetviewer.o
 ./debug\moc_widgetpdfdocument.o
+./debug\moc_widgetpdfviewer.o
+./debug\qrc_data.o
 );

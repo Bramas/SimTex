@@ -197,19 +197,31 @@ void WidgetPdfDocument::wheelEvent(QWheelEvent * event)
 {
     if(event->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::ShiftModifier))
     {
-        qreal factor =  event->delta() > 0 ? 1.1 : 0.90 ;
-        this->_zoom *= factor;
-        this->_painterTranslate *= factor;
-
-        this->_painterTranslate += event->pos() - event->pos()*factor;
-        this->boundPainterTranslation();
-        this->refreshPages();
+        qreal factor =  event->delta() > 0 ? 1.1 : 0.90;
+        this->zoom(factor, event->pos());
     }
     else
     {
        this->_painterTranslate.setY(this->_painterTranslate.y()+event->delta());
     }
+}
+void WidgetPdfDocument::zoom(qreal factor, QPoint target)
+{
+    this->_zoom *= factor;
+    this->_painterTranslate *= factor;
+    this->_painterTranslate += target - target*factor;
+    this->boundPainterTranslation();
+    this->refreshPages();
     update();
+}
+void WidgetPdfDocument::zoomIn()
+{
+    this->zoom(1.1);
+}
+
+void WidgetPdfDocument::zoomOut()
+{
+    this->zoom(0.9);
 }
 
 void WidgetPdfDocument::mouseMoveEvent(QMouseEvent * event)

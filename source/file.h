@@ -37,7 +37,7 @@ public:
      * if filename is empty, the filename given during the constructor is used.
      * if filename is not empty, it will replace the current filename.
      */
-    void open(QString filename = "");
+    void open(QString filename = "", QString codec = "");
     /**
      * @brief save the file
      * @param filename
@@ -122,6 +122,7 @@ private:
     Viewer * viewer;
     WidgetTextEdit * _widgetTextEdit;
     bool _modified;
+    QString _codec;
 
     QMap<int,int> _lineNumberSinceLastBuild;
 };

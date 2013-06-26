@@ -5,12 +5,14 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
+#include <QTextCodec>
 
 File::File(WidgetTextEdit* widgetTextEdit,QString filename) :
     filename(filename),
     builder(new Builder(this)),
     viewer(new Viewer(this)),
-    _widgetTextEdit(widgetTextEdit)
+    _widgetTextEdit(widgetTextEdit),
+    _codec(QTextCodec::codecForLocale()->name())
 {
 }
 void File::save(QString filename)
@@ -36,14 +38,14 @@ void File::save(QString filename)
         return;
 
     QTextStream out(&file);
-    out.setCodec("UTF-8");
+    out.setCodec(_codec.toLatin1());
     //out.setGenerateByteOrderMark(true);
     out << this->data;
 
     _modified = false;
 }
 
-void File::open(QString filename)
+void File::open(QString filename, QString codec)
 {
     // Get the filename
 
@@ -72,9 +74,24 @@ void File::open(QString filename)
     this->data = QString("");
 
     QTextStream in(&file);
+    if(codec.isEmpty())
+    {
+        in.setCodec("UTF-8");
+    }
+    else
+    {
+        in.setCodec(codec.toLatin1());
+    }
+
     while (!in.atEnd()) {
         data.append(in.readLine()+"\n");
     }
+    if(codec.isEmpty() && data.contains(QString::fromUtf8("�")))
+    {
+        this->open(this->filename,"ISO 8859-1");
+        return;
+    }
+    this->_codec = in.codec()->name();
     _modified = false;
 
 }

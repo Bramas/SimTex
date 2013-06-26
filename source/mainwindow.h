@@ -7,7 +7,7 @@ class QMimeData;
 class WidgetTextEdit;
 class WidgetLineNumber;
 class WidgetScroller;
-class WidgetViewer;
+class WidgetPdfViewer;
 class DialogWelcome;
 class DialogConfig;
 
@@ -38,7 +38,7 @@ private:
     WidgetLineNumber * widgetLineNumber;
     WidgetTextEdit * widgetTextEdit;
     WidgetScroller * widgetScroller;
-    WidgetViewer * _widgetViewer;
+    WidgetPdfViewer * _widgetPdfViewer;
     DialogWelcome * dialogWelcome;
     DialogConfig * dialogConfig;
 };
