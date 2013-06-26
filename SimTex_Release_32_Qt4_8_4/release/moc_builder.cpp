@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'builder.h'
 **
-** Created: Tue 25. Jun 23:25:21 2013
+** Created: Wed 26. Jun 23:59:12 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,26 +23,27 @@ static const uint qt_meta_data_Builder[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
+       2,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
        9,    8,    8,    8, 0x05,
+      32,    8,    8,    8, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      32,    8,    8,    8, 0x0a,
-      63,   43,    8,    8, 0x0a,
+      45,    8,    8,    8, 0x0a,
+      76,   56,    8,    8, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_Builder[] = {
     "Builder\0\0statusChanged(QString)\0"
-    "pdflatex()\0exitCode,exitStatus\0"
+    "pdfChanged()\0pdflatex()\0exitCode,exitStatus\0"
     "onFinished(int,QProcess::ExitStatus)\0"
 };
 
@@ -53,8 +54,9 @@ void Builder::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         Builder *_t = static_cast<Builder *>(_o);
         switch (_id) {
         case 0: _t->statusChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 1: _t->pdflatex(); break;
-        case 2: _t->onFinished((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QProcess::ExitStatus(*)>(_a[2]))); break;
+        case 1: _t->pdfChanged(); break;
+        case 2: _t->pdflatex(); break;
+        case 3: _t->onFinished((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QProcess::ExitStatus(*)>(_a[2]))); break;
         default: ;
         }
     }
@@ -92,9 +94,9 @@ int Builder::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }
@@ -104,5 +106,11 @@ void Builder::statusChanged(QString _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void Builder::pdfChanged()
+{
+    QMetaObject::activate(this, &staticMetaObject, 1, 0);
 }
 QT_END_MOC_NAMESPACE

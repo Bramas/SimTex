@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'dialogconfig.ui'
 **
-** Created: Wed 26. Jun 13:57:22 2013
+** Created: Wed 26. Jun 23:22:16 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -15,12 +15,15 @@
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
 #include <QtGui/QDialog>
+#include <QtGui/QFormLayout>
 #include <QtGui/QGridLayout>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
+#include <QtGui/QLabel>
 #include <QtGui/QListWidget>
 #include <QtGui/QPushButton>
 #include <QtGui/QRadioButton>
+#include <QtGui/QSpinBox>
 #include <QtGui/QStackedWidget>
 #include <QtGui/QTableWidget>
 #include <QtGui/QWidget>
@@ -36,6 +39,10 @@ public:
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
     QTableWidget *tableWidget;
+    QFormLayout *formLayout;
+    QLabel *label;
+    QSpinBox *spinBoxPointSize;
+    QLabel *label_2;
     QHBoxLayout *horizontalLayout;
     QRadioButton *radioButtonDarkTheme;
     QRadioButton *radioButtonLightTheme;
@@ -79,7 +86,25 @@ public:
         tableWidget->setItem(1, 0, __qtablewidgetitem4);
         tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
 
-        gridLayout->addWidget(tableWidget, 2, 0, 1, 1);
+        gridLayout->addWidget(tableWidget, 3, 0, 1, 1);
+
+        formLayout = new QFormLayout();
+        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+        label = new QLabel(gridLayoutWidget);
+        label->setObjectName(QString::fromUtf8("label"));
+
+        formLayout->setWidget(1, QFormLayout::LabelRole, label);
+
+        spinBoxPointSize = new QSpinBox(gridLayoutWidget);
+        spinBoxPointSize->setObjectName(QString::fromUtf8("spinBoxPointSize"));
+
+        formLayout->setWidget(1, QFormLayout::FieldRole, spinBoxPointSize);
+
+        label_2 = new QLabel(gridLayoutWidget);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+
+        formLayout->setWidget(2, QFormLayout::LabelRole, label_2);
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
@@ -95,7 +120,10 @@ public:
         horizontalLayout->addWidget(radioButtonLightTheme);
 
 
-        gridLayout->addLayout(horizontalLayout, 0, 0, 1, 1);
+        formLayout->setLayout(2, QFormLayout::FieldRole, horizontalLayout);
+
+
+        gridLayout->addLayout(formLayout, 0, 0, 1, 1);
 
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
@@ -131,8 +159,10 @@ public:
         ___qtablewidgetitem4->setText(QApplication::translate("DialogConfig", "#000000", 0, QApplication::UnicodeUTF8));
         tableWidget->setSortingEnabled(__sortingEnabled);
 
-        radioButtonDarkTheme->setText(QApplication::translate("DialogConfig", "Theme sombre", 0, QApplication::UnicodeUTF8));
-        radioButtonLightTheme->setText(QApplication::translate("DialogConfig", "Theme Clair", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("DialogConfig", "Taille du texte", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("DialogConfig", "Th\303\250me", 0, QApplication::UnicodeUTF8));
+        radioButtonDarkTheme->setText(QApplication::translate("DialogConfig", "Sombre", 0, QApplication::UnicodeUTF8));
+        radioButtonLightTheme->setText(QApplication::translate("DialogConfig", "Clair", 0, QApplication::UnicodeUTF8));
         pushButton->setText(QApplication::translate("DialogConfig", "Valider", 0, QApplication::UnicodeUTF8));
         pushButton_2->setText(QApplication::translate("DialogConfig", "Annler", 0, QApplication::UnicodeUTF8));
     } // retranslateUi

@@ -1,4 +1,5 @@
 #include "dialogconfig.h"
+#include "configmanager.h"
 #include "ui_dialogconfig.h"
 
 #include <QFile>
@@ -32,10 +33,18 @@ void DialogConfig::saveAndClose()
     {
         settings.setValue("theme",QString("dark"));
     }
-    this->close();
+
+    settings.setValue("pointSize",this->ui->spinBoxPointSize->value());
+    ConfigManager::Instance.setPointSize(this->ui->spinBoxPointSize->value());
+    this->accept();
 }
 
 void DialogConfig::save()
 {
     //QFile file()
+}
+void DialogConfig::show()
+{
+    this->ui->spinBoxPointSize->setValue(ConfigManager::Instance.getTextCharFormats()->value("normal").font().pointSize());
+    QDialog::show();
 }

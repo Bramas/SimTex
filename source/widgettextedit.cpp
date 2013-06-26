@@ -14,6 +14,7 @@
 #include <QSettings>
 #include <QMimeData>
 #include <QPalette>
+#include "syntaxhighlighter.h"
 
 #define max(a,b) ((a) < (b) ? (b) : (a))
 #define min(a,b) ((a) > (b) ? (b) : (a))
@@ -27,7 +28,8 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     textHeight(0),
     firstVisibleBlock(0),
     blocksInfo(new BlockInfo[1]),
-    _lineCount(0)
+    _lineCount(0),
+    _syntaxHighlighter(0)
 
 {
     blocksInfo[0].height = -1;
@@ -37,7 +39,8 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     //connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(update()));
     connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this->viewport(),SLOT(update()));
 
-    this->setCurrentFont(QFont("Consolas", 12));
+    this->setCurrentFont(QFont("Consolas", 17));
+    //this->setCurrentFont(QFont("Consolas", 17));
 
     this->setPalette(QPalette(Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,ConfigManager::Instance.getTextCharFormats()->value("normal").background().color()));
     //this->setStyleSheet("QTextEdit { background-color: rgb(0, 255, 0) }");
@@ -165,6 +168,34 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
 
     }*/
 }
+void WidgetTextEdit::wheelEvent(QWheelEvent * event)
+{
+
+    if(event->modifiers() & (Qt::ControlModifier))
+    {
+        int delta =  event->delta() > 0 ? 1 : -1 ;
+        /*QTextCharFormat format(ConfigManager::Instance.getTextCharFormats()->value("normal"));
+        QFont font(format.font());
+        font.setPointSize(font.pointSize()+delta);
+        format.setFont(font);
+        ConfigManager::Instance.getTextCharFormats()->insert("normal",format);
+        qDebug()<<"font "<<ConfigManager::Instance.getTextCharFormats()->value("normal").font().pointSize();
+        /*QFont font(this->currentFont());
+        font.setPointSize(font.pointSize()+delta);
+        this->setCurrentFont(font);*/
+        //this->setFontPointSize(20);
+        ConfigManager::Instance.changePointSizeBy(delta);
+        if(this->_syntaxHighlighter)
+        {
+            this->_syntaxHighlighter->rehighlight();
+        }
+    }
+    else
+    {
+        QTextEdit::wheelEvent(event);
+    }
+    update();
+}
 void WidgetTextEdit::initIndentation(void)
 {
     if(this->updatingIndentation)
@@ -227,6 +258,7 @@ void WidgetTextEdit::initIndentation(void)
             }
         }
     }
+    this->currentFile->refreshLineNumber();
     this->updatingIndentation = false;
 }
 
@@ -246,7 +278,6 @@ void WidgetTextEdit::updateIndentation(void)
     delete blocksInfo;
     blocksInfo = new BlockInfo[this->document()->blockCount()];
 
-    qDebug()<<"line count "<<this->document()->blockCount()<<" "<<_lineCount;
     if(this->document()->blockCount() != _lineCount)
     {
         this->currentFile->insertLine(this->textCursor().blockNumber(), this->document()->blockCount() - _lineCount);

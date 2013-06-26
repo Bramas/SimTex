@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetscroller.h'
 **
-** Created: Tue 25. Jun 23:25:20 2013
+** Created: Wed 26. Jun 23:59:09 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!

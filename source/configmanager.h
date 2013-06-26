@@ -20,6 +20,9 @@ public:
 
     ~ConfigManager();
 
+    void changePointSizeBy(int delta);
+    void setPointSize(int size);
+
     void setMainWindow(QWidget * mainWindow);
     void save(void);
 

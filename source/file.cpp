@@ -103,5 +103,4 @@ void File::insertLine(int lineNumber, int lineCount)
     {
         _lineNumberSinceLastBuild.remove(_lineNumberSinceLastBuild.size()-1);
     }
-    qDebug()<<"New Line Number : "<<_lineNumberSinceLastBuild.size();
 }

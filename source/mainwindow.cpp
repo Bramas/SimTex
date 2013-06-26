@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
     widgetScroller->setWidgetTextEdit(widgetTextEdit);
     _widgetViewer->widgetPdfDocument()->setWidgetTextEdit(widgetTextEdit);
     SyntaxHighlighter * syntaxHighlighter = new SyntaxHighlighter(widgetTextEdit);
+    widgetTextEdit->setSyntaxHighlighter(syntaxHighlighter);
 
     // Load settings
     {
@@ -92,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->dialogWelcome->show();
     connect(this->ui->actionSettings,SIGNAL(triggered()),this->dialogConfig,SLOT(show()));
+    connect(this->dialogConfig,SIGNAL(accepted()),syntaxHighlighter,SLOT(rehighlight()));
 
 }
 

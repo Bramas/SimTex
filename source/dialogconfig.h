@@ -18,6 +18,7 @@ public:
 public slots:
     void save(void);
     void saveAndClose(void);
+    void show();
     
 private:
     Ui::DialogConfig *ui;

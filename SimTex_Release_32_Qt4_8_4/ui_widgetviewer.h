@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'widgetviewer.ui'
 **
-** Created: Wed 26. Jun 01:45:03 2013
+** Created: Wed 26. Jun 23:58:43 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -25,23 +25,17 @@ QT_BEGIN_NAMESPACE
 class Ui_WidgetViewer
 {
 public:
-    QWidget *verticalLayoutWidget;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
     QPushButton *pushButton;
     QPushButton *pushButton_2;
 
-    void setupUi(QWidget *WidgetViewer)
+    void setupUi(QWidget *verticalLayoutWidget)
     {
-        if (WidgetViewer->objectName().isEmpty())
-            WidgetViewer->setObjectName(QString::fromUtf8("WidgetViewer"));
-        WidgetViewer->resize(595, 674);
-        verticalLayoutWidget = new QWidget(WidgetViewer);
-        verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(0, 10, 581, 661));
+        if (verticalLayoutWidget->objectName().isEmpty())
+            verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         pushButton = new QPushButton(verticalLayoutWidget);
@@ -58,14 +52,14 @@ public:
         verticalLayout->addLayout(horizontalLayout);
 
 
-        retranslateUi(WidgetViewer);
+        retranslateUi(verticalLayoutWidget);
 
-        QMetaObject::connectSlotsByName(WidgetViewer);
+        QMetaObject::connectSlotsByName(verticalLayoutWidget);
     } // setupUi
 
-    void retranslateUi(QWidget *WidgetViewer)
+    void retranslateUi(QWidget *verticalLayoutWidget)
     {
-        WidgetViewer->setWindowTitle(QApplication::translate("WidgetViewer", "Form", 0, QApplication::UnicodeUTF8));
+        verticalLayoutWidget->setWindowTitle(QApplication::translate("WidgetViewer", "Form", 0, QApplication::UnicodeUTF8));
         pushButton->setText(QApplication::translate("WidgetViewer", "PushButton", 0, QApplication::UnicodeUTF8));
         pushButton_2->setText(QApplication::translate("WidgetViewer", "PushButton", 0, QApplication::UnicodeUTF8));
     } // retranslateUi

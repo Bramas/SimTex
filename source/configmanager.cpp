@@ -23,9 +23,6 @@ ConfigManager::ConfigManager() :
 
     qDebug()<<"Init ConfigManager";
 
-    QFont font("Consolas");
-    QTextCharFormat charFormat;
-
     QCoreApplication::setOrganizationName("Ultratools");
     QCoreApplication::setOrganizationDomain("ultratools.org");
     QCoreApplication::setApplicationName("TexSim");
@@ -33,6 +30,12 @@ ConfigManager::ConfigManager() :
 
     QSettings settings;
     settings.beginGroup("theme");
+
+    QFont font("Consolas");
+    font.setPointSize(settings.value("pointSize",12).toInt());
+    QTextCharFormat charFormat;
+
+
     if(!settings.contains("theme"))
     {
         settings.setValue("theme",QString("dark"));
@@ -137,6 +140,31 @@ QString ConfigManager::textCharFormatToString(QTextCharFormat charFormat)
             ", "+QString::number(charFormat.background().color().blue())+
             ") ";
 }
+
+void ConfigManager::changePointSizeBy(int delta)
+{
+    foreach(const QString &key, this->textCharFormats->keys())
+    {
+        QTextCharFormat format(this->textCharFormats->value(key));
+        QFont font(format.font());
+        font.setPointSize(font.pointSize()+delta);
+        format.setFont(font);
+        this->textCharFormats->insert(key,format);
+    }
+}
+
+void ConfigManager::setPointSize(int size)
+{
+    foreach(const QString &key, this->textCharFormats->keys())
+    {
+        QTextCharFormat format(this->textCharFormats->value(key));
+        QFont font(format.font());
+        font.setPointSize(size);
+        format.setFont(font);
+        this->textCharFormats->insert(key,format);
+    }
+}
+
 
 void ConfigManager::save()
 {

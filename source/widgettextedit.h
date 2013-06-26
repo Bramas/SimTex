@@ -7,6 +7,7 @@
 #include "file.h"
 
 class FileStructure;
+class SyntaxHighlighter;
 
 struct BlockInfo
 {
@@ -33,6 +34,7 @@ public:
     BlockInfo * getBlocksInfo() { return this->blocksInfo; }
 
     bool isCursorVisible();
+    void setSyntaxHighlighter(SyntaxHighlighter * syntaxHighlighter) { this->_syntaxHighlighter = syntaxHighlighter; }
     
 signals:
     void updateFirstVisibleBlock(int,int);
@@ -49,7 +51,9 @@ private:
     void paintEvent(QPaintEvent *event);
     void keyPressEvent(QKeyEvent *e);
     void resizeEvent(QResizeEvent * event);
+    void wheelEvent(QWheelEvent * event);
 
+    SyntaxHighlighter * _syntaxHighlighter;
     bool updatingIndentation;
     FileStructure * fileStructure;
     BlockInfo * blocksInfo;
@@ -57,6 +61,7 @@ private:
     int textHeight;
     int firstVisibleBlock;
     int _lineCount;
+
 };
 
 #endif // WIDGETTEXTEDIT_H

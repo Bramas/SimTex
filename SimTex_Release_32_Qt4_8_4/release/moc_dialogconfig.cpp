@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'dialogconfig.h'
 **
-** Created: Tue 25. Jun 23:25:23 2013
+** Created: Wed 26. Jun 23:59:14 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_DialogConfig[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -33,12 +33,14 @@ static const uint qt_meta_data_DialogConfig[] = {
  // slots: signature, parameters, type, tag, flags
       14,   13,   13,   13, 0x0a,
       21,   13,   13,   13, 0x0a,
+      36,   13,   13,   13, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_DialogConfig[] = {
     "DialogConfig\0\0save()\0saveAndClose()\0"
+    "show()\0"
 };
 
 void DialogConfig::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -49,6 +51,7 @@ void DialogConfig::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         switch (_id) {
         case 0: _t->save(); break;
         case 1: _t->saveAndClose(); break;
+        case 2: _t->show(); break;
         default: ;
         }
     }
@@ -87,9 +90,9 @@ int DialogConfig::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }

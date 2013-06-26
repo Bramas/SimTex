@@ -56,20 +56,32 @@
    <property name="text">
     <string>Ouvrir</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionSaveAs">
    <property name="text">
     <string>Enregistrer Sous</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
     <string>Enregistrer</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionPdfLatex">
    <property name="text">
     <string>PdfLatex</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="actionSettings">
@@ -80,6 +92,9 @@
   <action name="actionView">
    <property name="text">
     <string>Voir le Pdf</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>
