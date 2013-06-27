@@ -46,8 +46,20 @@ ConfigManager::ConfigManager() :
         //font.setBold(QFont::Normal);
         charFormat.setForeground(QColor(248,248,242));
         charFormat.setFont(font);
+        charFormat.setBackground(QColor(58,60,50));
+        textCharFormats->insert("linenumber",charFormat);
+
+        charFormat.setForeground(QColor(14,16,15));
+        charFormat.setFont(font);
+        textCharFormats->insert("textedit-border",charFormat);
+
+
+        charFormat.setForeground(QColor(248,248,242));
+        charFormat.setFont(font);
         charFormat.setBackground(QColor(39,40,34));
         textCharFormats->insert("normal",charFormat);
+
+
 
         charFormat.setForeground(QColor(117,113,94));
         charFormat.setFont(font);
@@ -79,6 +91,15 @@ ConfigManager::ConfigManager() :
     {
 
         //font.setBold(QFont::Normal);
+        charFormat.setForeground(QColor(63,62,51));
+        charFormat.setFont(font);
+        charFormat.setBackground(QColor(220,220,220));
+        textCharFormats->insert("linenumber",charFormat);
+
+        charFormat.setForeground(QColor(200,200,200));
+        charFormat.setFont(font);
+        textCharFormats->insert("textedit-border",charFormat);
+
         charFormat.setForeground(QColor(53,52,41));
         charFormat.setFont(font);
         charFormat.setBackground(QColor(250,250,250));

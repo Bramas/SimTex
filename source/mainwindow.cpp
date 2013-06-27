@@ -21,6 +21,7 @@
 #include <QDebug>
 #include <QMimeData>
 #include <QString>
+#include <QPalette>
 #include "configmanager.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -51,10 +52,31 @@ MainWindow::MainWindow(QWidget *parent) :
         settings.endGroup();
     }
 
+    //define background
 
+    {
+        QPalette Pal(palette());
+        // set black background
+        Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats()->value("linenumber").background().color());
+        this->setAutoFillBackground(true);
+        this->setPalette(Pal);
+    }
+
+    {
+        QPalette Pal(this->ui->statusBar->palette());
+        // set black background
+        Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats()->value("normal").background().color());
+        Pal.setColor(QPalette::Window, ConfigManager::Instance.getTextCharFormats()->value("normal").background().color());
+        Pal.setColor(QPalette::WindowText, ConfigManager::Instance.getTextCharFormats()->value("normal").foreground().color());
+        this->setAutoFillBackground(true);
+        this->ui->statusBar->setPalette(Pal);
+        this->ui->statusBar->setStyleSheet("QStatusBar {background: "+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats()->value("normal").background().color())+
+                                           "}");
+    }
     // Connect things that can update the widgetTextEdit
 
     connect(widgetTextEdit,SIGNAL(textChanged()),widgetLineNumber,SLOT(update()));
+    connect(widgetTextEdit,SIGNAL(setBlockRange(int,int)),widgetLineNumber,SLOT(setBlockRange(int,int)));
     //connect(widgetTextEdit->verticalScrollBar(),SIGNAL(valueChanged(int)),widgetLineNumber,SLOT(update()));
 
     //connect(widgetTextEdit,SIGNAL(textChanged()),widgetScroller,SLOT(updateText()));
@@ -99,6 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     this->setMouseTracking(true);
+
 }
 
 MainWindow::~MainWindow()
@@ -208,10 +231,16 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 }
 void MainWindow::mousePressEvent(QMouseEvent * event)
 {
-    this->_mousePressed = true;
+    if(event->pos().x() > widgetTextEdit->width()+47
+       && event->pos().x() < widgetTextEdit->width()+54
+       && event->pos().y() > 30)
+    {
+        this->_mousePressed = true;
+    }
 }
 void MainWindow::mouseReleaseEvent(QMouseEvent * event)
 {
+
     this->_mousePressed = false;
     this->setCursor(Qt::ArrowCursor);
 }

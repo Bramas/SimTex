@@ -25,6 +25,7 @@ public:
 
     void setMainWindow(QWidget * mainWindow);
     void save(void);
+    QString colorToString(const QColor & color) { return "rgb("+QString::number(color.red())+","+QString::number(color.green())+","+QString::number(color.blue())+")";}
 
     static QString textCharFormatToString(QTextCharFormat charFormat);
 

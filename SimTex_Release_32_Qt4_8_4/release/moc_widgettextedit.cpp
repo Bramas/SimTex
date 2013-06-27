@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgettextedit.h'
 **
-** Created: Thu 27. Jun 03:06:09 2013
+** Created: Thu 27. Jun 11:07:02 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,21 +23,23 @@ static const uint qt_meta_data_WidgetTextEdit[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       7,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       2,       // signalCount
+       3,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
       18,   16,   15,   15, 0x05,
       51,   15,   15,   15, 0x05,
+      86,   16,   15,   15, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      86,   15,   15,   15, 0x0a,
-     100,   15,   15,   15, 0x0a,
-     120,   15,   15,   15, 0x0a,
+     109,   15,   15,   15, 0x0a,
+     123,   15,   15,   15, 0x0a,
+     143,   15,   15,   15, 0x0a,
+     168,   15,   15,   15, 0x0a,
 
        0        // eod
 };
@@ -45,8 +47,9 @@ static const uint qt_meta_data_WidgetTextEdit[] = {
 static const char qt_meta_stringdata_WidgetTextEdit[] = {
     "WidgetTextEdit\0\0,\0updateFirstVisibleBlock(int,int)\0"
     "updatedWithSameFirstVisibleBlock()\0"
-    "scrollTo(int)\0updateIndentation()\0"
-    "onCursorPositionChange()\0"
+    "setBlockRange(int,int)\0scrollTo(int)\0"
+    "updateIndentation()\0onCursorPositionChange()\0"
+    "matchAll()\0"
 };
 
 void WidgetTextEdit::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -57,9 +60,11 @@ void WidgetTextEdit::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         switch (_id) {
         case 0: _t->updateFirstVisibleBlock((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 1: _t->updatedWithSameFirstVisibleBlock(); break;
-        case 2: _t->scrollTo((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 3: _t->updateIndentation(); break;
-        case 4: _t->onCursorPositionChange(); break;
+        case 2: _t->setBlockRange((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 3: _t->scrollTo((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 4: _t->updateIndentation(); break;
+        case 5: _t->onCursorPositionChange(); break;
+        case 6: _t->matchAll(); break;
         default: ;
         }
     }
@@ -97,9 +102,9 @@ int WidgetTextEdit::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 7;
     }
     return _id;
 }
@@ -115,5 +120,12 @@ void WidgetTextEdit::updateFirstVisibleBlock(int _t1, int _t2)
 void WidgetTextEdit::updatedWithSameFirstVisibleBlock()
 {
     QMetaObject::activate(this, &staticMetaObject, 1, 0);
+}
+
+// SIGNAL 2
+void WidgetTextEdit::setBlockRange(int _t1, int _t2)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_END_MOC_NAMESPACE

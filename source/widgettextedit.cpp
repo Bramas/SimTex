@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QPainter>
 #include "filestructure.h"
+#include "blockdata.h"
 #include <QListIterator>
 #include <QMutableListIterator>
 #include <QList>
@@ -38,12 +39,15 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     connect(this,SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
     //connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(update()));
     connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this->viewport(),SLOT(update()));
+    connect(this,SIGNAL(cursorPositionChanged()),this, SLOT(matchAll()));
 
     this->setCurrentFont(QFont("Consolas", 17));
     //this->setCurrentFont(QFont("Consolas", 17));
 
     this->setPalette(QPalette(Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,ConfigManager::Instance.getTextCharFormats()->value("normal").background().color()));
-    //this->setStyleSheet("QTextEdit { background-color: rgb(0, 255, 0) }");
+    this->setStyleSheet(QString("QTextEdit { border: 1px solid ")+
+                        ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats()->value("textedit-border").foreground().color())+
+                                "}");
 }
 
 void WidgetTextEdit::scrollTo(int p)
@@ -333,6 +337,9 @@ void WidgetTextEdit::updateIndentation(void)
 
 void WidgetTextEdit::insertFromMimeData(const QMimeData *source)
 {
+    QMimeData * source2 =new QMimeData();
+    source2->setData(QString("text/plain"),QByteArray(source->text().toLatin1()));
+    QTextEdit::insertFromMimeData(source2);
    /* if(source->hasUrls())
     {
         this->currentFile->open(source->urls().first().toLocalFile());//this->currentFile->open()
@@ -340,5 +347,229 @@ void WidgetTextEdit::insertFromMimeData(const QMimeData *source)
         return;
     }
     this->append(source->text());*/
+}
+void WidgetTextEdit::matchAll()
+{
+
+    QList<QTextEdit::ExtraSelection> selections;
+    setExtraSelections(selections);
+    this->matchPar();
+    this->matchLat();
+}
+
+
+void WidgetTextEdit::matchPar()
+{
+
+    QTextBlock textBlock = textCursor().block();
+    BlockData *data = static_cast<BlockData *>( textBlock.userData() );
+    if ( data ) {
+        QVector<ParenthesisInfo *> infos = data->parentheses();
+        int pos = textCursor().block().position();
+
+        for (int i=0; i < infos.size(); ++i) {
+            ParenthesisInfo *info = infos.at(i);
+            int curPos = textCursor().position() - textBlock.position();
+            // Clicked on a left parenthesis?
+            if ( info->position == curPos-1 && info->character == '{' ) {
+                if ( matchLeftPar( textBlock, i+1, 0 ) )
+                    createParSelection( pos + info->position );
+            }
+
+            // Clicked on a right parenthesis?
+            if ( info->position == curPos-1 && info->character == '}' ) {
+                if ( matchRightPar( textBlock, i-1, 0 ) )
+                    createParSelection( pos + info->position );
+            }
+        }
+    }
+}
+bool WidgetTextEdit::matchLeftPar(	QTextBlock currentBlock, int index, int numLeftPar )
+{
+    BlockData *data = static_cast<BlockData *>( currentBlock.userData() );
+    QVector<ParenthesisInfo *> infos = data->parentheses();
+    int docPos = currentBlock.position();
+
+    // Match in same line?
+    for ( ; index<infos.size(); ++index ) {
+        ParenthesisInfo *info = infos.at(index);
+
+        if ( info->character == '{' ) {
+            ++numLeftPar;
+            continue;
+        }
+
+        if ( info->character == '}' && numLeftPar == 0 ) {
+            createParSelection( docPos + info->position );
+            return true;
+        } else
+            --numLeftPar;
+    }
+
+    // No match yet? Then try next block
+    currentBlock = currentBlock.next();
+    if ( currentBlock.isValid() )
+        return matchLeftPar( currentBlock, 0, numLeftPar );
+
+    // No match at all
+    return false;
+}
+
+bool WidgetTextEdit::matchRightPar(QTextBlock currentBlock, int index, int numRightPar)
+{
+    BlockData *data = static_cast<BlockData *>( currentBlock.userData() );
+    QVector<ParenthesisInfo *> infos = data->parentheses();
+    int docPos = currentBlock.position();
+
+    // Match in same line?
+    for (int j=index; j>=0; --j ) {
+        ParenthesisInfo *info = infos.at(j);
+
+        if ( info->character == '}' ) {
+            ++numRightPar;
+            continue;
+        }
+
+        if ( info->character == '{' && numRightPar == 0 ) {
+            createParSelection( docPos + info->position );
+            return true;
+        } else
+            --numRightPar;
+    }
+
+    // No match yet? Then try previous block
+    currentBlock = currentBlock.previous();
+    if ( currentBlock.isValid() ) {
+
+        // Recalculate correct index first
+        BlockData *data = static_cast<BlockData *>( currentBlock.userData() );
+        QVector<ParenthesisInfo *> infos = data->parentheses();
+
+        return matchRightPar( currentBlock, infos.size()-1, numRightPar );
+    }
+
+    // No match at all
+    return false;
+}
+
+void WidgetTextEdit::createParSelection( int pos )
+{
+    QList<QTextEdit::ExtraSelection> selections = extraSelections();
+    QTextEdit::ExtraSelection selection;
+    QTextCharFormat format = selection.format;
+    format.setBackground( QColor("#FFFF99") );
+    format.setForeground( QColor("#FF0000") );
+    selection.format = format;
+
+    QTextCursor cursor = textCursor();
+    cursor.setPosition( pos );
+    cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor );
+    selection.cursor = cursor;
+    selections.append( selection );
+    setExtraSelections( selections );
+}
+void WidgetTextEdit::matchLat()
+{
+    QTextBlock textBlock = textCursor().block();
+    //if (foldableLines.keys().contains(textBlock.blockNumber())) createLatSelection(textBlock.blockNumber(),foldableLines[textBlock.blockNumber()]);
+    //else
+    {
+        BlockData *data = static_cast<BlockData *>( textBlock.userData() );
+        if( data )
+        {
+            QVector<LatexBlockInfo *> infos = data->latexblocks();
+            int pos = textCursor().block().position();
+            if (infos.size()==0)
+            {
+                emit setBlockRange(-1,-1);
+                //endBlock=-1;
+            }
+            for ( int i=0; i<infos.size(); ++i )
+            {
+                LatexBlockInfo *info = infos.at(i);
+                int curPos = textCursor().position() - textBlock.position();
+                if ( info->position <= curPos && info->character == 'b' ) matchLeftLat( textBlock, i+1, 0, textBlock.blockNumber());
+                if ( info->position <= curPos && info->character == 'e' ) matchRightLat( textBlock, i-1, 0,textBlock.blockNumber());
+            }
+        }
+    }
+
+}
+
+bool WidgetTextEdit::matchLeftLat(	QTextBlock currentBlock, int index, int numLeftLat, int bpos )
+{
+    BlockData *data = static_cast<BlockData *>( currentBlock.userData() );
+    QVector<LatexBlockInfo *> infos = data->latexblocks();
+    int docPos = currentBlock.position();
+
+    // Match in same line?
+    for ( ; index<infos.size(); ++index ) {
+        LatexBlockInfo *info = infos.at(index);
+
+        if ( info->character == 'b' ) {
+            ++numLeftLat;
+            continue;
+        }
+
+        if ( info->character == 'e' && numLeftLat == 0 ) {
+            createLatSelection( bpos,currentBlock.blockNumber() );
+            return true;
+        } else
+            --numLeftLat;
+    }
+
+    // No match yet? Then try next block
+    currentBlock = currentBlock.next();
+    if ( currentBlock.isValid() )
+        return matchLeftLat( currentBlock, 0, numLeftLat, bpos );
+
+    // No match at all
+    return false;
+}
+
+bool WidgetTextEdit::matchRightLat(QTextBlock currentBlock, int index, int numRightLat, int epos)
+{
+
+    BlockData *data = static_cast<BlockData *>( currentBlock.userData() );
+    QVector<LatexBlockInfo *> infos = data->latexblocks();
+    int docPos = currentBlock.position();
+
+    // Match in same line?
+    for (int j=index; j>=0; --j ) {
+        LatexBlockInfo *info = infos.at(j);
+
+        if ( info->character == 'e' ) {
+            ++numRightLat;
+            continue;
+        }
+
+        if ( info->character == 'b' && numRightLat == 0 ) {
+            createLatSelection( epos, currentBlock.blockNumber() );
+            return true;
+        } else
+            --numRightLat;
+    }
+
+    // No match yet? Then try previous block
+    currentBlock = currentBlock.previous();
+    if ( currentBlock.isValid() ) {
+
+        // Recalculate correct index first
+        BlockData *data = static_cast<BlockData *>( currentBlock.userData() );
+        QVector<LatexBlockInfo *> infos = data->latexblocks();
+
+        return matchRightLat( currentBlock, infos.size()-1, numRightLat, epos );
+    }
+
+    // No match at all
+    return false;
+}
+
+void WidgetTextEdit::createLatSelection( int start, int end )
+{
+    int s=qMin(start,end);
+    int e=qMax(start,end);
+    emit setBlockRange(s,e);
+    //endBlock=e;
 }
 

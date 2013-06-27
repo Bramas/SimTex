@@ -39,10 +39,12 @@ public:
 signals:
     void updateFirstVisibleBlock(int,int);
     void updatedWithSameFirstVisibleBlock();
+    void setBlockRange(int,int);
 public slots:
     void scrollTo(int);
     void updateIndentation(void);
     void onCursorPositionChange(void);
+    void matchAll();
 protected:
     void insertFromMimeData(const QMimeData * source);
 
@@ -52,6 +54,16 @@ private:
     void keyPressEvent(QKeyEvent *e);
     void resizeEvent(QResizeEvent * event);
     void wheelEvent(QWheelEvent * event);
+
+
+    void matchPar();
+    bool matchLeftPar(QTextBlock currentBlock, int index, int numLeftPar );
+    bool matchRightPar(QTextBlock currentBlock, int index, int numRightPar);
+    void createParSelection(int pos );
+    void matchLat();
+    bool matchLeftLat(QTextBlock currentBlock, int index, int numLeftLat, int bpos);
+    bool matchRightLat(QTextBlock currentBlock, int index, int numLeftLat, int bpos);
+    void createLatSelection(int start, int end);
 
     SyntaxHighlighter * _syntaxHighlighter;
     bool updatingIndentation;

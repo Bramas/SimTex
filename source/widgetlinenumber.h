@@ -14,6 +14,7 @@ signals:
     
 public slots:
     void updateFirstVisibleBlock(int, int);
+    void setBlockRange(int,int);
 
 private:
     void paintEvent(QPaintEvent * event);
@@ -22,6 +23,8 @@ private:
     int scrollOffset;
     int firstVisibleBlock;
     int firstVisibleBlockTop;
+    int _startBlock;
+    int _endBlock;
 };
 
 #endif // WIDGETLINENUMBER_H

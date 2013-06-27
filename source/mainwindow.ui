@@ -16,6 +16,9 @@
   <property name="windowTitle">
    <string>SimTex</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="gridLayoutWidget">
    <property name="mouseTracking">
     <bool>true</bool>

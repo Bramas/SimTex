@@ -45,6 +45,18 @@ void DialogConfig::save()
 }
 void DialogConfig::show()
 {
+    QSettings settings;
+    settings.beginGroup("theme");
+    if(!settings.value("theme",QString("dark")).toString().compare("dark"))
+    {
+        this->ui->radioButtonDarkTheme->setChecked(true);
+        this->ui->radioButtonLightTheme->setChecked(false);
+    }
+    else
+    {
+        this->ui->radioButtonDarkTheme->setChecked(false);
+        this->ui->radioButtonLightTheme->setChecked(true);
+    }
     this->ui->spinBoxPointSize->setValue(ConfigManager::Instance.getTextCharFormats()->value("normal").font().pointSize());
     QDialog::show();
 }

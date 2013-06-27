@@ -134,7 +134,7 @@ void WidgetPdfDocument::initDocument()
 }
 QImage * WidgetPdfDocument::page(int page)
 {
-    if(!_pages)
+    if(!_pages || page < 0 || page >= _document->numPages())
     {
         return WidgetPdfDocument::EmptyImage;
     }
@@ -236,6 +236,10 @@ void WidgetPdfDocument::mouseMoveEvent(QMouseEvent * event)
 }
 void WidgetPdfDocument::boundPainterTranslation()
 {
+    if(!this->_document || !this->_document->numPages())
+    {
+        return;
+    }
     this->_painterTranslate.setX(max(this->_painterTranslate.x(), this->width()-this->_document->page(0)->pageSize().width()*_zoom - 10));
     this->_painterTranslate.setX(min(this->_painterTranslate.x(), 10));
     if(this->_document->page(0)->pageSize().width()*_zoom - 20 < this->width())
