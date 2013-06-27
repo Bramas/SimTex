@@ -31,6 +31,10 @@ public slots:
     void openLast(void);
     void focus(void);
 
+protected:
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
     
 private:
     Ui::MainWindow *ui;
@@ -41,6 +45,8 @@ private:
     WidgetPdfViewer * _widgetPdfViewer;
     DialogWelcome * dialogWelcome;
     DialogConfig * dialogConfig;
+    int _editorWidth;
+    bool _mousePressed;
 };
 
 #endif // MAINWINDOW_H

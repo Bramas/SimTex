@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Thu 27. Jun 01:54:59 2013
+** Created: Thu 27. Jun 02:48:10 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -46,6 +46,7 @@ public:
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(991, 633);
+        MainWindow->setMouseTracking(true);
         actionOpen = new QAction(MainWindow);
         actionOpen->setObjectName(QString::fromUtf8("actionOpen"));
         actionSaveAs = new QAction(MainWindow);
@@ -60,10 +61,12 @@ public:
         actionView->setObjectName(QString::fromUtf8("actionView"));
         gridLayoutWidget = new QWidget(MainWindow);
         gridLayoutWidget->setObjectName(QString::fromUtf8("gridLayoutWidget"));
+        gridLayoutWidget->setMouseTracking(true);
         gridLayout = new QGridLayout(gridLayoutWidget);
         gridLayout->setSpacing(0);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+        gridLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
         gridLayout->setContentsMargins(9, 5, 0, 0);
         MainWindow->setCentralWidget(gridLayoutWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -78,6 +81,7 @@ public:
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
+        statusBar->setMouseTracking(true);
         MainWindow->setStatusBar(statusBar);
 
         menuBar->addAction(menuFichier->menuAction());

@@ -112,6 +112,8 @@ public:
      */
     Viewer * getViewer() { return this->viewer; }
 
+    QString codec() { return this->_codec; }
+
 public slots:
     void setModified() { this->_modified = true; }
 

@@ -11,8 +11,13 @@ WidgetPdfViewer::WidgetPdfViewer(QWidget *parent) :
     _widgetPdfDocument(new WidgetPdfDocument(this))
 {
     ui->setupUi(this);
-    this->ui->verticalLayout->addWidget(_widgetPdfDocument);
 
+    this->ui->pushButtonZoomIn->setVisible(false);
+    this->ui->pushButtonZoomOut->setVisible(false);
+    this->ui->verticalLayout->removeWidget(this->ui->pushButtonZoomIn);
+    this->ui->verticalLayout->removeWidget(this->ui->pushButtonZoomOut);
+    this->ui->verticalLayout->addWidget(_widgetPdfDocument);
+/*
      QPixmap zoomOut(":/icons/data/icons/zoom-out.png");
      QIcon buttonIconZoomOut(zoomOut);
      this->ui->pushButtonZoomOut->setIcon(buttonIconZoomOut);
@@ -24,7 +29,7 @@ WidgetPdfViewer::WidgetPdfViewer(QWidget *parent) :
      this->ui->pushButtonZoomIn->setIconSize(zoomIn.rect().size());
 
      connect(this->ui->pushButtonZoomIn, SIGNAL(clicked()), this->_widgetPdfDocument, SLOT(zoomIn()));
-     connect(this->ui->pushButtonZoomOut, SIGNAL(clicked()), this->_widgetPdfDocument, SLOT(zoomOut()));
+     connect(this->ui->pushButtonZoomOut, SIGNAL(clicked()), this->_widgetPdfDocument, SLOT(zoomOut()));*/
 }
 
 WidgetPdfViewer::~WidgetPdfViewer()

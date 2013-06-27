@@ -31,7 +31,8 @@ MainWindow::MainWindow(QWidget *parent) :
     widgetScroller(new WidgetScroller),
     dialogWelcome(new DialogWelcome(this)),
     dialogConfig(new DialogConfig(this)),
-    _widgetPdfViewer(new WidgetPdfViewer(this))
+    _widgetPdfViewer(new WidgetPdfViewer(this)),
+    _mousePressed(false)
 {
     ui->setupUi(this);
     ConfigManager::Instance.setMainWindow(this);
@@ -96,6 +97,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->actionSettings,SIGNAL(triggered()),this->dialogConfig,SLOT(show()));
     connect(this->dialogConfig,SIGNAL(accepted()),syntaxHighlighter,SLOT(rehighlight()));
 
+
+    this->setMouseTracking(true);
 }
 
 MainWindow::~MainWindow()
@@ -153,6 +156,8 @@ void MainWindow::open(QString filename)
     //udpate the widget
     this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData());
 
+    this->ui->statusBar->showMessage(basename+" - "+this->widgetTextEdit->getCurrentFile()->codec());
+
 }
 void MainWindow::save()
 {
@@ -177,4 +182,36 @@ void MainWindow::saveAs()
     }
     this->widgetTextEdit->getCurrentFile()->save(filename);
     this->setWindowTitle(filename.replace(QRegExp("^.*[\\\\\\/]([^\\\\\\/]*)$"),"\\1")+" - SimTex");
+}
+
+
+void MainWindow::mouseMoveEvent(QMouseEvent * event)
+{
+    //qDebug()<<event->pos().x()<<"    editor : "<<widgetTextEdit->width()+47<<","<<widgetTextEdit->width()+54<<"  y: "<<event->pos().y();
+    if(_mousePressed || event->pos().x() > widgetTextEdit->width()+47
+       && event->pos().x() < widgetTextEdit->width()+54
+       && event->pos().y() > 30)
+    {
+        this->setCursor(Qt::SizeHorCursor);
+
+
+        if(_mousePressed)
+        {
+            this->ui->gridLayout->setColumnMinimumWidth(2,this->width()-event->pos().x());
+            //qDebug()<<this->width()-event->pos().x();
+        }
+    }
+    else
+    {
+        this->setCursor(Qt::ArrowCursor);
+    }
+}
+void MainWindow::mousePressEvent(QMouseEvent * event)
+{
+    this->_mousePressed = true;
+}
+void MainWindow::mouseReleaseEvent(QMouseEvent * event)
+{
+    this->_mousePressed = false;
+    this->setCursor(Qt::ArrowCursor);
 }
