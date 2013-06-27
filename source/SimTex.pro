@@ -75,3 +75,5 @@ SUBDIRS += poppler
 
 RESOURCES += \
     data.qrc
+
+RC_FILE = win.rc
