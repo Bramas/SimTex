@@ -103,7 +103,7 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
         }
 
         painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").background().color()));
-        painter.drawRect(- value->top - value->height + -10 + this->verticalScrollBar()->value(),25*(value->level-2)+5,value->height,25);
+        painter.drawRect(- value->top - value->height -4  + this->verticalScrollBar()->value(),25*(value->level-2)+5,value->height-2,25);
 
         painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").foreground().color()));
         painter.drawText(-top-height-20,25*(value->level-1),value->name);

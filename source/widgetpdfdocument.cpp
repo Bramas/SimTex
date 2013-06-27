@@ -56,7 +56,7 @@ void WidgetPdfDocument::paintEvent(QPaintEvent *)
         {
             if(_lastUpdate.elapsed()<1200)
             {
-                painter.drawRect(0, cumulatedTop, this->width(), this->height());
+                painter.drawRect(0, cumulatedTop, this->width()*_zoom+1, this->height());
             }
         }
         if(i == _syncPage)
@@ -65,8 +65,8 @@ void WidgetPdfDocument::paintEvent(QPaintEvent *)
             {
                 painter.setBrush(QBrush(QColor(0,0,0,min(50,(750-_lastUpdate.elapsed())*(2250-_lastUpdate.elapsed())*50/(750*750) + 50))));
                 //qDebug()<<"t "<<_lastUpdate.elapsed();
-                painter.drawRect(0, cumulatedTop - this->height(), this->width(), this->height() + _syncRect.y() * _zoom);
-                painter.drawRect(0, _syncRect.y()*_zoom + cumulatedTop + _syncRect.height()*_zoom, this->width(), this->height());
+                painter.drawRect(0, cumulatedTop - this->height(), this->width()*_zoom+1, this->height() + _syncRect.y() * _zoom);
+                painter.drawRect(0, _syncRect.y()*_zoom + cumulatedTop + _syncRect.height()*_zoom, this->width()*_zoom+1, this->height());
                 //painter.drawRect(_syncRect.x()*_zoom, _syncRect.y()*_zoom + cumulatedTop, _syncRect.width()*_zoom, _syncRect.height()*_zoom);
             }
             else
@@ -203,6 +203,7 @@ void WidgetPdfDocument::wheelEvent(QWheelEvent * event)
     else
     {
        this->_painterTranslate.setY(this->_painterTranslate.y()+event->delta());
+        update();
     }
 }
 void WidgetPdfDocument::zoom(qreal factor, QPoint target)
