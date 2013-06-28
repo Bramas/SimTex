@@ -8,8 +8,10 @@ class WidgetTextEdit;
 class WidgetLineNumber;
 class WidgetScroller;
 class WidgetPdfViewer;
+class WidgetConsole;
 class DialogWelcome;
 class DialogConfig;
+class QVBoxLayout;
 
 namespace Ui {
 class MainWindow;
@@ -43,10 +45,13 @@ private:
     WidgetTextEdit * widgetTextEdit;
     WidgetScroller * widgetScroller;
     WidgetPdfViewer * _widgetPdfViewer;
+    WidgetConsole * _widgetConsole;
     DialogWelcome * dialogWelcome;
     DialogConfig * dialogConfig;
+    QVBoxLayout * _leftLayout;
     int _editorWidth;
     bool _mousePressed;
+    bool _resizeConsole;
 };
 
 #endif // MAINWINDOW_H

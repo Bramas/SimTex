@@ -79,11 +79,10 @@ void CompletionEngine::keyPressEvent(QKeyEvent *event)
         QListWidget::keyPressEvent(event);
         return;
     }
-    if(event->text().contains(QRegExp("[^a-zA-Z]")))
+    if(event->text().contains(QRegExp("[^a-zA-Z]")) || event->text().isEmpty())
     {
         this->setVisible(false);
-        this->parentWidget()->setFocus();
-        QListWidget::keyPressEvent(event);
+        dynamic_cast<WidgetTextEdit*>(this->parentWidget())->setFocus(event);
         return;
     }
     dynamic_cast<WidgetTextEdit*>(this->parent())->insertPlainText(event->text());

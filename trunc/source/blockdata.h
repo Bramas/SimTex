@@ -16,6 +16,7 @@ struct LatexBlockInfo {
 
 class BlockData : public QTextBlockUserData
 {
+
 public:
     BlockData() {};
     static BlockData *data(const QTextBlock &block) { return static_cast<BlockData *>(block.userData()); }
@@ -25,9 +26,12 @@ public:
     QVector<LatexBlockInfo *> latexblocks();
     void insertPar( ParenthesisInfo *info );
     void insertLat( LatexBlockInfo *info );
+    void insertDollar(int pos ) { this->_dollars.append(pos); }
+    bool isAClosingDollar(int position);
 private:
-    QVector<ParenthesisInfo *> m_parentheses;
-    QVector<LatexBlockInfo *> m_latexblocks;
+    QVector<ParenthesisInfo *> _parentheses;
+    QVector<LatexBlockInfo *> _latexblocks;
+    QVector<int> _dollars;
 };
 
 

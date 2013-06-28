@@ -16,6 +16,7 @@
 #include <QList>
 #include <QScrollBar>
 #include <QFileDialog>
+#include <QVBoxLayout>
 #include <QSettings>
 #include <QPushButton>
 #include <QDebug>
@@ -23,6 +24,7 @@
 #include <QString>
 #include <QPalette>
 #include "configmanager.h"
+#include "widgetconsole.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -33,7 +35,10 @@ MainWindow::MainWindow(QWidget *parent) :
     dialogWelcome(new DialogWelcome(this)),
     dialogConfig(new DialogConfig(this)),
     _widgetPdfViewer(new WidgetPdfViewer(this)),
-    _mousePressed(false)
+    _mousePressed(false),
+    _leftLayout(new QVBoxLayout()),
+    _widgetConsole(new WidgetConsole()),
+    _resizeConsole(false)
 {
     ui->setupUi(this);
     ConfigManager::Instance.setMainWindow(this);
@@ -45,12 +50,11 @@ MainWindow::MainWindow(QWidget *parent) :
     widgetTextEdit->setSyntaxHighlighter(syntaxHighlighter);
 
     // Load settings
-    {
-        QSettings settings;
-        settings.beginGroup("mainwindow");
-        if(settings.contains("geometry")) this->setGeometry(settings.value("geometry").toRect());
-        settings.endGroup();
-    }
+
+    QSettings settings;
+    settings.beginGroup("mainwindow");
+    if(settings.contains("geometry")) this->setGeometry(settings.value("geometry").toRect());
+
 
     //define background
 
@@ -100,12 +104,16 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(this->widgetTextEdit->getCurrentFile()->getViewer(), SIGNAL(finished()), this, SLOT(focus()));
 
     ui->gridLayout->addWidget(widgetLineNumber,0,0);
-    ui->gridLayout->addWidget(widgetTextEdit,0,1);
+    ui->gridLayout->addLayout(this->_leftLayout,0,1);
     //ui->gridLayout->addWidget(widgetScroller,0,2);
     ui->gridLayout->addWidget(_widgetPdfViewer,0,2);
 
+    this->_leftLayout->setSpacing(4);
+    this->_leftLayout->addWidget(this->widgetTextEdit);
+    this->_leftLayout->addWidget(this->_widgetConsole);
+
     ui->gridLayout->setColumnMinimumWidth(0,40);
-    ui->gridLayout->setColumnMinimumWidth(2,600);
+    ui->gridLayout->setColumnMinimumWidth(2,settings.value("pdfViewerWidth",600).toInt());
     //ui->gridLayout->setColumnMinimumWidth(2,100);
 
 
@@ -175,6 +183,7 @@ void MainWindow::open(QString filename)
     //open
     this->widgetTextEdit->getCurrentFile()->open(filename);
     this->_widgetPdfViewer->widgetPdfDocument()->setFile(this->widgetTextEdit->getCurrentFile());
+    this->_widgetConsole->setBuilder(this->widgetTextEdit->getCurrentFile()->getBuilder());
 
     //udpate the widget
     this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData());
@@ -210,6 +219,8 @@ void MainWindow::saveAs()
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
+
+
     //qDebug()<<event->pos().x()<<"    editor : "<<widgetTextEdit->width()+47<<","<<widgetTextEdit->width()+54<<"  y: "<<event->pos().y();
     if(_mousePressed || event->pos().x() > widgetTextEdit->width()+47
        && event->pos().x() < widgetTextEdit->width()+54
@@ -223,11 +234,26 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
             this->ui->gridLayout->setColumnMinimumWidth(2,this->width()-event->pos().x());
             //qDebug()<<this->width()-event->pos().x();
         }
+        return;
     }
-    else
+
+    int leftLayoutY = this->height() - this->_widgetConsole->height() - this->ui->statusBar->height();
+    if(this->_resizeConsole || (event->pos().x() > 50
+            && event->pos().x() < widgetTextEdit->width()
+            && event->pos().y() > leftLayoutY - 5
+            && event->pos().y() < leftLayoutY + 5
+                 ))
     {
-        this->setCursor(Qt::ArrowCursor);
+        this->setCursor(Qt::SizeVerCursor);
+        if(this->_resizeConsole)
+        {
+            int consoleHeight = this->height() - event->pos().y() - this->ui->statusBar->height();
+            this->_widgetConsole->setMinimumHeight(qMax(0, qMin(consoleHeight, this->height()/2)));
+        }
+        return;
     }
+    this->setCursor(Qt::ArrowCursor);
+
 }
 void MainWindow::mousePressEvent(QMouseEvent * event)
 {
@@ -237,10 +263,25 @@ void MainWindow::mousePressEvent(QMouseEvent * event)
     {
         this->_mousePressed = true;
     }
+    int leftLayoutY = this->height() - this->_widgetConsole->height() - this->ui->statusBar->height();
+    if(event->pos().x() > 50
+       && event->pos().x() < widgetTextEdit->width()
+       && event->pos().y() > leftLayoutY - 5
+       && event->pos().y() < leftLayoutY + 5
+            )
+    {
+        this->_resizeConsole = true;
+    }
 }
 void MainWindow::mouseReleaseEvent(QMouseEvent * event)
 {
 
+    QSettings settings;
+    settings.beginGroup("mainwindow");
+    settings.setValue("pdfViewerWidth", this->ui->gridLayout->columnMinimumWidth(2));
+    settings.endGroup();
+
     this->_mousePressed = false;
+    this->_resizeConsole = false;
     this->setCursor(Qt::ArrowCursor);
 }

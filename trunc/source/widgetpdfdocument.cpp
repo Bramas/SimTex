@@ -6,10 +6,20 @@
 #include <QBrush>
 #include <QColor>
 #include "file.h"
+
+#if linux
+    #include <poppler/qt4/poppler-qt4.h>
+#else
+    #include <poppler-qt4.h>
+#endif
+
+
 #define SYNCTEX_GZ_EXT ".synctex.gz"
 #define SYNCTEX_EXT ".synctex"
 #define max(a,b) ((a)>(b)?(a):(b))
 #define min(a,b) ((a)<(b)?(a):(b))
+
+
 
 QImage * WidgetPdfDocument::EmptyImage = new QImage();
 int WidgetPdfDocument::PageMargin = 20;
@@ -22,12 +32,14 @@ WidgetPdfDocument::WidgetPdfDocument(QWidget *parent) :
     _mousePressed(false),
     _loadedPages(0),
     _pages(0),
-    _zoom(1)
+    _zoom(1),
+    scanner(NULL)
 
 {
     this->setMouseTracking(true);
     this->setCursor(Qt::OpenHandCursor);
     connect(&this->_timer, SIGNAL(timeout()),this, SLOT(update()));
+    Poppler::Document::load(" ");
 }
 
 void WidgetPdfDocument::paintEvent(QPaintEvent *)
@@ -257,7 +269,7 @@ void WidgetPdfDocument::updatePdf()
 
 void WidgetPdfDocument::jumpToPdfFromSourceView(int firstVisibleBlock, int i)
 {
-    if(!this->_widgetTextEdit->isCursorVisible())
+    if(!this->_widgetTextEdit->isCursorVisible() && _file)
     {
         this->jumpToPdfFromSource(this->_file->getFilename(),firstVisibleBlock);
     }

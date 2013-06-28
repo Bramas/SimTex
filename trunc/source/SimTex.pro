@@ -12,9 +12,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = SimTex
 TEMPLATE = app
 
-INCLUDEPATH += C:/dev/Tools/poppler/include/poppler/qt4
-INCLUDEPATH += C:/dev/Qt/Tools/zlib/include
-LIBS += -LC:/dev/Tools/poppler/lib -lpoppler-qt4
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -30,12 +27,12 @@ SOURCES += main.cpp\
     dialogconfig.cpp \
     configmanager.cpp \
     viewer.cpp \
-    pdfDocument.cpp \
     widgetpdfdocument.cpp \
     synctex_parser.c \
     synctex_parser_utils.c \
     widgetpdfviewer.cpp \
-    completionengine.cpp
+    completionengine.cpp \
+    widgetconsole.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -50,13 +47,13 @@ HEADERS  += mainwindow.h \
     dialogconfig.h \
     configmanager.h \
     viewer.h \
-    pdfDocument.h \
     widgetpdfdocument.h \
     synctex_parser.h \
     synctex_parser_utils.h \
     synctex_parser_local.h \
     widgetpdfviewer.h \
-    completionengine.h
+    completionengine.h \
+    widgetconsole.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
@@ -73,10 +70,19 @@ target.path = SimTexwin32
 
 INSTALLS = target
 
-SUBDIRS += poppler
 
 RESOURCES += \
     data.qrc \
     completion.qrc
 
-RC_FILE = win.rc
+win32 {
+
+    INCLUDEPATH += C:/dev/Tools/poppler/include/poppler/qt4
+    INCLUDEPATH += C:/dev/Qt/Tools/zlib/include
+    LIBS += -LC:/dev/Tools/poppler/lib -lpoppler-qt4
+
+    RC_FILE = win.rc
+}
+unix{
+    LIBS += -L/usr/local/lib -lpoppler-qt4
+}

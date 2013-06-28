@@ -31,7 +31,8 @@ ConfigManager::ConfigManager() :
     QSettings settings;
     settings.beginGroup("theme");
 
-    QFont font("Consolas");
+    //QFont font("Consolas");
+    QFont font("Arial",12);
     font.setPointSize(settings.value("pointSize",12).toInt());
     QTextCharFormat charFormat;
 

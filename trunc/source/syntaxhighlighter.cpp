@@ -12,8 +12,20 @@ SyntaxHighlighter::SyntaxHighlighter(QTextEdit *parent) :
 void SyntaxHighlighter::highlightBlock(const QString &text)
 {
 
-
     BlockData *blockData = new BlockData;
+    if(this->previousBlockState() == 1)
+    {
+        blockData->insertDollar(-1);
+    }
+
+    int dollarPos = text.indexOf( '$' );
+    while ( dollarPos != -1 )
+    {
+        blockData->insertDollar(dollarPos);
+        dollarPos = text.indexOf( '$', dollarPos+1 );
+    }
+
+
     int leftPos = text.indexOf( '{' );
     while ( leftPos != -1 )
       {

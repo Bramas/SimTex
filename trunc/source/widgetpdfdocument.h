@@ -7,13 +7,18 @@
 #include <QTimer>
 
 
-#include "pdfdocument.h"
 #include "synctex_parser.h"
 #include <QPoint>
 
 class File;
 class QImage;
 class WidgetTextEdit;
+namespace Poppler
+{
+    class Document;
+}
+
+
 
 class WidgetPdfDocument : public QWidget
 {
@@ -50,7 +55,6 @@ private:
 
     WidgetTextEdit * _widgetTextEdit;
     File* _file;
-    //PdfDocument* _document;
     Poppler::Document* _document;
     QPoint _pressAt;
     QPoint _painterTranslateWhenMousePressed;

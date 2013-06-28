@@ -81,15 +81,18 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
 
     QTextEdit::paintEvent(event);
     QPainter painter(viewport());
-    painter.translate(15,0);
-    painter.rotate(-90);
+
+
 
     painter.setBrush(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").background());
     painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").foreground().color()));
 
-    QFont font(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").font());
+    QFont font(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").font().family(),ConfigManager::Instance.getTextCharFormats()->value("leftStructure").font().pointSize());
+    font.setBold(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").font().bold());
     QFontMetrics fm(font);
     painter.setFont(font);
+
+
 
     QListIterator<FileStructureInfo*> iterator(*this->fileStructure->info());
     FileStructureInfo * value;
@@ -97,8 +100,13 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     int height = 0;
     //qDebug()<<"--------------------";
 
+
+
+    painter.translate(15,0);
+    painter.rotate(-90);
     while(iterator.hasNext())
     {
+
         value = iterator.next();
         if(value->top + value->height < this->verticalScrollBar()->value() ||
            this->verticalScrollBar()->value() + this->height() < value->top   )
@@ -164,7 +172,9 @@ void WidgetTextEdit::onCursorPositionChange()
 
 void WidgetTextEdit::resizeEvent(QResizeEvent *event)
 {
+    this->updateIndentation();
     QTextEdit::resizeEvent(event);
+    update();
     //this->updateGeometry();
     //this->update();
     //this->viewport()->update();
@@ -187,6 +197,46 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
     {
         this->insertPlainText(this->_completionEngine->acceptedWord());
         this->setFocus();
+        return;
+    }
+    if(e->key() == Qt::Key_Dollar)
+    {
+        QTextCursor cur = this->textCursor();
+        int start = cur.selectionStart();
+        int end = cur.selectionEnd();
+        BlockData * bd = dynamic_cast<BlockData *>(this->textCursor().block().userData());
+        if(start == end && bd->isAClosingDollar(start - this->textCursor().block().position()))
+        {
+            cur.insertText(QString::fromUtf8("$"));
+            this->setTextCursor(cur);
+            return;
+        }
+        cur.setPosition(start);
+        cur.insertText(QString::fromUtf8("$"));
+        cur.setPosition(end+1);
+        cur.insertText(QString::fromUtf8("$"));
+        if(end == start)
+        {
+            cur.movePosition(QTextCursor::Left);
+        }
+        this->setTextCursor(cur);
+        return;
+    }
+    if(e->key() == Qt::Key_BraceLeft)
+    {
+
+        QTextCursor cur = this->textCursor();
+        int start = cur.selectionStart();
+        int end = cur.selectionEnd();
+        cur.setPosition(start);
+        cur.insertText(QString::fromUtf8("{"));
+        cur.setPosition(end+1);
+        cur.insertText(QString::fromUtf8("}"));
+        if(end == start)
+        {
+            cur.movePosition(QTextCursor::Left);
+        }
+        this->setTextCursor(cur);
         return;
     }
     QTextEdit::keyPressEvent(e);
@@ -217,7 +267,10 @@ void WidgetTextEdit::wheelEvent(QWheelEvent * event)
         int pos = this->textCursor().position();
         this->selectAll();
         this->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats()->value("normal"));
-        this->textCursor().setPosition(pos,QTextCursor::KeepAnchor);
+
+        QTextCursor cur(this->textCursor());
+        cur.setPosition(pos);
+        this->setTextCursor(cur);
 
         if(this->_syntaxHighlighter)
         {

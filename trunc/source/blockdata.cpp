@@ -1,26 +1,40 @@
 #include "blockdata.h"
 
 QVector<ParenthesisInfo *> BlockData::parentheses() {
-    return m_parentheses;
+    return _parentheses;
 }
 QVector<LatexBlockInfo *> BlockData::latexblocks() {
-    return m_latexblocks;
+    return _latexblocks;
 }
 
 void BlockData::insertPar( ParenthesisInfo *info ) {
     int i = 0;
     while (
-        i < m_parentheses.size() &&
-        info->position > m_parentheses.at(i)->position )
+        i < _parentheses.size() &&
+        info->position > _parentheses.at(i)->position )
         ++i;
-    m_parentheses.insert( i, info );
+    _parentheses.insert( i, info );
 }
 
 void BlockData::insertLat( LatexBlockInfo *info ) {
     int i = 0;
     while (
-        i < m_latexblocks.size() &&
-        info->position > m_latexblocks.at(i)->position )
+        i < _latexblocks.size() &&
+        info->position > _latexblocks.at(i)->position )
         ++i;
-    m_latexblocks.insert( i, info );
+    _latexblocks.insert( i, info );
+}
+
+bool BlockData::isAClosingDollar(int position)
+{
+    bool even = true;
+    foreach(int dollar, this->_dollars)
+    {
+        even = !even;
+        if(dollar > position)
+        {
+            return even;
+        }
+    }
+    return even;
 }

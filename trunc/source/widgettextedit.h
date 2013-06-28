@@ -29,6 +29,7 @@ public:
     int blockBottom(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top + this->blocksInfo[textBlock.blockNumber()].height; }
     QRectF blockGeometry(QTextBlock &textBlock) { return textBlock.layout()->boundingRect(); }
 
+
     int getTextHeight() { return this->textHeight; }
     File * getCurrentFile() { return this->currentFile; }
     void setText(const QString &text);
@@ -48,6 +49,8 @@ public slots:
     void onCursorPositionChange(void);
     void matchCommand();
     void matchAll();
+    void setFocus() { QTextEdit::setFocus(); }
+    void setFocus(QKeyEvent * event) { QTextEdit::setFocus(); this->keyPressEvent(event); }
 protected:
     void insertFromMimeData(const QMimeData * source);
 
