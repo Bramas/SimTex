@@ -103,6 +103,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
     //connect(this->widgetTextEdit->getCurrentFile()->getViewer(), SIGNAL(finished()), this, SLOT(focus()));
 
+    connect(_widgetConsole, SIGNAL(requestLine(int)), widgetTextEdit, SLOT(goToLine(int)));
+
     ui->gridLayout->addWidget(widgetLineNumber,0,0);
     ui->gridLayout->addLayout(this->_leftLayout,0,1);
     //ui->gridLayout->addWidget(widgetScroller,0,2);
@@ -248,6 +250,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
         if(this->_resizeConsole)
         {
             int consoleHeight = this->height() - event->pos().y() - this->ui->statusBar->height();
+            this->_widgetConsole->setMaximumHeight(qMax(0, qMin(consoleHeight, this->height()/2)));
             this->_widgetConsole->setMinimumHeight(qMax(0, qMin(consoleHeight, this->height()/2)));
         }
         return;

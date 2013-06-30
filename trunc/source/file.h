@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QRegExp>
 #include <QMap>
+#include <QFileInfo>
 
 class Viewer;
 class Builder;
@@ -91,6 +92,12 @@ public:
         }
         return this->getPath()+".simtex";//+dir.separator();
     }
+
+    /**
+     * @brief fileInfo
+     * @return the file info
+     */
+    QFileInfo fileInfo() const { return QFileInfo(this->filename); }
 
     /**
      * @brief getPdfFilename

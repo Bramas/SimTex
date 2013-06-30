@@ -1,11 +1,12 @@
 #ifndef WIDGETCONSOLE_H
 #define WIDGETCONSOLE_H
 
-#include <QWidget>
+#include <QScrollArea>
+#include <QPlainTextEdit>
 
 class Builder;
 
-class WidgetConsole : public QWidget
+class WidgetConsole : public QPlainTextEdit
 {
     Q_OBJECT
 public:
@@ -14,18 +15,23 @@ public:
     void setBuilder(Builder * builder);
     
 signals:
-    
+    void requestLine(int);
 public slots:
     void expand(void);
+    void collapsed(void);
+    void onError(void);
+    void onSuccess(void);
 
 protected:
-    void paintEvent(QPaintEvent *);
-    void mouseMoveEvent(QMouseEvent *);
+    //void paintEvent(QPaintEvent *);
+    void mouseMoveEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent * event);
 
 private:
     bool _collapsed;
     int _height;
     Builder * _builder;
+    //QPlainTextEdit * _mainWidget;
     
 };
 

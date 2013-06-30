@@ -55,10 +55,14 @@ ConfigManager::ConfigManager() :
         textCharFormats->insert("textedit-border",charFormat);
 
 
+        charFormat.setBackground(QColor(48,50,44));
+        textCharFormats->insert("selected-line",charFormat);
+
         charFormat.setForeground(QColor(248,248,242));
         charFormat.setFont(font);
         charFormat.setBackground(QColor(39,40,34));
         textCharFormats->insert("normal",charFormat);
+
 
 
 

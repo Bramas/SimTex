@@ -18,6 +18,7 @@
 #include "syntaxhighlighter.h"
 #include "completionengine.h"
 #include <math.h>
+#include <QtCore>
 
 #define max(a,b) ((a) < (b) ? (b) : (a))
 #define min(a,b) ((a) > (b) ? (b) : (a))
@@ -33,7 +34,8 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     blocksInfo(new BlockInfo[1]),
     _lineCount(0),
     _syntaxHighlighter(0),
-    _completionEngine(new CompletionEngine(this))
+    _completionEngine(new CompletionEngine(this)),
+    _indentationInited(false)
 
 {
     blocksInfo[0].height = -1;
@@ -42,7 +44,6 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     connect(this,SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
     //connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(update()));
     connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this->viewport(),SLOT(update()));
-    connect(this,SIGNAL(cursorPositionChanged()),this, SLOT(matchAll()));
 
     //this->setCurrentFont(QFont("Consolas", 17));
     //this->setCurrentFont(QFont("Consolas", 17));
@@ -65,8 +66,10 @@ void WidgetTextEdit::scrollTo(int p)
 
 void WidgetTextEdit::setText(const QString &text)
 {
+    this->_indentationInited = false;
     QTextEdit::setText(text);
-
+/* TODO : Run initIndentation in a thread */
+    //QtConcurrent::run(this,&WidgetTextEdit::initIndentation);
     this->initIndentation();
     this->updateIndentation();
     this->update();
@@ -165,9 +168,11 @@ bool WidgetTextEdit::isCursorVisible()
 
 void WidgetTextEdit::onCursorPositionChange()
 {
-
+    QList<QTextEdit::ExtraSelection> selections;
+    setExtraSelections(selections);
+    this->highlightCurrentLine();
+    matchAll();
     this->currentFile->getViewer()->setLine(this->textCursor().blockNumber()+1);
-    //this->currentFile->getViewer()->view();
 }
 
 void WidgetTextEdit::resizeEvent(QResizeEvent *event)
@@ -201,6 +206,7 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
     }
     if(e->key() == Qt::Key_Dollar)
     {
+        /* TODO : use beginEditBlock */
         QTextCursor cur = this->textCursor();
         int start = cur.selectionStart();
         int end = cur.selectionEnd();
@@ -296,6 +302,22 @@ void WidgetTextEdit::wheelEvent(QWheelEvent * event)
     }
     update();
 }
+void WidgetTextEdit::setBlockLeftMargin(const QTextBlock &textBlock, int leftMargin)
+{
+    //_formatMutex.lock();
+    //if(!textBlock.isValid()) return;
+    int blockNumber = textBlock.blockNumber();
+    QTextBlockFormat format;
+    QTextCursor cursor(this->textCursor());
+    format.setLeftMargin(leftMargin);
+    cursor.setPosition(textBlock.position());
+    cursor.setBlockFormat(format);
+
+    //_formatMutex.unlock();
+    //if(blockNumber < this->document()->blockCount() - 1)
+   // QtConcurrent::run(this, &WidgetTextEdit::setBlockLeftMargin, this->document()->findBlockByNumber(blockNumber+1), leftMargin);
+}
+
 void WidgetTextEdit::initIndentation(void)
 {
     if(this->updatingIndentation)
@@ -316,7 +338,6 @@ void WidgetTextEdit::initIndentation(void)
 
 
 
-    QTextCursor cursor(this->textCursor());
     QTextBlock textBlock = this->document()->begin();
 
 
@@ -342,23 +363,38 @@ void WidgetTextEdit::initIndentation(void)
 
     QTextBlockFormat myClassFormat;
     QListIterator<FileStructureInfo*> iterator(*this->fileStructure->info());
-    //FileStructureInfo * value;
+    QTextCursor cursor(this->textCursor());
     while(iterator.hasNext())
     {
         value = iterator.next();
         value->top = blocksInfo[value->startBlock].top;
         value->height = blocksInfo[value->endBlock].top - blocksInfo[value->startBlock].top + blocksInfo[value->endBlock].height;
+
         for(int i = value->startBlock; i <= value->endBlock; ++i)
         {
-            if(this->document()->findBlockByNumber(i).blockFormat().leftMargin() != 25*value->level)
+            blocksInfo[i].leftMargin = 25*value->level;
+            /*if(this->document()->findBlockByNumber(i).blockFormat().leftMargin() != 25*value->level)
             {
                 myClassFormat.setLeftMargin(25*value->level);
                 cursor.setPosition(blocksInfo[i].position);
-                cursor.setBlockFormat(myClassFormat);
-            }
+                //cursor.setBlockFormat(myClassFormat);
+            }*/
         }
     }
+
+    //QtConcurrent::run(this, &WidgetTextEdit::setBlockLeftMargin, this->document()->begin(), marginApplied);
+    //textBlock = this->document()->begin();
+    for(int idx = 0; idx < this->document()->blockCount(); ++idx)
+    {
+        //this->setBlockLeftMargin(textBlock, marginApplied[idx]);
+        textBlock = this->document()->findBlockByNumber(idx);
+        this->setBlockLeftMargin(textBlock, blocksInfo[idx].leftMargin);
+    }
+
     this->currentFile->refreshLineNumber();
+    this->_indentationMutex.lock();
+    this->_indentationInited = true;
+    this->_indentationMutex.unlock();
     this->updatingIndentation = false;
 }
 
@@ -402,6 +438,15 @@ void WidgetTextEdit::updateIndentation(void)
 
     this->matchCommand();
 
+    this->_indentationMutex.lock();
+    if(!this->_indentationInited)
+    {
+        this->_indentationMutex.unlock();
+        this->updatingIndentation = false;
+        return;
+    }
+    this->_indentationMutex.unlock();
+
     this->fileStructure->updateStructure();
     if(!this->fileStructure->info()->count())
     {
@@ -433,6 +478,7 @@ void WidgetTextEdit::updateIndentation(void)
         }
     this->updatingIndentation = false;
 
+
 }
 
 void WidgetTextEdit::insertFromMimeData(const QMimeData *source)
@@ -451,8 +497,6 @@ void WidgetTextEdit::insertFromMimeData(const QMimeData *source)
 void WidgetTextEdit::matchAll()
 {
     this->_completionEngine->setVisible(false);
-    QList<QTextEdit::ExtraSelection> selections;
-    setExtraSelections(selections);
     this->matchPar();
     this->matchLat();
 }
@@ -707,3 +751,34 @@ void WidgetTextEdit::createLatSelection( int start, int end )
     //endBlock=e;
 }
 
+void WidgetTextEdit::goToLine(int line)
+{
+    QTextCursor cursor(this->textCursor());
+    cursor.setPosition(this->document()->findBlockByNumber(line).position());
+    this->setTextCursor(cursor);
+}
+
+void WidgetTextEdit::highlightCurrentLine(void)
+{
+    QList<QTextEdit::ExtraSelection> extraSelections = this->extraSelections();
+
+
+    QTextCursor cursor = textCursor();
+    int blockNumber = cursor.blockNumber();
+    cursor.movePosition(QTextCursor::StartOfBlock);
+    while(cursor.blockNumber() == blockNumber)
+    {
+        QTextEdit::ExtraSelection selection;
+        selection.format.setBackground(ConfigManager::Instance.getTextCharFormats()->value("selected-line").background());
+        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+        selection.cursor = QTextCursor(cursor);
+        selection.cursor.clearSelection();
+        extraSelections.append(selection);
+        if(!cursor.movePosition(QTextCursor::Down))
+        {
+            break;
+        }
+    }
+
+    setExtraSelections(extraSelections);
+}

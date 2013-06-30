@@ -4,6 +4,7 @@
 #include <QTextEdit>
 #include <QTextBlock>
 #include <QTextLayout>
+#include <QMutex>
 #include "file.h"
 
 class FileStructure;
@@ -15,6 +16,8 @@ struct BlockInfo
     int top;
     int height;
     int position;
+    int leftMargin;
+    BlockInfo() : leftMargin(0), top(0), height(0), position(0) {}
 };
 
 
@@ -51,6 +54,7 @@ public slots:
     void matchAll();
     void setFocus() { QTextEdit::setFocus(); }
     void setFocus(QKeyEvent * event) { QTextEdit::setFocus(); this->keyPressEvent(event); }
+    void goToLine(int line);
 protected:
     void insertFromMimeData(const QMimeData * source);
 
@@ -60,7 +64,9 @@ private:
     void keyPressEvent(QKeyEvent *e);
     void resizeEvent(QResizeEvent * event);
     void wheelEvent(QWheelEvent * event);
+    void highlightCurrentLine(void);
 
+    void setBlockLeftMargin(const QTextBlock & textBlock, int leftMargin);
 
     void matchPar();
     bool matchLeftPar(QTextBlock currentBlock, int index, int numLeftPar );
@@ -74,6 +80,9 @@ private:
     SyntaxHighlighter * _syntaxHighlighter;
     CompletionEngine * _completionEngine;
     bool updatingIndentation;
+    QMutex _indentationMutex;
+    QMutex _formatMutex;
+    bool _indentationInited;
     FileStructure * fileStructure;
     BlockInfo * blocksInfo;
     File * currentFile;

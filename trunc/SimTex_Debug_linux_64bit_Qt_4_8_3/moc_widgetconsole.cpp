@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetconsole.h'
 **
-** Created: Fri Jun 28 23:57:03 2013
+** Created: Sun Jun 30 16:00:42 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,21 +23,29 @@ static const uint qt_meta_data_WidgetConsole[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       1,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       1,       // signalCount
+
+ // signals: signature, parameters, type, tag, flags
+      15,   14,   14,   14, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      15,   14,   14,   14, 0x0a,
+      32,   14,   14,   14, 0x0a,
+      41,   14,   14,   14, 0x0a,
+      53,   14,   14,   14, 0x0a,
+      63,   14,   14,   14, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_WidgetConsole[] = {
-    "WidgetConsole\0\0expand()\0"
+    "WidgetConsole\0\0requestLine(int)\0"
+    "expand()\0collapsed()\0onError()\0"
+    "onSuccess()\0"
 };
 
 void WidgetConsole::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -46,11 +54,14 @@ void WidgetConsole::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         Q_ASSERT(staticMetaObject.cast(_o));
         WidgetConsole *_t = static_cast<WidgetConsole *>(_o);
         switch (_id) {
-        case 0: _t->expand(); break;
+        case 0: _t->requestLine((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 1: _t->expand(); break;
+        case 2: _t->collapsed(); break;
+        case 3: _t->onError(); break;
+        case 4: _t->onSuccess(); break;
         default: ;
         }
     }
-    Q_UNUSED(_a);
 }
 
 const QMetaObjectExtraData WidgetConsole::staticMetaObjectExtraData = {
@@ -58,7 +69,7 @@ const QMetaObjectExtraData WidgetConsole::staticMetaObjectExtraData = {
 };
 
 const QMetaObject WidgetConsole::staticMetaObject = {
-    { &QWidget::staticMetaObject, qt_meta_stringdata_WidgetConsole,
+    { &QPlainTextEdit::staticMetaObject, qt_meta_stringdata_WidgetConsole,
       qt_meta_data_WidgetConsole, &staticMetaObjectExtraData }
 };
 
@@ -76,19 +87,26 @@ void *WidgetConsole::qt_metacast(const char *_clname)
     if (!_clname) return 0;
     if (!strcmp(_clname, qt_meta_stringdata_WidgetConsole))
         return static_cast<void*>(const_cast< WidgetConsole*>(this));
-    return QWidget::qt_metacast(_clname);
+    return QPlainTextEdit::qt_metacast(_clname);
 }
 
 int WidgetConsole::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QWidget::qt_metacall(_c, _id, _a);
+    _id = QPlainTextEdit::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 1)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 1;
+        _id -= 5;
     }
     return _id;
+}
+
+// SIGNAL 0
+void WidgetConsole::requestLine(int _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_END_MOC_NAMESPACE

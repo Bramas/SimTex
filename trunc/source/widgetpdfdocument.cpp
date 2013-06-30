@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QBrush>
 #include <QColor>
+#include <QRectF>
 #include "file.h"
 
 #if linux
@@ -64,6 +65,24 @@ void WidgetPdfDocument::paintEvent(QPaintEvent *)
         }
         image = this->page(i);
         painter.drawImage(0,cumulatedTop,*image);
+        if(_document->page(i)->links().count())
+        {
+            foreach(const Poppler::Link * link, _document->page(i)->links())
+            {
+                QRectF linkArea = link->linkArea();
+                qreal height = _document->page(i)->pageSize().height()*linkArea.height()*_zoom;
+                qreal width = _document->page(i)->pageSize().width()*linkArea.width()*_zoom;
+                qreal top = _document->page(i)->pageSize().height()*linkArea.top()*_zoom+cumulatedTop;
+                qreal left = _document->page(i)->pageSize().width()*linkArea.left()*_zoom;
+                QRectF linkAreaAbsolute(left,top,width,height);
+                //linkArea.setTop();
+                //painter.drawRect(linkAreaAbsolute);
+                if(linkAreaAbsolute.contains(this->cursor().pos()))
+                {
+                    this->setCursor(QCursor(Qt::PointingHandCursor));
+                }
+            }
+        }
         if(i == _syncPage+1)
         {
             if(_lastUpdate.elapsed()<1200)

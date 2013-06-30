@@ -1,5 +1,6 @@
 #include "syntaxhighlighter.h"
 #include <QTextCharFormat>
+#include <QTextDocument>
 #include <QDebug>
 #include "blockdata.h"
 #include "configmanager.h"
@@ -11,7 +12,6 @@ SyntaxHighlighter::SyntaxHighlighter(QTextEdit *parent) :
 
 void SyntaxHighlighter::highlightBlock(const QString &text)
 {
-
     BlockData *blockData = new BlockData;
     if(this->previousBlockState() == 1)
     {

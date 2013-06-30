@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgettextedit.h'
 **
-** Created: Fri Jun 28 23:02:58 2013
+** Created: Sun Jun 30 16:13:49 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_WidgetTextEdit[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -43,6 +43,7 @@ static const uint qt_meta_data_WidgetTextEdit[] = {
      183,   15,   15,   15, 0x0a,
      194,   15,   15,   15, 0x0a,
      211,  205,   15,   15, 0x0a,
+     237,  232,   15,   15, 0x0a,
 
        0        // eod
 };
@@ -53,7 +54,8 @@ static const char qt_meta_stringdata_WidgetTextEdit[] = {
     "setBlockRange(int,int)\0scrollTo(int)\0"
     "updateIndentation()\0onCursorPositionChange()\0"
     "matchCommand()\0matchAll()\0setFocus()\0"
-    "event\0setFocus(QKeyEvent*)\0"
+    "event\0setFocus(QKeyEvent*)\0line\0"
+    "goToLine(int)\0"
 };
 
 void WidgetTextEdit::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -72,6 +74,7 @@ void WidgetTextEdit::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 7: _t->matchAll(); break;
         case 8: _t->setFocus(); break;
         case 9: _t->setFocus((*reinterpret_cast< QKeyEvent*(*)>(_a[1]))); break;
+        case 10: _t->goToLine((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -109,9 +112,9 @@ int WidgetTextEdit::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 11;
     }
     return _id;
 }
