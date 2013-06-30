@@ -54,7 +54,9 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
 
-    QFont font("Consolas", 12);
+    QFont font;
+    font.setFamily(ConfigManager::Instance.getTextCharFormats()->value("linenumber").font().family());
+    font.setPointSize(ConfigManager::Instance.getTextCharFormats()->value("linenumber").font().pointSize());
     painter.setFont(font);
     QFontMetrics fm(font);
     painter.setFont(font);
@@ -80,7 +82,7 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
     int cumulatedPosition = this->firstVisibleBlockTop;
     if(this->firstVisibleBlock == 1)
     {
-        painter.drawText(0,this->scrollOffset+fm.height(),QString::number(1));
+        painter.drawText(0,this->scrollOffset+fm.height()+5,QString::number(1));
     }
     for(l = this->firstVisibleBlock+1; l <= widgetTextEdit->document()->blockCount(); ++l)
     {
@@ -94,7 +96,7 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
         {
             break;
         }
-        painter.drawText(0,this->scrollOffset+cumulatedPosition+fm.height(),QString::number(l));
+        painter.drawText(0,this->scrollOffset+cumulatedPosition+fm.height()+5,QString::number(l));
         if(l == _startBlock + 1)
         {
             painter.setPen(blockRangePen);

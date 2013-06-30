@@ -5,19 +5,31 @@
 #include <QPoint>
 #include <QElapsedTimer>
 #include <QTimer>
-
+#include <QList>
+#include <QRectF>
 
 #include "synctex_parser.h"
 #include <QPoint>
+#if linux
+    #include <poppler/qt4/poppler-qt4.h>
+#else
+    #include <poppler-qt4.h>
+#endif
 
 class File;
 class QImage;
 class WidgetTextEdit;
-namespace Poppler
-{
-    class Document;
-}
 
+struct Link
+{
+    QRectF rectangle;
+    Poppler::LinkDestination * destination;
+
+    ~Link()
+    {
+        delete destination;
+    }
+};
 
 
 class WidgetPdfDocument : public QWidget
@@ -46,9 +58,12 @@ protected:
     void wheelEvent(QWheelEvent *);
 private:
     void initDocument();
+    void initLinks();
     void boundPainterTranslation();
     QImage * page(int page);
     void refreshPages();
+    void checkLinksOver(const QPointF &pos);
+    bool checkLinksPress(const QPointF &pos);
 
     QElapsedTimer _lastUpdate;
     QTimer _timer;
@@ -70,6 +85,8 @@ private:
     int _syncPage;
 
     synctex_scanner_t scanner;
+
+    QList<Link> _links;
 
     static QImage * EmptyImage;
     static int PageMargin;

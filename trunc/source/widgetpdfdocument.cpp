@@ -5,14 +5,8 @@
 #include <QPainter>
 #include <QBrush>
 #include <QColor>
-#include <QRectF>
 #include "file.h"
 
-#if linux
-    #include <poppler/qt4/poppler-qt4.h>
-#else
-    #include <poppler-qt4.h>
-#endif
 
 
 #define SYNCTEX_GZ_EXT ".synctex.gz"
@@ -65,24 +59,6 @@ void WidgetPdfDocument::paintEvent(QPaintEvent *)
         }
         image = this->page(i);
         painter.drawImage(0,cumulatedTop,*image);
-        if(_document->page(i)->links().count())
-        {
-            foreach(const Poppler::Link * link, _document->page(i)->links())
-            {
-                QRectF linkArea = link->linkArea();
-                qreal height = _document->page(i)->pageSize().height()*linkArea.height()*_zoom;
-                qreal width = _document->page(i)->pageSize().width()*linkArea.width()*_zoom;
-                qreal top = _document->page(i)->pageSize().height()*linkArea.top()*_zoom+cumulatedTop;
-                qreal left = _document->page(i)->pageSize().width()*linkArea.left()*_zoom;
-                QRectF linkAreaAbsolute(left,top,width,height);
-                //linkArea.setTop();
-                //painter.drawRect(linkAreaAbsolute);
-                if(linkAreaAbsolute.contains(this->cursor().pos()))
-                {
-                    this->setCursor(QCursor(Qt::PointingHandCursor));
-                }
-            }
-        }
         if(i == _syncPage+1)
         {
             if(_lastUpdate.elapsed()<1200)
@@ -157,12 +133,55 @@ void WidgetPdfDocument::initDocument()
         _loadedPages[idx] = false;
     }
 
+    this->initLinks();
+
     QString syncFile = QFileInfo(this->_file->getFilename()).canonicalFilePath();
     scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
 
 
     jumpToPdfFromSource(_file->getFilename(),_widgetTextEdit->textCursor().blockNumber());
 }
+
+void WidgetPdfDocument::initLinks()
+{
+    _links.clear();
+
+    QRectF linkArea;
+    qreal height;
+    qreal width;
+    qreal top;
+    qreal left;
+    int cumulatedTop = 0;
+    for(int page_idx = 0; page_idx < _document->numPages(); ++page_idx)
+    {
+        if(_document->page(page_idx)->links().count())
+        {
+            foreach(const Poppler::Link * popLink, _document->page(page_idx)->links())
+            {
+                if(popLink->linkType() == Poppler::Link::Goto)
+                {
+                    Link link;
+                    linkArea = popLink->linkArea();
+                    height = _document->page(page_idx)->pageSize().height()*linkArea.height()*_zoom;
+                    width = _document->page(page_idx)->pageSize().width()*linkArea.width()*_zoom;
+                    top = _document->page(page_idx)->pageSize().height()*linkArea.top()*_zoom+cumulatedTop;
+                    left = _document->page(page_idx)->pageSize().width()*linkArea.left()*_zoom;
+                    link.rectangle = QRectF(left,top,width,height);
+                    link.destination = new Poppler::LinkDestination(dynamic_cast<const Poppler::LinkGoto*>(popLink)->destination());
+                    qDebug()<<link.destination->pageNumber();
+                    _links.append(link);
+                }
+            }
+        }
+        cumulatedTop += _document->page(page_idx)->pageSize().height()*_zoom+WidgetPdfDocument::PageMargin;
+    }
+
+    /*if(linkAreaAbsolute.contains(this->cursor().pos()))
+    {
+        this->setCursor(QCursor(Qt::PointingHandCursor));
+    }*/
+}
+
 QImage * WidgetPdfDocument::page(int page)
 {
     if(!_pages || page < 0 || page >= _document->numPages())
@@ -210,9 +229,40 @@ void WidgetPdfDocument::refreshPages()
     }
 
 }
+void WidgetPdfDocument::checkLinksOver(const QPointF &pos)
+{
+    QPointF absolutePos = pos - this->_painterTranslate;
+    this->setCursor(Qt::ArrowCursor);
+    foreach(const Link &link, _links)
+    {
+        if(link.rectangle.contains(absolutePos))
+        {
+            this->setCursor(Qt::PointingHandCursor);
+            break;
+        }
+    }
+}
+bool WidgetPdfDocument::checkLinksPress(const QPointF &pos)
+{
+    QPointF absolutePos = pos - this->_painterTranslate;
+    foreach(const Link &link, _links)
+    {
+        if(link.rectangle.contains(absolutePos))
+        {
+            qDebug()<<link.destination->pageNumber();
+            this->goToPage(link.destination->pageNumber());
+            return true;
+        }
+    }
+    return false;
+}
 
 void WidgetPdfDocument::mousePressEvent(QMouseEvent * event)
 {
+    if(this->checkLinksPress(event->posF()))
+    {
+        return;
+    }
     this->_pressAt = event->pos();
     this->_painterTranslateWhenMousePressed = this->_painterTranslate;
     this->_mousePressed = true;
@@ -258,12 +308,14 @@ void WidgetPdfDocument::zoomOut()
 
 void WidgetPdfDocument::mouseMoveEvent(QMouseEvent * event)
 {
+    this->checkLinksOver(event->posF());
     if(this->_mousePressed)
     {
         this->_painterTranslate = this->_painterTranslateWhenMousePressed + (event->pos() - this->_pressAt);
         this->boundPainterTranslation();
         update();
     }
+
 }
 void WidgetPdfDocument::boundPainterTranslation()
 {
