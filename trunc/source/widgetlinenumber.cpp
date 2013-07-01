@@ -34,14 +34,36 @@ void WidgetLineNumber::setWidgetTextEdit(WidgetTextEdit *widgetTextEdit)
     this->widgetTextEdit = widgetTextEdit;
     connect(this->widgetTextEdit,SIGNAL(updateFirstVisibleBlock(int,int)), this, SLOT(updateFirstVisibleBlock(int,int)));
     connect(this->widgetTextEdit,SIGNAL(updatedWithSameFirstVisibleBlock()), this, SLOT(update()));
+    connect(this->widgetTextEdit,SIGNAL(lineCountChanged(int)), this, SLOT(updateWidth(int)));
 }
+
 
 void WidgetLineNumber::updateFirstVisibleBlock(int block, int top)
 {
     this->firstVisibleBlock = block;
     this->firstVisibleBlockTop = top;
+
     this->update();
     //qDebug()<<"first : "<<block<<"  "<< this->firstVisibleBlockTop;
+}
+
+void WidgetLineNumber::updateWidth(int lineCount)
+{
+    QFont font;
+    font.setFamily(ConfigManager::Instance.getTextCharFormats()->value("linenumber").font().family());
+    font.setPointSize(ConfigManager::Instance.getTextCharFormats()->value("linenumber").font().pointSize());
+    QFontMetrics fm(font);
+
+    int width = fm.width("0") + 2;
+
+    int ln = 1;
+    while(lineCount >= 10)
+    {
+        lineCount /= 10;
+        ++ln;
+    }
+    this->setMinimumWidth(ln*width + 8);
+
 }
 
 void WidgetLineNumber::paintEvent(QPaintEvent *event)
@@ -79,10 +101,11 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
     painter.setPen(defaultPen);
 
     int right = this->width()-5;
+    int fontHeight = fm.height();
     int cumulatedPosition = this->firstVisibleBlockTop;
     if(this->firstVisibleBlock == 1)
     {
-        painter.drawText(0,this->scrollOffset+fm.height()+5,QString::number(1));
+        painter.drawText(0, this->scrollOffset+5, right-9, fontHeight, Qt::AlignRight, QString::number(1));
     }
     for(l = this->firstVisibleBlock+1; l <= widgetTextEdit->document()->blockCount(); ++l)
     {
@@ -96,7 +119,7 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
         {
             break;
         }
-        painter.drawText(0,this->scrollOffset+cumulatedPosition+fm.height()+5,QString::number(l));
+        painter.drawText(0,this->scrollOffset+cumulatedPosition+5, right-9, fontHeight, Qt::AlignRight, QString::number(l));
         if(l == _startBlock + 1)
         {
             painter.setPen(blockRangePen);

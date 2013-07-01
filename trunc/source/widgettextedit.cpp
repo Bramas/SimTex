@@ -411,6 +411,7 @@ void WidgetTextEdit::updateIndentation(void)
     if(this->document()->blockCount() != _lineCount)
     {
         this->currentFile->insertLine(this->textCursor().blockNumber(), this->document()->blockCount() - _lineCount);
+        emit lineCountChanged(this->document()->blockCount());
     }
     _lineCount = this->document()->blockCount();
 

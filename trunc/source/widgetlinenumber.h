@@ -15,6 +15,7 @@ signals:
 public slots:
     void updateFirstVisibleBlock(int, int);
     void setBlockRange(int,int);
+    void updateWidth(int lineCount);
 
 private:
     void paintEvent(QPaintEvent * event);

@@ -46,6 +46,7 @@ signals:
     void updateFirstVisibleBlock(int,int);
     void updatedWithSameFirstVisibleBlock();
     void setBlockRange(int,int);
+    void lineCountChanged(int);
 public slots:
     void scrollTo(int);
     void updateIndentation(void);
