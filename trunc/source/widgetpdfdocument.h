@@ -27,7 +27,7 @@ struct Link
 
     ~Link()
     {
-        delete destination;
+        //delete destination;
     }
 };
 

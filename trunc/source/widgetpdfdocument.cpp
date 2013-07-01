@@ -168,7 +168,6 @@ void WidgetPdfDocument::initLinks()
                     left = _document->page(page_idx)->pageSize().width()*linkArea.left()*_zoom;
                     link.rectangle = QRectF(left,top,width,height);
                     link.destination = new Poppler::LinkDestination(dynamic_cast<const Poppler::LinkGoto*>(popLink)->destination());
-                    qDebug()<<link.destination->pageNumber();
                     _links.append(link);
                 }
             }
@@ -249,8 +248,9 @@ bool WidgetPdfDocument::checkLinksPress(const QPointF &pos)
     {
         if(link.rectangle.contains(absolutePos))
         {
-            qDebug()<<link.destination->pageNumber();
-            this->goToPage(link.destination->pageNumber());
+            int pageNumber = link.destination->pageNumber() - 1;
+            int top = link.destination->top()*_document->page(pageNumber)->pageSize().height();
+            this->goToPage(pageNumber, top);
             return true;
         }
     }
