@@ -28,13 +28,22 @@ WidgetPdfDocument::WidgetPdfDocument(QWidget *parent) :
     _loadedPages(0),
     _pages(0),
     _zoom(1),
-    scanner(NULL)
+    _scroll(new QScrollBar(Qt::Vertical, this)),
+    scanner(NULL),
+    _documentHeight(0)
 
 {
     this->setMouseTracking(true);
     this->setCursor(Qt::OpenHandCursor);
     connect(&this->_timer, SIGNAL(timeout()),this, SLOT(update()));
     Poppler::Document::load(" ");
+
+    _scroll->setGeometry(this->width()-20,0,20,200);
+    _scroll->setRange(0,1);
+
+    connect(_scroll, SIGNAL(valueChanged(int)), this, SLOT(onScroll(int)));
+    connect(this, SIGNAL(translated(int)), _scroll, SLOT(setValue(int)));
+
 }
 
 void WidgetPdfDocument::paintEvent(QPaintEvent *)
@@ -134,6 +143,7 @@ void WidgetPdfDocument::initDocument()
     }
 
     this->initLinks();
+    this->initScroll();
 
     QString syncFile = QFileInfo(this->_file->getFilename()).canonicalFilePath();
     scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
@@ -141,6 +151,24 @@ void WidgetPdfDocument::initDocument()
 
     jumpToPdfFromSource(_file->getFilename(),_widgetTextEdit->textCursor().blockNumber());
 }
+
+void WidgetPdfDocument::initScroll()
+{
+    if(!_document->numPages())
+    {
+        return;
+    }
+
+    int height = -WidgetPdfDocument::PageMargin;
+    for(int page_idx = 0; page_idx < _document->numPages(); ++page_idx)
+    {
+        height += _document->page(page_idx)->pageSize().height();
+    }
+    _documentHeight = height;
+    this->_scroll->setRange(0,this->documentHeight() - this->height()+30);
+}
+
+
 
 void WidgetPdfDocument::initLinks()
 {
@@ -181,6 +209,20 @@ void WidgetPdfDocument::initLinks()
     }*/
 }
 
+void WidgetPdfDocument::resizeEvent(QResizeEvent *)
+{
+    _scroll->setGeometry(this->width()-20,0,20,this->height());
+    _scroll->setPageStep(this->height() / _zoom);
+
+    this->boundPainterTranslation();
+
+}
+void WidgetPdfDocument::onScroll(int value)
+{
+    this->_painterTranslate.setY(-value);
+    update();
+}
+
 QImage * WidgetPdfDocument::page(int page)
 {
     if(!_pages || page < 0 || page >= _document->numPages())
@@ -212,7 +254,9 @@ void WidgetPdfDocument::goToPage(int page, int top, int height)
     if(-this->_painterTranslate.y() + this->height() < cumulatedTop + top*_zoom + height * _zoom || -this->_painterTranslate.y() > cumulatedTop + top*_zoom )
     {
         this->_painterTranslate.setY(-cumulatedTop-top*_zoom-height*_zoom/2+this->height()/2);
+        emit translated( - _painterTranslate.y());
     }
+
     update();
 }
 
@@ -231,6 +275,7 @@ void WidgetPdfDocument::refreshPages()
 void WidgetPdfDocument::checkLinksOver(const QPointF &pos)
 {
     QPointF absolutePos = pos - this->_painterTranslate;
+    //absolutePos *= _zoom;
     this->setCursor(Qt::ArrowCursor);
     foreach(const Link &link, _links)
     {
@@ -283,7 +328,9 @@ void WidgetPdfDocument::wheelEvent(QWheelEvent * event)
     }
     else
     {
-       this->_painterTranslate.setY(this->_painterTranslate.y()+event->delta());
+        this->_painterTranslate.setY(this->_painterTranslate.y()+event->delta());
+        emit translated( - _painterTranslate.y());
+        this->boundPainterTranslation();
         update();
     }
 }
@@ -294,6 +341,11 @@ void WidgetPdfDocument::zoom(qreal factor, QPoint target)
     this->_painterTranslate += target - target*factor;
     this->boundPainterTranslation();
     this->refreshPages();
+
+    this->_scroll->setRange(0,this->documentHeight() - this->height()+30);
+    this->_scroll->setPageStep(this->height() / _zoom);
+    emit translated( - _painterTranslate.y());
+    initLinks();
     update();
 }
 void WidgetPdfDocument::zoomIn()
@@ -313,6 +365,7 @@ void WidgetPdfDocument::mouseMoveEvent(QMouseEvent * event)
     {
         this->_painterTranslate = this->_painterTranslateWhenMousePressed + (event->pos() - this->_pressAt);
         this->boundPainterTranslation();
+        emit translated( - _painterTranslate.y());
         update();
     }
 
@@ -323,11 +376,18 @@ void WidgetPdfDocument::boundPainterTranslation()
     {
         return;
     }
-    this->_painterTranslate.setX(max(this->_painterTranslate.x(), this->width()-this->_document->page(0)->pageSize().width()*_zoom - 10));
+    this->_painterTranslate.setX(max(this->_painterTranslate.x(), this->width() - this->_document->page(0)->pageSize().width()*_zoom - 30));
     this->_painterTranslate.setX(min(this->_painterTranslate.x(), 10));
     if(this->_document->page(0)->pageSize().width()*_zoom - 20 < this->width())
     {
         this->_painterTranslate.setX(-this->_document->page(0)->pageSize().width()*_zoom/2+this->width()/2);
+    }
+
+    this->_painterTranslate.setY(max(this->_painterTranslate.y(), this->height() - this->documentHeight() - 30));
+    this->_painterTranslate.setY(min(this->_painterTranslate.y(), 10));
+    if(this->documentHeight() - 20 < this->width())
+    {
+        this->_painterTranslate.setY(-this->documentHeight()/2+this->height()/2);
     }
 }
 
