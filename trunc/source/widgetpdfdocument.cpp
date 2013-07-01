@@ -378,14 +378,14 @@ void WidgetPdfDocument::boundPainterTranslation()
     }
     this->_painterTranslate.setX(max(this->_painterTranslate.x(), this->width() - this->_document->page(0)->pageSize().width()*_zoom - 30));
     this->_painterTranslate.setX(min(this->_painterTranslate.x(), 10));
-    if(this->_document->page(0)->pageSize().width()*_zoom - 20 < this->width())
+    if(this->_document->page(0)->pageSize().width()*_zoom + 40 < this->width())
     {
-        this->_painterTranslate.setX(-this->_document->page(0)->pageSize().width()*_zoom/2+this->width()/2);
+        this->_painterTranslate.setX(-this->_document->page(0)->pageSize().width()*_zoom/2+this->width()/2-20);
     }
 
     this->_painterTranslate.setY(max(this->_painterTranslate.y(), this->height() - this->documentHeight() - 30));
     this->_painterTranslate.setY(min(this->_painterTranslate.y(), 10));
-    if(this->documentHeight() - 20 < this->width())
+    if(this->documentHeight() < this->width())
     {
         this->_painterTranslate.setY(-this->documentHeight()/2+this->height()/2);
     }

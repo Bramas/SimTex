@@ -1,4 +1,5 @@
 #include "blockdata.h"
+#include <QDebug>
 
 QVector<ParenthesisInfo *> BlockData::parentheses() {
     return _parentheses;
@@ -27,14 +28,14 @@ void BlockData::insertLat( LatexBlockInfo *info ) {
 
 bool BlockData::isAClosingDollar(int position)
 {
-    bool even = true;
+    bool even = false;
     foreach(int dollar, this->_dollars)
     {
-        even = !even;
         if(dollar > position)
         {
             return even;
         }
+        even = !even;
     }
     return even;
 }

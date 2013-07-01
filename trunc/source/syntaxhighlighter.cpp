@@ -133,6 +133,12 @@ void SyntaxHighlighter::highlightBlock(const QString &text)
             length = expression.matchedLength();
             setFormat(0, length, formatMath);
         }
+        else
+        {
+            setFormat(0, text.length(), formatMath);
+            this->setCurrentBlockState(1);
+            return;
+        }
     }
 
     QString patternMath = "("+mathLeftDelimiters+")((?!("+mathRightDelimiters+"|\\%)).)*("+mathRightDelimiters+")";

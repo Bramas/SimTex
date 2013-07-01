@@ -197,6 +197,11 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
         this->_completionEngine->setFocus();
         return;
     }
+    if(this->_completionEngine->isVisible() && e->key() == Qt::Key_Up)
+    {
+        this->_completionEngine->setFocus();
+        return;
+    }
 
     if(this->focusWidget() != this)
     {
@@ -504,7 +509,7 @@ void WidgetTextEdit::matchAll()
 
 void WidgetTextEdit::matchCommand()
 {
-    QRegExp command("\\\\[a-zA-Z]+$");
+    QRegExp command("\\\\[a-zA-Z\\{\\-_]+$");
     int pos = this->textCursor().positionInBlock();
     QString possibleCommand = this->textCursor().block().text().left(pos);
 
