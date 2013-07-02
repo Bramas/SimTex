@@ -37,6 +37,7 @@ protected:
     void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
+    void closeEvent(QCloseEvent *);
     
 private:
     Ui::MainWindow *ui;

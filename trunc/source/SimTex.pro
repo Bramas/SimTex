@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     synctex_parser_utils.c \
     widgetpdfviewer.cpp \
     completionengine.cpp \
-    widgetconsole.cpp
+    widgetconsole.cpp \
+    dialogclose.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -53,12 +54,14 @@ HEADERS  += mainwindow.h \
     synctex_parser_local.h \
     widgetpdfviewer.h \
     completionengine.h \
-    widgetconsole.h
+    widgetconsole.h \
+    dialogclose.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
     dialogconfig.ui \
-    widgetpdfviewer.ui
+    widgetpdfviewer.ui \
+    dialogclose.ui
 
 #LIBS         += -LG:\poppler -lpoppler-qt4
 #LIBS         += -LG:\poppler\cpp\bin -lpoppler-cpp

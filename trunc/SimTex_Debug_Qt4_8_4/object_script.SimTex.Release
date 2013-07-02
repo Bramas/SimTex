@@ -19,6 +19,7 @@ INPUT(
 ./release\widgetpdfviewer.o
 ./release\completionengine.o
 ./release\widgetconsole.o
+./release\dialogclose.o
 ./release\moc_mainwindow.o
 ./release\moc_widgetlinenumber.o
 ./release\moc_widgettextedit.o
@@ -33,6 +34,7 @@ INPUT(
 ./release\moc_widgetpdfviewer.o
 ./release\moc_completionengine.o
 ./release\moc_widgetconsole.o
+./release\moc_dialogclose.o
 ./release\qrc_data.o
 ./release\qrc_completion.o
 );

@@ -12,7 +12,8 @@ File::File(WidgetTextEdit* widgetTextEdit,QString filename) :
     builder(new Builder(this)),
     viewer(new Viewer(this)),
     _widgetTextEdit(widgetTextEdit),
-    _codec(QTextCodec::codecForLocale()->name())
+    _codec(QTextCodec::codecForLocale()->name()),
+    _modified(false)
 {
 }
 void File::save(QString filename)
@@ -45,7 +46,7 @@ void File::save(QString filename)
     _modified = false;
 }
 
-void File::open(QString filename, QString codec)
+const QString& File::open(QString filename, QString codec)
 {
     // Get the filename
 
@@ -57,7 +58,7 @@ void File::open(QString filename, QString codec)
             //this->filename = QFileDialog::getOpenFileName(this->_parent,tr("Ouvrir un fichier"));
             if(this->filename.isEmpty())
             {
-                return;
+                return "";
             }
         }
     }
@@ -69,7 +70,7 @@ void File::open(QString filename, QString codec)
 
     QFile file(this->filename);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
+        return "";
 
     this->data = QString("");
 
@@ -89,10 +90,12 @@ void File::open(QString filename, QString codec)
     if(codec.isEmpty() && data.contains(QString::fromUtf8("�")))
     {
         this->open(this->filename,"ISO 8859-1");
-        return;
+        return "";
     }
     this->_codec = in.codec()->name();
+    this->_widgetTextEdit->setText(this->data);
     _modified = false;
+    return this->data;
 
 }
 
@@ -121,3 +124,5 @@ void File::insertLine(int lineNumber, int lineCount)
         _lineNumberSinceLastBuild.remove(_lineNumberSinceLastBuild.size()-1);
     }
 }
+
+

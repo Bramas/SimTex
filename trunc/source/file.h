@@ -38,7 +38,7 @@ public:
      * if filename is empty, the filename given during the constructor is used.
      * if filename is not empty, it will replace the current filename.
      */
-    void open(QString filename = "", QString codec = "");
+    const QString& open(QString filename = "", QString codec = "");
     /**
      * @brief save the file
      * @param filename
@@ -121,8 +121,18 @@ public:
 
     QString codec() { return this->_codec; }
 
+    bool isModified() { return this->_modified; }
+
 public slots:
-    void setModified() { this->_modified = true; }
+    void setModified() {
+        this->_modified = true;
+    }
+    void create(void)
+    {
+        this->_modified = false;
+        this->data=QString("");
+        this->filename = QString("");
+    }
 
 private:
     QString filename;

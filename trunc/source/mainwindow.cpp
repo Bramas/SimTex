@@ -12,6 +12,7 @@
 #include "dialogconfig.h"
 #include "viewer.h"
 #include "widgetpdfdocument.h"
+#include "dialogclose.h"
 
 #include <QList>
 #include <QScrollBar>
@@ -119,6 +120,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->gridLayout->setColumnMinimumWidth(2,100);
 
 
+    connect(this->dialogWelcome->getActionNew(),SIGNAL(clicked()), this->widgetTextEdit->getCurrentFile(), SLOT(create()));
     connect(this->dialogWelcome->getActionNew(),SIGNAL(clicked()), this->dialogWelcome, SLOT(close()));
     connect(this->dialogWelcome->getActionOpen(),SIGNAL(clicked()), this->dialogWelcome, SLOT(close()));
     connect(this->dialogWelcome->getActionOpenLast(),SIGNAL(clicked()), this->dialogWelcome, SLOT(close()));
@@ -128,6 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->dialogWelcome->show();
     connect(this->ui->actionSettings,SIGNAL(triggered()),this->dialogConfig,SLOT(show()));
     connect(this->dialogConfig,SIGNAL(accepted()),syntaxHighlighter,SLOT(rehighlight()));
+
 
 
     this->setMouseTracking(true);
@@ -149,6 +152,25 @@ MainWindow::~MainWindow()
 void MainWindow::focus()
 {
     this->activateWindow();
+}
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+    if(!widgetTextEdit->getCurrentFile()->isModified())
+    {
+        event->accept();
+        return;
+    }
+    qDebug()<<"Closing";
+    DialogClose dialogClose(this);
+    dialogClose.setMessage(tr(QString::fromUtf8("Le fichier %1 n'a pas été enregistré.").toLatin1()).arg(this->widgetTextEdit->getCurrentFile()->getFilename()));
+    dialogClose.exec();
+    if(dialogClose.confirmed())
+    {
+        event->accept();
+        return;
+    }
+    event->ignore();
+
 }
 
 void MainWindow::openLast()
@@ -188,7 +210,7 @@ void MainWindow::open(QString filename)
     this->_widgetConsole->setBuilder(this->widgetTextEdit->getCurrentFile()->getBuilder());
 
     //udpate the widget
-    this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData());
+    //this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData());
 
     this->ui->statusBar->showMessage(basename+" - "+this->widgetTextEdit->getCurrentFile()->codec());
 

@@ -39,6 +39,7 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
 
 {
     blocksInfo[0].height = -1;
+
     connect(this,SIGNAL(textChanged()),this->currentFile,SLOT(setModified()));
     connect(this,SIGNAL(textChanged()),this,SLOT(updateIndentation()));
     connect(this,SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
@@ -54,8 +55,9 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
                                 "}");
 
     this->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats()->value("normal"));
-    this->setText("");
     this->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats()->value("normal"));
+
+    this->setText("");
 
 }
 
