@@ -57,6 +57,6 @@ void DialogConfig::show()
         this->ui->radioButtonDarkTheme->setChecked(false);
         this->ui->radioButtonLightTheme->setChecked(true);
     }
-    this->ui->spinBoxPointSize->setValue(ConfigManager::Instance.getTextCharFormats()->value("normal").font().pointSize());
+    this->ui->spinBoxPointSize->setValue(ConfigManager::Instance.getTextCharFormats("normal").font().pointSize());
     QDialog::show();
 }

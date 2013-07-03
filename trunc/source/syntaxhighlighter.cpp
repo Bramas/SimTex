@@ -78,14 +78,13 @@ void SyntaxHighlighter::highlightBlock(const QString &text)
 
 
 
-    QTextCharFormat formatNormal = ConfigManager::Instance.getTextCharFormats()->value("normal");
-    QTextCharFormat formatCommand = ConfigManager::Instance.getTextCharFormats()->value("command");
-    QTextCharFormat formatComment = ConfigManager::Instance.getTextCharFormats()->value("comment");
-    QTextCharFormat formatMath = ConfigManager::Instance.getTextCharFormats()->value("math");
-    QTextCharFormat formatStructure = ConfigManager::Instance.getTextCharFormats()->value("structure");
+    QTextCharFormat formatNormal = ConfigManager::Instance.getTextCharFormats("normal");
+    QTextCharFormat formatCommand = ConfigManager::Instance.getTextCharFormats("command");
+    QTextCharFormat formatComment = ConfigManager::Instance.getTextCharFormats("comment");
+    QTextCharFormat formatMath = ConfigManager::Instance.getTextCharFormats("math");
+    QTextCharFormat formatStructure = ConfigManager::Instance.getTextCharFormats("structure");
 
      setFormat(0, text.size(), formatNormal);
-
 
 
      QString patternCommand = "\\\\[a(-zA-Z]+";

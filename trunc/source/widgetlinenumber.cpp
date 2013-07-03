@@ -19,7 +19,7 @@ WidgetLineNumber::WidgetLineNumber(QWidget *parent) :
 
     QPalette Pal(palette());
     // set black background
-    Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats()->value("linenumber").background().color());
+    Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats("linenumber").background().color());
     this->setAutoFillBackground(true);
     this->setPalette(Pal);
 
@@ -50,8 +50,8 @@ void WidgetLineNumber::updateFirstVisibleBlock(int block, int top)
 void WidgetLineNumber::updateWidth(int lineCount)
 {
     QFont font;
-    font.setFamily(ConfigManager::Instance.getTextCharFormats()->value("linenumber").font().family());
-    font.setPointSize(ConfigManager::Instance.getTextCharFormats()->value("linenumber").font().pointSize());
+    font.setFamily(ConfigManager::Instance.getTextCharFormats("linenumber").font().family());
+    font.setPointSize(ConfigManager::Instance.getTextCharFormats("linenumber").font().pointSize());
     QFontMetrics fm(font);
 
     int width = fm.width("0") + 2;
@@ -77,8 +77,8 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     QFont font;
-    font.setFamily(ConfigManager::Instance.getTextCharFormats()->value("linenumber").font().family());
-    font.setPointSize(ConfigManager::Instance.getTextCharFormats()->value("linenumber").font().pointSize());
+    font.setFamily(ConfigManager::Instance.getTextCharFormats("linenumber").font().family());
+    font.setPointSize(ConfigManager::Instance.getTextCharFormats("linenumber").font().pointSize());
     painter.setFont(font);
     QFontMetrics fm(font);
     painter.setFont(font);
@@ -96,7 +96,7 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
             qDebug()<<i;
         }
     }*/
-    QPen defaultPen(ConfigManager::Instance.getTextCharFormats()->value("linenumber").foreground().color(),1);
+    QPen defaultPen(ConfigManager::Instance.getTextCharFormats("linenumber").foreground().color(),1);
     QPen blockRangePen(QColor(160,10,10),4);
     painter.setPen(defaultPen);
 

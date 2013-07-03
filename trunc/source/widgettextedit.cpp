@@ -49,13 +49,13 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     //this->setCurrentFont(QFont("Consolas", 17));
     //this->setCurrentFont(QFont("Consolas", 17));
 
-    this->setPalette(QPalette(Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,ConfigManager::Instance.getTextCharFormats()->value("normal").background().color()));
+    this->setPalette(QPalette(Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,ConfigManager::Instance.getTextCharFormats("normal").background().color()));
     this->setStyleSheet(QString("QTextEdit { border: 1px solid ")+
-                        ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats()->value("textedit-border").foreground().color())+
+                        ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("textedit-border").foreground().color())+
                                 "}");
 
-    this->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats()->value("normal"));
-    this->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats()->value("normal"));
+    this->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
+    this->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
 
     this->setText("");
 
@@ -89,11 +89,11 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
 
 
 
-    painter.setBrush(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").background());
-    painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").foreground().color()));
+    painter.setBrush(ConfigManager::Instance.getTextCharFormats("leftStructure").background());
+    painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats("leftStructure").foreground().color()));
 
-    QFont font(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").font().family(),ConfigManager::Instance.getTextCharFormats()->value("leftStructure").font().pointSize());
-    font.setBold(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").font().bold());
+    QFont font(ConfigManager::Instance.getTextCharFormats("leftStructure").font().family(),ConfigManager::Instance.getTextCharFormats("leftStructure").font().pointSize());
+    font.setBold(ConfigManager::Instance.getTextCharFormats("leftStructure").font().bold());
     QFontMetrics fm(font);
     painter.setFont(font);
 
@@ -127,10 +127,10 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
             //qDebug()<<"pas assez "<<(value->height + value->top - this->verticalScrollBar()->value())<<" > "<<(height + 30);
         }
 
-        painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").background().color()));
+        painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats("leftStructure").background().color()));
         painter.drawRect(- value->top - value->height -4  + this->verticalScrollBar()->value(),25*(value->level-2)+5,value->height-2,25);
 
-        painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats()->value("leftStructure").foreground().color()));
+        painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats("leftStructure").foreground().color()));
         painter.drawText(-top-height-20,25*(value->level-1),value->name);
     }
 
@@ -269,17 +269,17 @@ void WidgetTextEdit::wheelEvent(QWheelEvent * event)
 
         //this->textCursor().movePosition()
         ConfigManager::Instance.changePointSizeBy(delta);
-        /*this->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats()->value("normal"));
+        /*this->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
         QTextBlock tb = this->document()->begin();
         for(int i = 0; i < this->document()->blockCount(); ++i)
         {
-            tb.layout()->setFont(ConfigManager::Instance.getTextCharFormats()->value("normal").font());
+            tb.layout()->setFont(ConfigManager::Instance.getTextCharFormats("normal").font());
             tb.clearLayout();
             tb.next();
         }*/
         int pos = this->textCursor().position();
         this->selectAll();
-        this->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats()->value("normal"));
+        this->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
 
         QTextCursor cur(this->textCursor());
         cur.setPosition(pos);
@@ -296,7 +296,7 @@ void WidgetTextEdit::wheelEvent(QWheelEvent * event)
             QTextLayout::FormatRange r;
             r.start = -1;
             r.length=2;
-            r.format = ConfigManager::Instance.getTextCharFormats()->value("normal");
+            r.format = ConfigManager::Instance.getTextCharFormats("normal");
             formats.append(r);
             tb.layout()->setAdditionalFormats(formats);
             tb.clearLayout();
@@ -518,7 +518,7 @@ void WidgetTextEdit::matchCommand()
 
     if(possibleCommand.indexOf(command) != -1) // the possibleCommand is a command
     {
-        QFontMetrics fm(ConfigManager::Instance.getTextCharFormats()->value("normal").font());
+        QFontMetrics fm(ConfigManager::Instance.getTextCharFormats("normal").font());
         /*double widthD = double(fm.width(possibleCommand)) / double(this->blockWidth(this->textCursor().block()));
         qDebug()<<"command "<<fm.width(possibleCommand)<<" => "<<widthD<<", "<<fm.height();
         int widthI = floor(widthD);
@@ -777,7 +777,7 @@ void WidgetTextEdit::highlightCurrentLine(void)
     while(cursor.blockNumber() == blockNumber)
     {
         QTextEdit::ExtraSelection selection;
-        selection.format.setBackground(ConfigManager::Instance.getTextCharFormats()->value("selected-line").background());
+        selection.format.setBackground(ConfigManager::Instance.getTextCharFormats("selected-line").background());
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = QTextCursor(cursor);
         selection.cursor.clearSelection();

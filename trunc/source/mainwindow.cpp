@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         QPalette Pal(palette());
         // set black background
-        Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats()->value("linenumber").background().color());
+        Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats("linenumber").background().color());
         this->setAutoFillBackground(true);
         this->setPalette(Pal);
     }
@@ -70,12 +70,12 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         QPalette Pal(this->ui->statusBar->palette());
         // set black background
-        Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats()->value("normal").background().color());
-        Pal.setColor(QPalette::Window, ConfigManager::Instance.getTextCharFormats()->value("normal").background().color());
-        Pal.setColor(QPalette::WindowText, ConfigManager::Instance.getTextCharFormats()->value("normal").foreground().color());
+        Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats("normal").background().color());
+        Pal.setColor(QPalette::Window, ConfigManager::Instance.getTextCharFormats("normal").background().color());
+        Pal.setColor(QPalette::WindowText, ConfigManager::Instance.getTextCharFormats("normal").foreground().color());
         this->setAutoFillBackground(true);
         this->ui->statusBar->setPalette(Pal);
-        this->ui->statusBar->setStyleSheet("QStatusBar {background: "+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats()->value("normal").background().color())+
+        this->ui->statusBar->setStyleSheet("QStatusBar {background: "+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
                                            "}");
     }
     // Connect things that can update the widgetTextEdit
@@ -96,7 +96,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->actionOpen,SIGNAL(triggered()),this,SLOT(open()));
     connect(this->ui->actionSave,SIGNAL(triggered()),this,SLOT(save()));
     connect(this->ui->actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
-
+    connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(this->ui->actionOpenRecent, SIGNAL(triggered()), this, SLOT(openLast()));
+    connect(this->ui->actionUndo, SIGNAL(triggered()), this->widgetTextEdit, SLOT(undo()));
+    connect(this->ui->actionRedo, SIGNAL(triggered()), this->widgetTextEdit, SLOT(redo()));
+    connect(this->ui->actionCopy, SIGNAL(triggered()), this->widgetTextEdit, SLOT(copy()));
+    connect(this->ui->actionCut, SIGNAL(triggered()), this->widgetTextEdit, SLOT(cut()));
+    connect(this->ui->actionPaste, SIGNAL(triggered()), this->widgetTextEdit, SLOT(paste()));
 
     connect(this->ui->actionPdfLatex,SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getBuilder(),SLOT(pdflatex()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(pdfChanged()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(updatePdf()));
@@ -108,7 +114,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->gridLayout->addWidget(widgetLineNumber,0,0);
     ui->gridLayout->addLayout(this->_leftLayout,0,1);
-    //ui->gridLayout->addWidget(widgetScroller,0,2);
     ui->gridLayout->addWidget(_widgetPdfViewer,0,2);
 
     this->_leftLayout->setSpacing(4);

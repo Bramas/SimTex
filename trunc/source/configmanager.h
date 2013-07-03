@@ -16,7 +16,10 @@ public:
 
     static ConfigManager Instance;
 
-    QMap<QString,QTextCharFormat> * getTextCharFormats() { return this->textCharFormats; }
+    const QTextCharFormat& getTextCharFormats(QString key)
+    {
+        return this->textCharFormats->value(key,this->textCharFormats->value("normal"));
+    }
 
     ~ConfigManager();
 
@@ -25,9 +28,11 @@ public:
 
     void setMainWindow(QWidget * mainWindow);
     void save(void);
+    bool load(void);
     QString colorToString(const QColor & color) { return "rgb("+QString::number(color.red())+","+QString::number(color.green())+","+QString::number(color.blue())+")";}
 
-    static QString textCharFormatToString(QTextCharFormat charFormat);
+    QString textCharFormatToString(QTextCharFormat charFormat, QTextCharFormat defaultFormat = QTextCharFormat());
+    QTextCharFormat stringToTextCharFormat(QString string, QTextCharFormat defaultFormat = QTextCharFormat());
 
 private:
     ConfigManager();

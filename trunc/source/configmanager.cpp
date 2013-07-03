@@ -31,18 +31,26 @@ ConfigManager::ConfigManager() :
     QSettings settings;
     settings.beginGroup("theme");
 
-    //QFont font("Consolas");
-    QFont font("Arial",12);
-    font.setPointSize(settings.value("pointSize",12).toInt());
-    QTextCharFormat charFormat;
+
 
 
     if(!settings.contains("theme"))
     {
         settings.setValue("theme",QString("dark"));
     }
+    if(!this->load())
+    {
+        QFont font("Consolas");
+        font.setPointSize(settings.value("pointSize",12).toInt());
+        QTextCharFormat charFormat;
 
-    if(!settings.value("theme").toString().compare("dark"))
+        charFormat.setForeground(QColor(53,52,41));
+        charFormat.setFont(font);
+        charFormat.setBackground(QColor(250,250,250));
+        textCharFormats->insert("normal",charFormat);
+    }
+    return;
+/*    if(!settings.value("theme").toString().compare("dark"))
     {
         //font.setBold(QFont::Normal);
         charFormat.setForeground(QColor(248,248,242));
@@ -105,10 +113,14 @@ ConfigManager::ConfigManager() :
         charFormat.setFont(font);
         textCharFormats->insert("textedit-border",charFormat);
 
+        charFormat.setBackground(QColor(230,230,230));
+        textCharFormats->insert("selected-line",charFormat);
+
         charFormat.setForeground(QColor(53,52,41));
         charFormat.setFont(font);
         charFormat.setBackground(QColor(250,250,250));
         textCharFormats->insert("normal",charFormat);
+
 
         charFormat.setForeground(QColor(117,113,94));
         charFormat.setFont(font);
@@ -138,7 +150,7 @@ ConfigManager::ConfigManager() :
         charFormat.setBackground(QColor(235,235,235));
         charFormat.setFont(font);
         textCharFormats->insert("leftStructure",charFormat);
-    }
+    }*/
 
 }
 void ConfigManager::setMainWindow(QWidget * mainWindow)
@@ -154,21 +166,168 @@ ConfigManager::~ConfigManager()
     delete this->textCharFormats;
 }
 
-QString ConfigManager::textCharFormatToString(QTextCharFormat charFormat)
+QString ConfigManager::textCharFormatToString(QTextCharFormat charFormat, QTextCharFormat defaultFormat)
 {
-    return QString(charFormat.font().bold()?"Bold":"Normal")+
-            " foreground("+QString::number(charFormat.foreground().color().red())+
-            ", "+QString::number(charFormat.foreground().color().green())+
-            ", "+QString::number(charFormat.foreground().color().blue())+
-            ") "+
-            " background("+QString::number(charFormat.background().color().red())+
-            ", "+QString::number(charFormat.background().color().green())+
-            ", "+QString::number(charFormat.background().color().blue())+
-            ") ";
+    QString config;
+
+    if(charFormat.font() != defaultFormat.font())
+    {
+        config += QString("font(");
+        if(charFormat.font().family().compare(defaultFormat.font().family()))
+        {
+            config += QString("\"")+charFormat.font().family()+QString("\" ");
+        }
+        if(charFormat.font().pointSize() != defaultFormat.font().pointSize())
+        {
+            config += QString::number(charFormat.font().pointSize())+QString(" ");
+        }
+        if(charFormat.font().bold() != defaultFormat.font().bold())
+        {
+            config += (charFormat.font().bold()?"bold":"normal")+QString(" ");
+        }
+        config +=QString(") ");
+    }
+
+    if(charFormat.foreground().style() != Qt::NoBrush)
+    {
+        config += " foreground("+QString::number(charFormat.foreground().color().red())+
+                ", "+QString::number(charFormat.foreground().color().green())+
+                ", "+QString::number(charFormat.foreground().color().blue())+
+                ") ";
+    }
+    if(charFormat.background().style() != Qt::NoBrush)
+    {
+        config += " background("+QString::number(charFormat.background().color().red())+
+                    ", "+QString::number(charFormat.background().color().green())+
+                    ", "+QString::number(charFormat.background().color().blue())+
+                    ") ";
+    }
+    if(config.isEmpty())
+    {
+        config = "inherit";
+    }
+    return config;
+}
+
+QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharFormat defaultFormat)
+{
+    QTextCharFormat charFormat(defaultFormat);
+
+    qDebug()<<string;
+    QRegExp pattern("([a-z]*)\\(([^\\)]*)\\)");
+    QRegExp familyPattern("\\\"([^\\\"]*)\\\"");
+    QRegExp pointSizePattern("[^0-9]([0-9]+)[^0-9]");
+    int index;
+    int length;
+    index = string.indexOf(pattern);
+    while(index != -1)
+    {
+        length = pattern.matchedLength();
+        if(pattern.captureCount() < 2)
+        {
+            qDebug()<<(QString::fromUtf8("Erreur lors de la lecture du fichier Theme près de la ligne : ")+string).toLatin1();
+            continue;
+            //QMessageBox::warning(0, QObject::trUtf8("Erreur"), QObject::tr((QString::fromUtf8("Erreur lors de la lecture du fichier Theme près de la ligne : ")+string).toLatin1()));
+        }
+        if(!pattern.capturedTexts().at(1).compare("foreground"))
+        {
+            QStringList colors = pattern.capturedTexts().last().split(",");
+
+            if(colors.count() < 3)
+            {
+                qDebug()<<(QString::fromUtf8("Erreur lors de la lecture du fichier Theme près de la ligne : ")+string).toLatin1();
+                continue;
+            }
+            charFormat.setForeground(QBrush(QColor(colors.at(0).trimmed().toInt(),
+                                                   colors.at(1).trimmed().toInt(),
+                                                   colors.at(2).trimmed().toInt())));
+            qDebug()<<"Color : "<<colors.at(0).trimmed().toInt()<<", "<<colors.at(1).trimmed().toInt()<<", "<<colors.at(2).trimmed().toInt();
+        }
+        else if(!pattern.capturedTexts().at(1).compare("background"))
+        {
+            QStringList colors = pattern.capturedTexts().last().split(",");
+
+            if(colors.count() < 3)
+            {
+                qDebug()<<(QString::fromUtf8("Erreur lors de la lecture du fichier Theme près de la ligne : ")+string).toLatin1();
+                continue;
+            }
+            charFormat.setBackground(QBrush(QColor(colors.at(0).trimmed().toInt(),
+                                                   colors.at(1).trimmed().toInt(),
+                                                   colors.at(2).trimmed().toInt())));
+            qDebug()<<"BackgroundColor : "<<colors.at(0).trimmed().toInt()<<", "<<colors.at(1).trimmed().toInt()<<", "<<colors.at(2).trimmed().toInt();
+        }
+        else if(!pattern.capturedTexts().at(1).compare("font"))
+        {
+            QFont font(charFormat.font());
+            if(pattern.capturedTexts().last().contains("bold",Qt::CaseInsensitive))
+            {
+                font.setBold(QFont::Bold);
+                qDebug()<<"Bold : bold";
+            }
+            else if(pattern.capturedTexts().last().contains("normal",Qt::CaseInsensitive))
+            {
+                font.setBold(QFont::Normal);
+                qDebug()<<"Bold : normal";
+            }
+            if(pattern.capturedTexts().last().indexOf(familyPattern) != -1)
+            {
+                font.setFamily(familyPattern.capturedTexts().last());
+                qDebug()<<"Family : "<<familyPattern.capturedTexts().last();
+            }
+            if(pattern.capturedTexts().last().indexOf(pointSizePattern) != -1)
+            {
+                font.setPointSize(pointSizePattern.capturedTexts().last().toInt());
+                qDebug()<<"PointSize : "<<pointSizePattern.capturedTexts().last().toInt();
+            }
+            charFormat.setFont(font);
+        }
+        index = string.indexOf(pattern, index + length);
+    }
+    return charFormat;
+/*
+    if(charFormat.font() != defaultFormat.font())
+    {
+        config += QString("font(");
+        if(charFormat.font().family().compare(defaultFormat.font().family()))
+        {
+            config += QString("\"")+charFormat.font().family()+QString("\" ");
+        }
+        if(charFormat.font().pointSize() != defaultFormat.font().pointSize())
+        {
+            config += QString::number(charFormat.font().pointSize())+QString(" ");
+        }
+        if(charFormat.font().bold() != defaultFormat.font().bold())
+        {
+            config += (charFormat.font().bold()?"bold":"normal")+QString(" ");
+        }
+        config +=QString(") ");
+    }
+
+    if(charFormat.foreground().style() != Qt::NoBrush)
+    {
+        config += " foreground("+QString::number(charFormat.foreground().color().red())+
+                ", "+QString::number(charFormat.foreground().color().green())+
+                ", "+QString::number(charFormat.foreground().color().blue())+
+                ") ";
+    }
+    if(charFormat.background().style() != Qt::NoBrush)
+    {
+        config += " background("+QString::number(charFormat.background().color().red())+
+                    ", "+QString::number(charFormat.background().color().green())+
+                    ", "+QString::number(charFormat.background().color().blue())+
+                    ") ";
+    }
+    if(config.isEmpty())
+    {
+        config = "inherit";
+    }
+    return config;*/
 }
 
 void ConfigManager::changePointSizeBy(int delta)
 {
+    qDebug()<<"fontSize Changed";
     foreach(const QString &key, this->textCharFormats->keys())
     {
         QTextCharFormat format(this->textCharFormats->value(key));
@@ -181,6 +340,7 @@ void ConfigManager::changePointSizeBy(int delta)
 
 void ConfigManager::setPointSize(int size)
 {
+    qDebug()<<"fontSize Changed";
     foreach(const QString &key, this->textCharFormats->keys())
     {
         QTextCharFormat format(this->textCharFormats->value(key));
@@ -204,6 +364,7 @@ void ConfigManager::save()
     if(dataLocation.isEmpty())
     {
             QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
+            return;
     }
     if(!dir.exists(dataLocation))
     {
@@ -211,8 +372,10 @@ void ConfigManager::save()
     }
     //qDebug()<<QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     //return;
-    QSettings file(dataLocation+dir.separator()+"theme.txt",QSettings::IniFormat);
-    file.beginGroup("Theme");
+    QSettings settings;
+    settings.beginGroup("theme");
+    QSettings file(dataLocation+dir.separator()+settings.value("theme").toString()+".sim-theme",QSettings::IniFormat);
+//    file.beginGroup("Theme");
 
     QMapIterator<QString,QTextCharFormat> it(*this->textCharFormats);
     QString key;
@@ -220,8 +383,51 @@ void ConfigManager::save()
     while(it.hasNext())
     {
         it.next();
-        file.setValue(it.key(),ConfigManager::textCharFormatToString(it.value()));
+        file.setValue(it.key(),ConfigManager::textCharFormatToString(it.value(),this->textCharFormats->value("normal")));
     }
+    file.setValue("normal",this->textCharFormatToString(this->textCharFormats->value("normal"),QTextCharFormat()));
+
+}
+
+
+bool ConfigManager::load()
+{
+    QDir dir;
+    QString dataLocation("");
+#if QT_VERSION < 0x050000
+    dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#else
+    dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+#endif
+    if(dataLocation.isEmpty())
+    {
+            //QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
+            return false;
+    }
+
+    QSettings settings;
+    settings.beginGroup("theme");
+    QSettings file(dataLocation+dir.separator()+settings.value("theme").toString()+".sim-theme",QSettings::IniFormat);
+
+    if(!file.contains("normal"))
+    {
+        return false;
+    }
+
+    QStringList keys = file.allKeys();
+
+    QTextCharFormat normal = this->stringToTextCharFormat(file.value("normal").toString());
+    this->textCharFormats->insert("normal", normal);
+    foreach(const QString& key, keys)
+    {
+        if(!key.compare("normal"))
+        {
+            continue;
+        }
+        QTextCharFormat val = ConfigManager::stringToTextCharFormat(file.value(key).toString(), normal);
+        this->textCharFormats->insert(key, val);
+    }
+
 
 }
 
