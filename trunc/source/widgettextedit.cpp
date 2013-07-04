@@ -49,13 +49,7 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     //this->setCurrentFont(QFont("Consolas", 17));
     //this->setCurrentFont(QFont("Consolas", 17));
 
-    this->setPalette(QPalette(Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,ConfigManager::Instance.getTextCharFormats("normal").background().color()));
-    this->setStyleSheet(QString("QTextEdit { border: 1px solid ")+
-                        ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("textedit-border").foreground().color())+
-                                "}");
 
-    this->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
-    this->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
 
     this->setText("");
 

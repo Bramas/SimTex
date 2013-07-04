@@ -2,6 +2,7 @@
 #include <QFont>
 #include <QColor>
 #include <QSettings>
+#include <QDesktopServices>
 #if QT_VERSION < 0x050000
     #include <QDesktopServices>
 #else
@@ -10,9 +11,12 @@
 
 #include <QMapIterator>
 #include <QDir>
+#include <QUrl>
 #include <QMessageBox>
 #include <QDebug>
 #include <QCoreApplication>
+
+#define DEBUG_THEME_PARSER(a)
 
 ConfigManager ConfigManager::Instance;
 
@@ -213,7 +217,7 @@ QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharF
 {
     QTextCharFormat charFormat(defaultFormat);
 
-    qDebug()<<string;
+    DEBUG_THEME_PARSER(qDebug()<<string);
     QRegExp pattern("([a-z]*)\\(([^\\)]*)\\)");
     QRegExp familyPattern("\\\"([^\\\"]*)\\\"");
     QRegExp pointSizePattern("[^0-9]([0-9]+)[^0-9]");
@@ -241,7 +245,7 @@ QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharF
             charFormat.setForeground(QBrush(QColor(colors.at(0).trimmed().toInt(),
                                                    colors.at(1).trimmed().toInt(),
                                                    colors.at(2).trimmed().toInt())));
-            qDebug()<<"Color : "<<colors.at(0).trimmed().toInt()<<", "<<colors.at(1).trimmed().toInt()<<", "<<colors.at(2).trimmed().toInt();
+            DEBUG_THEME_PARSER(qDebug()<<"Color : "<<colors.at(0).trimmed().toInt()<<", "<<colors.at(1).trimmed().toInt()<<", "<<colors.at(2).trimmed().toInt());
         }
         else if(!pattern.capturedTexts().at(1).compare("background"))
         {
@@ -255,7 +259,7 @@ QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharF
             charFormat.setBackground(QBrush(QColor(colors.at(0).trimmed().toInt(),
                                                    colors.at(1).trimmed().toInt(),
                                                    colors.at(2).trimmed().toInt())));
-            qDebug()<<"BackgroundColor : "<<colors.at(0).trimmed().toInt()<<", "<<colors.at(1).trimmed().toInt()<<", "<<colors.at(2).trimmed().toInt();
+            DEBUG_THEME_PARSER(qDebug()<<"BackgroundColor : "<<colors.at(0).trimmed().toInt()<<", "<<colors.at(1).trimmed().toInt()<<", "<<colors.at(2).trimmed().toInt());
         }
         else if(!pattern.capturedTexts().at(1).compare("font"))
         {
@@ -263,22 +267,22 @@ QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharF
             if(pattern.capturedTexts().last().contains("bold",Qt::CaseInsensitive))
             {
                 font.setBold(QFont::Bold);
-                qDebug()<<"Bold : bold";
+                DEBUG_THEME_PARSER(qDebug()<<"Bold : bold");
             }
             else if(pattern.capturedTexts().last().contains("normal",Qt::CaseInsensitive))
             {
                 font.setBold(QFont::Normal);
-                qDebug()<<"Bold : normal";
+                DEBUG_THEME_PARSER(qDebug()<<"Bold : normal");
             }
             if(pattern.capturedTexts().last().indexOf(familyPattern) != -1)
             {
                 font.setFamily(familyPattern.capturedTexts().last());
-                qDebug()<<"Family : "<<familyPattern.capturedTexts().last();
+                DEBUG_THEME_PARSER(qDebug()<<"Family : "<<familyPattern.capturedTexts().last());
             }
             if(pattern.capturedTexts().last().indexOf(pointSizePattern) != -1)
             {
                 font.setPointSize(pointSizePattern.capturedTexts().last().toInt());
-                qDebug()<<"PointSize : "<<pointSizePattern.capturedTexts().last().toInt();
+                DEBUG_THEME_PARSER(qDebug()<<"PointSize : "<<pointSizePattern.capturedTexts().last().toInt());
             }
             charFormat.setFont(font);
         }
@@ -327,7 +331,6 @@ QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharF
 
 void ConfigManager::changePointSizeBy(int delta)
 {
-    qDebug()<<"fontSize Changed";
     foreach(const QString &key, this->textCharFormats->keys())
     {
         QTextCharFormat format(this->textCharFormats->value(key));
@@ -340,7 +343,6 @@ void ConfigManager::changePointSizeBy(int delta)
 
 void ConfigManager::setPointSize(int size)
 {
-    qDebug()<<"fontSize Changed";
     foreach(const QString &key, this->textCharFormats->keys())
     {
         QTextCharFormat format(this->textCharFormats->value(key));
@@ -363,7 +365,7 @@ void ConfigManager::save()
 #endif
     if(dataLocation.isEmpty())
     {
-            QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
+            //QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
             return;
     }
     if(!dir.exists(dataLocation))
@@ -390,7 +392,7 @@ void ConfigManager::save()
 }
 
 
-bool ConfigManager::load()
+bool ConfigManager::load(QString theme)
 {
     QDir dir;
     QString dataLocation("");
@@ -404,10 +406,20 @@ bool ConfigManager::load()
             //QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
             return false;
     }
-
-    QSettings settings;
-    settings.beginGroup("theme");
-    QSettings file(dataLocation+dir.separator()+settings.value("theme").toString()+".sim-theme",QSettings::IniFormat);
+    if(theme.isEmpty())
+    {
+        QSettings settings;
+        settings.beginGroup("theme");
+        theme = settings.value("theme").toString();
+    }
+    else
+    {
+        QSettings settings;
+        settings.beginGroup("theme");
+        settings.setValue("theme",theme);
+    }
+    this->_theme = theme;
+    QSettings file(dataLocation+dir.separator()+theme+".sim-theme",QSettings::IniFormat);
 
     if(!file.contains("normal"))
     {
@@ -431,4 +443,36 @@ bool ConfigManager::load()
 
 }
 
+void ConfigManager::openThemeFolder()
+{
+    QString dataLocation;
+#if QT_VERSION < 0x050000
+    dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#else
+    dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+#endif
+    if(dataLocation.isEmpty())
+    {
+            return;
+    }
+
+    QDesktopServices::openUrl(QUrl("file:///" + dataLocation));
+}
+
+QStringList ConfigManager::themesList()
+{
+    QString dataLocation("");
+#if QT_VERSION < 0x050000
+    dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#else
+    dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+#endif
+    if(dataLocation.isEmpty())
+    {
+            //QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
+        return QStringList();
+    }
+    QDir dir(dataLocation);
+    return dir.entryList(QDir::Files | QDir::Readable, QDir::Name).filter(QRegExp("\\.sim-theme"));
+}
 

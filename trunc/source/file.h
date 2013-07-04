@@ -63,7 +63,7 @@ public:
      * @return the line number corresponding to the file when it was builded
      */
     int getBuildedLine(int block) {
-        //qDebug()<<"getLine : "<<line<<" : "<<this->_lineNumberSinceLastBuild.value(line,-1);
+        //qDebug()<<"getLine : "<<block<<" : "<<this->_lineNumberSinceLastBuild.value(block,-1);
         // convert block to line : + 1
         return this->_lineNumberSinceLastBuild.value(block, block) + 1;
     }

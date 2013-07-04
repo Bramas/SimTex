@@ -29,6 +29,7 @@ INPUT(
 ./debug\moc_builder.o
 ./debug\moc_dialogwelcome.o
 ./debug\moc_dialogconfig.o
+./debug\moc_configmanager.o
 ./debug\moc_viewer.o
 ./debug\moc_widgetpdfdocument.o
 ./debug\moc_widgetpdfviewer.o

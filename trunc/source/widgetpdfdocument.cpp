@@ -108,6 +108,13 @@ void WidgetPdfDocument::initDocument()
     {
         return;
     }
+
+    if(_pages)
+    {
+        this->refreshPages();
+        delete _pages;
+    }
+
     if(_document)
     {
         delete _document;
@@ -125,11 +132,7 @@ void WidgetPdfDocument::initDocument()
     _document->setRenderHint(Poppler::Document::Antialiasing);
     _document->setRenderHint(Poppler::Document::TextAntialiasing);
 
-    if(_pages)
-    {
-        this->refreshPages();
-        delete _pages;
-    }
+
     _pages = new QImage*[_document->numPages()];
 
     if(_loadedPages)
@@ -149,7 +152,8 @@ void WidgetPdfDocument::initDocument()
     scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
 
 
-    jumpToPdfFromSource(_file->getFilename(),_widgetTextEdit->textCursor().blockNumber());
+    //jumpToPdfFromSource(_file->getFilename(),_widgetTextEdit->textCursor().blockNumber());
+    update();
 }
 
 void WidgetPdfDocument::initScroll()
@@ -402,13 +406,19 @@ void WidgetPdfDocument::jumpToPdfFromSourceView(int firstVisibleBlock, int i)
 {
     if(!this->_widgetTextEdit->isCursorVisible() && _file)
     {
-        this->jumpToPdfFromSource(this->_file->getFilename(),firstVisibleBlock);
+        this->jumpToPdfFromSource(firstVisibleBlock);
     }
 }
 
-void WidgetPdfDocument::jumpToPdfFromSource(QString sourceFile, int source_line)
+void WidgetPdfDocument::jumpToPdfFromSource(int source_line)
 {
     if (!_file) return;
+
+    if(source_line == -1)
+    {
+        source_line = this->_widgetTextEdit->textCursor().blockNumber();
+    }
+    QString sourceFile = this->_file->getFilename();
 
     if (scanner == NULL)
     {
@@ -416,6 +426,11 @@ void WidgetPdfDocument::jumpToPdfFromSource(QString sourceFile, int source_line)
     }
 
     source_line = this->_file->getBuildedLine(source_line);
+
+    if(source_line < 0 || source_line >= this->_widgetTextEdit->document()->blockCount())
+    {
+        return;
+    }
 
     const QFileInfo sourceFileInfo(sourceFile);
     QDir curDir(QFileInfo(this->_file->getPdfFilename()).canonicalPath());

@@ -63,7 +63,7 @@ signals:
     void translated(int);
 public slots:
     void jumpToPdfFromSourceView(int firstVisibleBlock, int);
-    void jumpToPdfFromSource(QString sourceFile, int source_line);
+    void jumpToPdfFromSource(int source_line = -1);
     void zoomIn();
     void zoomOut();
     void zoom(qreal factor, QPoint target = QPoint(0,0));

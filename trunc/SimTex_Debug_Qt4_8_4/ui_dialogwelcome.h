@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'dialogwelcome.ui'
 **
-** Created: Thu 27. Jun 22:05:46 2013
+** Created: Thu 4. Jul 21:54:19 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

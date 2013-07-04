@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetpdfdocument.h'
 **
-** Created: Wed 3. Jul 17:35:01 2013
+** Created: Thu 4. Jul 23:24:56 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_WidgetPdfDocument[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -35,14 +35,15 @@ static const uint qt_meta_data_WidgetPdfDocument[] = {
 
  // slots: signature, parameters, type, tag, flags
       54,   35,   18,   18, 0x0a,
-     110,   87,   18,   18, 0x0a,
-     143,   18,   18,   18, 0x0a,
-     152,   18,   18,   18, 0x0a,
-     176,  162,   18,   18, 0x0a,
-     202,  195,   18,   18, 0x2a,
-     214,   18,   18,   18, 0x0a,
-     226,   18,   18,   18, 0x0a,
-     245,  239,   18,   18, 0x0a,
+      99,   87,   18,   18, 0x0a,
+     124,   18,   18,   18, 0x2a,
+     146,   18,   18,   18, 0x0a,
+     155,   18,   18,   18, 0x0a,
+     179,  165,   18,   18, 0x0a,
+     205,  198,   18,   18, 0x2a,
+     217,   18,   18,   18, 0x0a,
+     229,   18,   18,   18, 0x0a,
+     248,  242,   18,   18, 0x0a,
 
        0        // eod
 };
@@ -50,12 +51,11 @@ static const uint qt_meta_data_WidgetPdfDocument[] = {
 static const char qt_meta_stringdata_WidgetPdfDocument[] = {
     "WidgetPdfDocument\0\0translated(int)\0"
     "firstVisibleBlock,\0jumpToPdfFromSourceView(int,int)\0"
-    "sourceFile,source_line\0"
-    "jumpToPdfFromSource(QString,int)\0"
-    "zoomIn()\0zoomOut()\0factor,target\0"
-    "zoom(qreal,QPoint)\0factor\0zoom(qreal)\0"
-    "updatePdf()\0initScroll()\0value\0"
-    "onScroll(int)\0"
+    "source_line\0jumpToPdfFromSource(int)\0"
+    "jumpToPdfFromSource()\0zoomIn()\0zoomOut()\0"
+    "factor,target\0zoom(qreal,QPoint)\0"
+    "factor\0zoom(qreal)\0updatePdf()\0"
+    "initScroll()\0value\0onScroll(int)\0"
 };
 
 void WidgetPdfDocument::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -66,14 +66,15 @@ void WidgetPdfDocument::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         switch (_id) {
         case 0: _t->translated((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 1: _t->jumpToPdfFromSourceView((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 2: _t->jumpToPdfFromSource((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 3: _t->zoomIn(); break;
-        case 4: _t->zoomOut(); break;
-        case 5: _t->zoom((*reinterpret_cast< qreal(*)>(_a[1])),(*reinterpret_cast< QPoint(*)>(_a[2]))); break;
-        case 6: _t->zoom((*reinterpret_cast< qreal(*)>(_a[1]))); break;
-        case 7: _t->updatePdf(); break;
-        case 8: _t->initScroll(); break;
-        case 9: _t->onScroll((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 2: _t->jumpToPdfFromSource((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 3: _t->jumpToPdfFromSource(); break;
+        case 4: _t->zoomIn(); break;
+        case 5: _t->zoomOut(); break;
+        case 6: _t->zoom((*reinterpret_cast< qreal(*)>(_a[1])),(*reinterpret_cast< QPoint(*)>(_a[2]))); break;
+        case 7: _t->zoom((*reinterpret_cast< qreal(*)>(_a[1]))); break;
+        case 8: _t->updatePdf(); break;
+        case 9: _t->initScroll(); break;
+        case 10: _t->onScroll((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -111,9 +112,9 @@ int WidgetPdfDocument::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 11;
     }
     return _id;
 }

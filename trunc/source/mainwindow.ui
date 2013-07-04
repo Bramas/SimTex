@@ -57,10 +57,17 @@
     <property name="title">
      <string>Fichier</string>
     </property>
+    <widget class="QMenu" name="menuOuvrir_R_cent">
+     <property name="title">
+      <string>Ouvrir Récent</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionDeleteLastOpenFiles"/>
+    </widget>
     <addaction name="actionNouveau"/>
     <addaction name="separator"/>
     <addaction name="actionOpen"/>
-    <addaction name="actionOpenRecent"/>
+    <addaction name="menuOuvrir_R_cent"/>
     <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
@@ -82,7 +89,15 @@
     <property name="title">
      <string>Options</string>
     </property>
+    <widget class="QMenu" name="menuTh_me">
+     <property name="title">
+      <string>Thème</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionOpenConfigFolder"/>
+    </widget>
     <addaction name="actionSettings"/>
+    <addaction name="menuTh_me"/>
    </widget>
    <widget class="QMenu" name="menuEdition">
     <property name="title">
@@ -157,11 +172,6 @@
     <string>Nouveau</string>
    </property>
   </action>
-  <action name="actionOpenRecent">
-   <property name="text">
-    <string>Ouvrir Récent</string>
-   </property>
-  </action>
   <action name="actionEncodage">
    <property name="text">
     <string>Encodage</string>
@@ -208,6 +218,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionOpenConfigFolder">
+   <property name="text">
+    <string>Ouvrir le dossier thème</string>
+   </property>
+  </action>
+  <action name="actionDeleteLastOpenFiles">
+   <property name="text">
+    <string>Supprimer l'historique</string>
    </property>
   </action>
  </widget>

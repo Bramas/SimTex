@@ -12,6 +12,7 @@ class WidgetConsole;
 class DialogWelcome;
 class DialogConfig;
 class QVBoxLayout;
+class SyntaxHighlighter;
 
 namespace Ui {
 class MainWindow;
@@ -32,6 +33,7 @@ public slots:
     void open(QString filename = "");
     void openLast(void);
     void focus(void);
+    void changeTheme(void);
 
 protected:
     void mousePressEvent(QMouseEvent *);
@@ -41,6 +43,7 @@ protected:
     
 private:
     Ui::MainWindow *ui;
+    void initTheme();
 
     WidgetLineNumber * widgetLineNumber;
     WidgetTextEdit * widgetTextEdit;
@@ -50,6 +53,7 @@ private:
     DialogWelcome * dialogWelcome;
     DialogConfig * dialogConfig;
     QVBoxLayout * _leftLayout;
+    SyntaxHighlighter * _syntaxHighlighter;
     int _editorWidth;
     bool _mousePressed;
     bool _resizeConsole;

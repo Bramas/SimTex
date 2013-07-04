@@ -3,6 +3,8 @@
 #include "configmanager.h"
 #include <QPainter>
 #include <QString>
+#include <QBrush>
+#include <QTextCharFormat>
 #include <QTextBlock>
 #include <QTextLayout>
 #include <QScrollBar>
@@ -17,11 +19,6 @@ WidgetLineNumber::WidgetLineNumber(QWidget *parent) :
 {
     this->scrollOffset = 0;
 
-    QPalette Pal(palette());
-    // set black background
-    Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats("linenumber").background().color());
-    this->setAutoFillBackground(true);
-    this->setPalette(Pal);
 
     /*this->setStyleSheet(QString("WidgetLineNumber { background-color: black")+//ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats()->value("linenumber").background().color())+
                         "; }");

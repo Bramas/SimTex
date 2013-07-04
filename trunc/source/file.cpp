@@ -94,6 +94,7 @@ const QString& File::open(QString filename, QString codec)
     }
     this->_codec = in.codec()->name();
     this->_widgetTextEdit->setText(this->data);
+    this->refreshLineNumber();
     _modified = false;
     return this->data;
 
@@ -102,6 +103,7 @@ const QString& File::open(QString filename, QString codec)
 void File::refreshLineNumber()
 {
     int lineNumber = this->_widgetTextEdit->document()->blockCount();
+    //qDebug()<<"refreshLineNumber "<<lineNumber;
     _lineNumberSinceLastBuild.clear();
     for(int idx = 0; idx < lineNumber; ++idx)
     {
@@ -110,6 +112,7 @@ void File::refreshLineNumber()
 }
 void File::insertLine(int lineNumber, int lineCount)
 {
+    //qDebug()<<"insertLine "<<lineNumber<<" : "<<lineCount;
     for(int idx = lineNumber; idx < _lineNumberSinceLastBuild.size(); ++idx)
     {
         _lineNumberSinceLastBuild.insert(idx,_lineNumberSinceLastBuild.value(idx) - lineCount);

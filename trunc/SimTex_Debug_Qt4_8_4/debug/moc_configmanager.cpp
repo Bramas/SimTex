@@ -1,15 +1,15 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'filestructure.h'
+** Meta object code from reading C++ file 'configmanager.h'
 **
-** Created: Wed 3. Jul 23:50:00 2013
+** Created: Thu 4. Jul 22:14:59 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../source/filestructure.h"
+#include "../../source/configmanager.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'filestructure.h' doesn't include <QObject>."
+#error "The header file 'configmanager.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 63
 #error "This file was generated using the moc from 4.8.4. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -17,7 +17,7 @@
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
-static const uint qt_meta_data_FileStructure[] = {
+static const uint qt_meta_data_ConfigManager[] = {
 
  // content:
        6,       // revision
@@ -36,50 +36,50 @@ static const uint qt_meta_data_FileStructure[] = {
        0        // eod
 };
 
-static const char qt_meta_stringdata_FileStructure[] = {
-    "FileStructure\0\0updateStructure()\0"
+static const char qt_meta_stringdata_ConfigManager[] = {
+    "ConfigManager\0\0openThemeFolder()\0"
 };
 
-void FileStructure::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void ConfigManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         Q_ASSERT(staticMetaObject.cast(_o));
-        FileStructure *_t = static_cast<FileStructure *>(_o);
+        ConfigManager *_t = static_cast<ConfigManager *>(_o);
         switch (_id) {
-        case 0: _t->updateStructure(); break;
+        case 0: _t->openThemeFolder(); break;
         default: ;
         }
     }
     Q_UNUSED(_a);
 }
 
-const QMetaObjectExtraData FileStructure::staticMetaObjectExtraData = {
+const QMetaObjectExtraData ConfigManager::staticMetaObjectExtraData = {
     0,  qt_static_metacall 
 };
 
-const QMetaObject FileStructure::staticMetaObject = {
-    { &QObject::staticMetaObject, qt_meta_stringdata_FileStructure,
-      qt_meta_data_FileStructure, &staticMetaObjectExtraData }
+const QMetaObject ConfigManager::staticMetaObject = {
+    { &QObject::staticMetaObject, qt_meta_stringdata_ConfigManager,
+      qt_meta_data_ConfigManager, &staticMetaObjectExtraData }
 };
 
 #ifdef Q_NO_DATA_RELOCATION
-const QMetaObject &FileStructure::getStaticMetaObject() { return staticMetaObject; }
+const QMetaObject &ConfigManager::getStaticMetaObject() { return staticMetaObject; }
 #endif //Q_NO_DATA_RELOCATION
 
-const QMetaObject *FileStructure::metaObject() const
+const QMetaObject *ConfigManager::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : &staticMetaObject;
 }
 
-void *FileStructure::qt_metacast(const char *_clname)
+void *ConfigManager::qt_metacast(const char *_clname)
 {
     if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_FileStructure))
-        return static_cast<void*>(const_cast< FileStructure*>(this));
+    if (!strcmp(_clname, qt_meta_stringdata_ConfigManager))
+        return static_cast<void*>(const_cast< ConfigManager*>(this));
     return QObject::qt_metacast(_clname);
 }
 
-int FileStructure::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int ConfigManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
