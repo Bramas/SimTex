@@ -367,7 +367,6 @@ void MainWindow::initTheme()
         this->ui->statusBar->setStyleSheet("QStatusBar {background: "+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
                                            "}");
     }
-    qDebug()<<"Background "<<ConfigManager::Instance.getTextCharFormats("normal").background().color();
     //this->widgetTextEdit->setPalette(QPalette(Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,ConfigManager::Instance.getTextCharFormats("normal").background().color()));
     this->widgetTextEdit->setStyleSheet(QString("QTextEdit { border: 1px solid ")+
                                         ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("textedit-border").foreground().color())+"; "+

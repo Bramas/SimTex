@@ -51,14 +51,14 @@ void WidgetLineNumber::updateWidth(int lineCount)
     font.setPointSize(ConfigManager::Instance.getTextCharFormats("linenumber").font().pointSize());
     QFontMetrics fm(font);
 
-    int width = fm.width("0") + 2;
-
+    int width = ConfigManager::Instance.getTextCharFormats("linenumber").font().pointSize();//fm.width("0") + 2;
     int ln = 1;
     while(lineCount >= 10)
     {
         lineCount /= 10;
         ++ln;
     }
+    qDebug()<<ln*width + 8;
     this->setMinimumWidth(ln*width + 8);
 
 }

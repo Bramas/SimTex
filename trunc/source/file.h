@@ -12,6 +12,7 @@
 class Viewer;
 class Builder;
 class WidgetTextEdit;
+class QTimer;
 class File : public QObject
 {
     Q_OBJECT
@@ -93,6 +94,12 @@ public:
         return this->getPath()+".simtex";//+dir.separator();
     }
 
+    QString getAutoSaveFilename()
+    {
+        QDir dir;
+        return this->getAuxPath()+dir.separator()+this->fileInfo().baseName()+"_autosave.tex";
+    }
+
     /**
      * @brief fileInfo
      * @return the file info
@@ -123,7 +130,15 @@ public:
 
     bool isModified() { return this->_modified; }
 
+
 public slots:
+    /**
+     * @brief autoSave
+     */
+    void autoSave();
+    /**
+     * @brief setModified
+     */
     void setModified() {
         this->_modified = true;
     }
@@ -142,6 +157,7 @@ private:
     WidgetTextEdit * _widgetTextEdit;
     bool _modified;
     QString _codec;
+    QTimer * _autoSaveTimer;
 
     QMap<int,int> _lineNumberSinceLastBuild;
 };

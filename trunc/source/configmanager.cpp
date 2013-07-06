@@ -54,7 +54,8 @@ ConfigManager::ConfigManager() :
         textCharFormats->insert("normal",charFormat);
     }
     return;
-/*    if(!settings.value("theme").toString().compare("dark"))
+    /*
+    if(!settings.value("theme").toString().compare("dark"))
     {
         //font.setBold(QFont::Normal);
         charFormat.setForeground(QColor(248,248,242));
@@ -154,7 +155,7 @@ ConfigManager::ConfigManager() :
         charFormat.setBackground(QColor(235,235,235));
         charFormat.setFont(font);
         textCharFormats->insert("leftStructure",charFormat);
-    }*/
+    }// */
 
 }
 void ConfigManager::setMainWindow(QWidget * mainWindow)
@@ -440,7 +441,7 @@ bool ConfigManager::load(QString theme)
         this->textCharFormats->insert(key, val);
     }
 
-
+    return true;
 }
 
 void ConfigManager::openThemeFolder()

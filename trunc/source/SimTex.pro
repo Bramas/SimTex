@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     widgetpdfviewer.cpp \
     completionengine.cpp \
     widgetconsole.cpp \
-    dialogclose.cpp
+    dialogclose.cpp \
+    widgetinsertcommand.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -55,13 +56,15 @@ HEADERS  += mainwindow.h \
     widgetpdfviewer.h \
     completionengine.h \
     widgetconsole.h \
-    dialogclose.h
+    dialogclose.h \
+    widgetinsertcommand.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
     dialogconfig.ui \
     widgetpdfviewer.ui \
-    dialogclose.ui
+    dialogclose.ui \
+    widgetinsertcommand.ui
 
 #LIBS         += -LG:\poppler -lpoppler-qt4
 #LIBS         += -LG:\poppler\cpp\bin -lpoppler-cpp

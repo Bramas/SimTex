@@ -10,6 +10,7 @@
 class FileStructure;
 class SyntaxHighlighter;
 class CompletionEngine;
+class WidgetInsertCommand;
 
 struct BlockInfo
 {
@@ -41,7 +42,7 @@ public:
 
     bool isCursorVisible();
     void setSyntaxHighlighter(SyntaxHighlighter * syntaxHighlighter) { this->_syntaxHighlighter = syntaxHighlighter; }
-    
+    void displayWidgetInsertCommand();
 signals:
     void updateFirstVisibleBlock(int,int);
     void updatedWithSameFirstVisibleBlock();
@@ -90,6 +91,7 @@ private:
     int textHeight;
     int firstVisibleBlock;
     int _lineCount;
+    WidgetInsertCommand * _widgetInsertCommand;
 
 
 };
