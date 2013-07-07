@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetpdfdocument.h'
 **
-** Created: Fri Jun 28 22:32:25 2013
+** Created: Sat Jul 6 20:58:48 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,33 +23,39 @@ static const uint qt_meta_data_WidgetPdfDocument[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       1,       // signalCount
+
+ // signals: signature, parameters, type, tag, flags
+      19,   18,   18,   18, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      38,   19,   18,   18, 0x0a,
-      94,   71,   18,   18, 0x0a,
-     127,   18,   18,   18, 0x0a,
-     136,   18,   18,   18, 0x0a,
-     160,  146,   18,   18, 0x0a,
-     186,  179,   18,   18, 0x2a,
-     198,   18,   18,   18, 0x0a,
+      54,   35,   18,   18, 0x0a,
+      99,   87,   18,   18, 0x0a,
+     124,   18,   18,   18, 0x2a,
+     146,   18,   18,   18, 0x0a,
+     155,   18,   18,   18, 0x0a,
+     179,  165,   18,   18, 0x0a,
+     205,  198,   18,   18, 0x2a,
+     217,   18,   18,   18, 0x0a,
+     229,   18,   18,   18, 0x0a,
+     248,  242,   18,   18, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_WidgetPdfDocument[] = {
-    "WidgetPdfDocument\0\0firstVisibleBlock,\0"
-    "jumpToPdfFromSourceView(int,int)\0"
-    "sourceFile,source_line\0"
-    "jumpToPdfFromSource(QString,int)\0"
-    "zoomIn()\0zoomOut()\0factor,target\0"
-    "zoom(qreal,QPoint)\0factor\0zoom(qreal)\0"
-    "updatePdf()\0"
+    "WidgetPdfDocument\0\0translated(int)\0"
+    "firstVisibleBlock,\0jumpToPdfFromSourceView(int,int)\0"
+    "source_line\0jumpToPdfFromSource(int)\0"
+    "jumpToPdfFromSource()\0zoomIn()\0zoomOut()\0"
+    "factor,target\0zoom(qreal,QPoint)\0"
+    "factor\0zoom(qreal)\0updatePdf()\0"
+    "initScroll()\0value\0onScroll(int)\0"
 };
 
 void WidgetPdfDocument::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -58,13 +64,17 @@ void WidgetPdfDocument::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         Q_ASSERT(staticMetaObject.cast(_o));
         WidgetPdfDocument *_t = static_cast<WidgetPdfDocument *>(_o);
         switch (_id) {
-        case 0: _t->jumpToPdfFromSourceView((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 1: _t->jumpToPdfFromSource((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 2: _t->zoomIn(); break;
-        case 3: _t->zoomOut(); break;
-        case 4: _t->zoom((*reinterpret_cast< qreal(*)>(_a[1])),(*reinterpret_cast< QPoint(*)>(_a[2]))); break;
-        case 5: _t->zoom((*reinterpret_cast< qreal(*)>(_a[1]))); break;
-        case 6: _t->updatePdf(); break;
+        case 0: _t->translated((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 1: _t->jumpToPdfFromSourceView((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 2: _t->jumpToPdfFromSource((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 3: _t->jumpToPdfFromSource(); break;
+        case 4: _t->zoomIn(); break;
+        case 5: _t->zoomOut(); break;
+        case 6: _t->zoom((*reinterpret_cast< qreal(*)>(_a[1])),(*reinterpret_cast< QPoint(*)>(_a[2]))); break;
+        case 7: _t->zoom((*reinterpret_cast< qreal(*)>(_a[1]))); break;
+        case 8: _t->updatePdf(); break;
+        case 9: _t->initScroll(); break;
+        case 10: _t->onScroll((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -102,10 +112,17 @@ int WidgetPdfDocument::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 11;
     }
     return _id;
+}
+
+// SIGNAL 0
+void WidgetPdfDocument::translated(int _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_END_MOC_NAMESPACE

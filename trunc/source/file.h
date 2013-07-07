@@ -1,3 +1,24 @@
+/***************************************************************************
+ *   copyright       : (C) 2013 by Quentin BRAMAS                          *
+ *   http://www.simtex.fr                                                  *
+ *                                                                         *
+ *   This file is part of SimTex.                                          *
+ *                                                                         *
+ *   SimTex is free software: you can redistribute it and/or modify        *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   SimTex is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with SimTex.  If not, see <http://www.gnu.org/licenses/>.       *                         *
+ *                                                                         *
+ ***************************************************************************/
+
 #ifndef FILE_H
 #define FILE_H
 
@@ -12,6 +33,7 @@
 class Viewer;
 class Builder;
 class WidgetTextEdit;
+class QTimer;
 class File : public QObject
 {
     Q_OBJECT
@@ -93,6 +115,12 @@ public:
         return this->getPath()+".simtex";//+dir.separator();
     }
 
+    QString getAutoSaveFilename()
+    {
+        QDir dir;
+        return this->getAuxPath()+dir.separator()+this->fileInfo().baseName()+"_autosave.tex";
+    }
+
     /**
      * @brief fileInfo
      * @return the file info
@@ -123,7 +151,15 @@ public:
 
     bool isModified() { return this->_modified; }
 
+
 public slots:
+    /**
+     * @brief autoSave
+     */
+    void autoSave();
+    /**
+     * @brief setModified
+     */
     void setModified() {
         this->_modified = true;
     }
@@ -142,6 +178,7 @@ private:
     WidgetTextEdit * _widgetTextEdit;
     bool _modified;
     QString _codec;
+    QTimer * _autoSaveTimer;
 
     QMap<int,int> _lineNumberSinceLastBuild;
 };

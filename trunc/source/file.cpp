@@ -1,3 +1,24 @@
+/***************************************************************************
+ *   copyright       : (C) 2013 by Quentin BRAMAS                          *
+ *   http://www.simtex.fr                                                  *
+ *                                                                         *
+ *   This file is part of SimTex.                                          *
+ *                                                                         *
+ *   SimTex is free software: you can redistribute it and/or modify        *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   SimTex is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with SimTex.  If not, see <http://www.gnu.org/licenses/>.       *                         *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "file.h"
 #include "builder.h"
 #include "viewer.h"
@@ -6,6 +27,8 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QTextCodec>
+#include <QTimer>
+#define AUTO_SAVE 120000
 
 File::File(WidgetTextEdit* widgetTextEdit,QString filename) :
     filename(filename),
@@ -13,8 +36,10 @@ File::File(WidgetTextEdit* widgetTextEdit,QString filename) :
     viewer(new Viewer(this)),
     _widgetTextEdit(widgetTextEdit),
     _codec(QTextCodec::codecForLocale()->name()),
-    _modified(false)
+    _modified(false),
+    _autoSaveTimer(new QTimer)
 {
+    connect(_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()));
 }
 void File::save(QString filename)
 {
@@ -44,6 +69,8 @@ void File::save(QString filename)
     out << this->data;
 
     _modified = false;
+    _autoSaveTimer->stop();
+    _autoSaveTimer->start(AUTO_SAVE);
 }
 
 const QString& File::open(QString filename, QString codec)
@@ -96,6 +123,8 @@ const QString& File::open(QString filename, QString codec)
     this->_widgetTextEdit->setText(this->data);
     this->refreshLineNumber();
     _modified = false;
+    _autoSaveTimer->stop();
+    _autoSaveTimer->start(AUTO_SAVE);
     return this->data;
 
 }
@@ -128,4 +157,18 @@ void File::insertLine(int lineNumber, int lineCount)
     }
 }
 
+void File::autoSave()
+{
+    if(this->filename.isEmpty())
+    {
+        return;
+    }
+    QFile file(this->getAutoSaveFilename());
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
 
+    QTextStream out(&file);
+    out.setCodec(_codec.toLatin1());
+    //out.setGenerateByteOrderMark(true);
+    out << this->data;
+}

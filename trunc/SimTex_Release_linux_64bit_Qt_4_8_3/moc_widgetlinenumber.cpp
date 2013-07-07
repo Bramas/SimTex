@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetlinenumber.h'
 **
-** Created: Fri Jun 28 22:32:19 2013
+** Created: Sat Jul 6 20:58:40 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_WidgetLineNumber[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -33,6 +33,7 @@ static const uint qt_meta_data_WidgetLineNumber[] = {
  // slots: signature, parameters, type, tag, flags
       20,   18,   17,   17, 0x0a,
       53,   18,   17,   17, 0x0a,
+      86,   76,   17,   17, 0x0a,
 
        0        // eod
 };
@@ -40,7 +41,8 @@ static const uint qt_meta_data_WidgetLineNumber[] = {
 static const char qt_meta_stringdata_WidgetLineNumber[] = {
     "WidgetLineNumber\0\0,\0"
     "updateFirstVisibleBlock(int,int)\0"
-    "setBlockRange(int,int)\0"
+    "setBlockRange(int,int)\0lineCount\0"
+    "updateWidth(int)\0"
 };
 
 void WidgetLineNumber::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -51,6 +53,7 @@ void WidgetLineNumber::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         switch (_id) {
         case 0: _t->updateFirstVisibleBlock((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 1: _t->setBlockRange((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 2: _t->updateWidth((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -88,9 +91,9 @@ int WidgetLineNumber::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }

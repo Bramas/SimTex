@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'file.h'
 **
-** Created: Sun Jun 30 15:24:07 2013
+** Created: Sun Jul 7 10:37:57 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_File[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       1,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -32,12 +32,14 @@ static const uint qt_meta_data_File[] = {
 
  // slots: signature, parameters, type, tag, flags
        6,    5,    5,    5, 0x0a,
+      17,    5,    5,    5, 0x0a,
+      31,    5,    5,    5, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_File[] = {
-    "File\0\0setModified()\0"
+    "File\0\0autoSave()\0setModified()\0create()\0"
 };
 
 void File::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -46,7 +48,9 @@ void File::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         Q_ASSERT(staticMetaObject.cast(_o));
         File *_t = static_cast<File *>(_o);
         switch (_id) {
-        case 0: _t->setModified(); break;
+        case 0: _t->autoSave(); break;
+        case 1: _t->setModified(); break;
+        case 2: _t->create(); break;
         default: ;
         }
     }
@@ -85,9 +89,9 @@ int File::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 1)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 1;
+        _id -= 3;
     }
     return _id;
 }

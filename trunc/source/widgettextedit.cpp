@@ -1,4 +1,26 @@
+/***************************************************************************
+ *   copyright       : (C) 2013 by Quentin BRAMAS                          *
+ *   http://www.simtex.fr                                                  *
+ *                                                                         *
+ *   This file is part of SimTex.                                          *
+ *                                                                         *
+ *   SimTex is free software: you can redistribute it and/or modify        *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation, either version 3 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   SimTex is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with SimTex.  If not, see <http://www.gnu.org/licenses/>.       *                         *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "widgettextedit.h"
+#include "widgetinsertcommand.h"
 #include "configmanager.h"
 #include "file.h"
 #include "viewer.h"
@@ -35,7 +57,8 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     _lineCount(0),
     _syntaxHighlighter(0),
     _completionEngine(new CompletionEngine(this)),
-    _indentationInited(false)
+    _indentationInited(false),
+    _widgetInsertCommand(new WidgetInsertCommand(this))
 
 {
     blocksInfo[0].height = -1;
@@ -185,7 +208,8 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
 {
     if(e->key() == Qt::Key_Space && (e->modifiers() & Qt::CTRL))
     {
-        this->matchCommand();
+        //this->matchCommand();
+        this->displayWidgetInsertCommand();
         return;
     }
     if(this->_completionEngine->isVisible() && e->key() == Qt::Key_Down)
@@ -218,14 +242,19 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
             this->setTextCursor(cur);
             return;
         }
+        cur.beginEditBlock();
         cur.setPosition(start);
         cur.insertText(QString::fromUtf8("$"));
         cur.setPosition(end+1);
+        cur.endEditBlock();
+        cur.beginEditBlock();
         cur.insertText(QString::fromUtf8("$"));
+
         if(end == start)
         {
             cur.movePosition(QTextCursor::Left);
         }
+        cur.endEditBlock();
         this->setTextCursor(cur);
         return;
     }
@@ -503,37 +532,64 @@ void WidgetTextEdit::matchAll()
     this->matchLat();
 }
 
+void WidgetTextEdit::displayWidgetInsertCommand()
+{
+    QTextLine line = this->textCursor().block().layout()->lineForTextPosition(this->textCursor().positionInBlock());
+    qreal left = line.cursorToX(this->textCursor().positionInBlock());
+    qreal top = line.position().y() + line.height() + 5;
+    QRect geo = _widgetInsertCommand->geometry();
+    geo.moveTo(QPoint(0, top + this->blockTop(this->textCursor().block())-this->verticalScrollBar()->value()));
+    if(geo.bottom() > this->height())
+    {
+        geo.translate(QPoint(0,-geo.height()-line.height()));
+    }
+    _widgetInsertCommand->setGeometry(geo);
+    _widgetInsertCommand->setVisible(true);
+    this->_widgetInsertCommand->show();
+
+}
+
 void WidgetTextEdit::matchCommand()
 {
     QRegExp command("\\\\[a-zA-Z\\{\\-_]+$");
+    QRegExp beginCommand("\\\\begin\\{([^\\}]+)\\}$");
     int pos = this->textCursor().positionInBlock();
     QString possibleCommand = this->textCursor().block().text().left(pos);
 
 
     if(possibleCommand.indexOf(command) != -1) // the possibleCommand is a command
     {
-        QFontMetrics fm(ConfigManager::Instance.getTextCharFormats("normal").font());
-        /*double widthD = double(fm.width(possibleCommand)) / double(this->blockWidth(this->textCursor().block()));
-        qDebug()<<"command "<<fm.width(possibleCommand)<<" => "<<widthD<<", "<<fm.height();
-        int widthI = floor(widthD);
-        widthD -= widthI;
-        widthD *= this->blockWidth(this->textCursor().block());
-        ++widthI;
-        widthI *= fm.height() + 2;
-        widthI += 4;*/
+        //QFontMetrics fm(ConfigManager::Instance.getTextCharFormats("normal").font());
+        int length = command.matchedLength();
+        possibleCommand = possibleCommand.right(length);
 
-        //QRect rect = fm.boundingRect (0,0,this->blockWidth(this->textCursor().block()),9999999, Qt::TextWordWrap | Qt::AlignLeft, possibleCommand);
-
-        //qDebug()<<"command "<<rect.width()<<" , "<<rect.height();
         QTextLine line = this->textCursor().block().layout()->lineForTextPosition(this->textCursor().positionInBlock());
         qreal left = line.cursorToX(this->textCursor().positionInBlock());
         qreal top = line.position().y() + line.height() + 5;
-        int length = command.matchedLength();
-        this->_completionEngine->proposeCommand(left,top + this->blockTop(this->textCursor().block())-this->verticalScrollBar()->value(),possibleCommand.right(length));
+        this->_completionEngine->proposeCommand(left,top + this->blockTop(this->textCursor().block())-this->verticalScrollBar()->value(),possibleCommand);
         if(this->_completionEngine->isVisible())// && e->key() == Qt::Key_Down)
         {
             this->_completionEngine->setFocus();
         }
+    }
+    else if(possibleCommand.indexOf(beginCommand) != -1)
+    {
+        QString environment = beginCommand.capturedTexts().last();
+        QString endCommand(QString("\\end{")+environment+"}");
+        QTextCursor cur = this->textCursor();
+        int start = cur.selectionStart();
+        cur.clearSelection();
+        QTextBlock nextBlock = this->textCursor().block().next().next();
+        if(nextBlock.isValid() && nextBlock.text().contains(endCommand))
+        {
+            return;
+        }
+        cur.insertText("\n    ");
+        cur.beginEditBlock();
+        cur.insertText(QString("\n")+endCommand);
+        cur.setPosition(start+5);
+        cur.endEditBlock();
+        this->setTextCursor(cur);
     }
 
 }
