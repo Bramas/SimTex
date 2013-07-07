@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'dialogclose.h'
 **
-** Created: Fri Jul 5 23:01:56 2013
+** Created: Sat Jul 6 20:58:52 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!

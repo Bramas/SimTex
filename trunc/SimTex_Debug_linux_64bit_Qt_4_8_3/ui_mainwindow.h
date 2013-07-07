@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri Jul 5 20:05:57 2013
+** Created: Sun Jul 7 11:19:38 2013
 **      by: Qt User Interface Compiler version 4.8.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -112,7 +112,7 @@ public:
         MainWindow->setCentralWidget(gridLayoutWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 991, 21));
+        menuBar->setGeometry(QRect(0, 0, 991, 25));
         menuFichier = new QMenu(menuBar);
         menuFichier->setObjectName(QString::fromUtf8("menuFichier"));
         menuOuvrir_R_cent = new QMenu(menuFichier);
@@ -192,6 +192,7 @@ public:
         actionCopy->setText(QApplication::translate("MainWindow", "Copier", 0, QApplication::UnicodeUTF8));
         actionPaste->setText(QApplication::translate("MainWindow", "Coller", 0, QApplication::UnicodeUTF8));
         actionFindReplace->setText(QApplication::translate("MainWindow", "Rechercher / Remplacer", 0, QApplication::UnicodeUTF8));
+        actionFindReplace->setShortcut(QApplication::translate("MainWindow", "Ctrl+F", 0, QApplication::UnicodeUTF8));
         actionView->setText(QApplication::translate("MainWindow", "Voir le pdf", 0, QApplication::UnicodeUTF8));
         actionView->setShortcut(QApplication::translate("MainWindow", "Ctrl+D", 0, QApplication::UnicodeUTF8));
         actionOpenConfigFolder->setText(QApplication::translate("MainWindow", "Ouvrir le dossier th\303\250me", 0, QApplication::UnicodeUTF8));

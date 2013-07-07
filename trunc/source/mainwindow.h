@@ -34,6 +34,7 @@ class DialogWelcome;
 class DialogConfig;
 class QVBoxLayout;
 class SyntaxHighlighter;
+class WidgetFindReplace;
 
 namespace Ui {
 class MainWindow;
@@ -55,7 +56,8 @@ public slots:
     void openLast(void);
     void focus(void);
     void changeTheme(void);
-
+    void openFindReplaceWidget(void);
+    void closeFindReplaceWidget(void);
 protected:
     void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
@@ -71,6 +73,7 @@ private:
     WidgetScroller * widgetScroller;
     WidgetPdfViewer * _widgetPdfViewer;
     WidgetConsole * _widgetConsole;
+    WidgetFindReplace * _widgetFindReplace;
     DialogWelcome * dialogWelcome;
     DialogConfig * dialogConfig;
     QVBoxLayout * _leftLayout;

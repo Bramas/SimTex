@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetinsertcommand.h'
 **
-** Created: Fri Jul 5 21:29:52 2013
+** Created: Sun Jul 7 10:38:06 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!

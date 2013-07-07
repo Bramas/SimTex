@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetpdfviewer.h'
 **
-** Created: Fri Jun 28 17:21:01 2013
+** Created: Sun Jul 7 10:38:03 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!

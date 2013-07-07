@@ -34,6 +34,7 @@
 #include "viewer.h"
 #include "widgetpdfdocument.h"
 #include "dialogclose.h"
+#include "widgetfindreplace.h"
 
 #include <QAction>
 #include <QList>
@@ -71,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _widgetPdfViewer->widgetPdfDocument()->setWidgetTextEdit(widgetTextEdit);
     _syntaxHighlighter = new SyntaxHighlighter(widgetTextEdit);
     widgetTextEdit->setSyntaxHighlighter(_syntaxHighlighter);
+    _widgetFindReplace = new WidgetFindReplace(widgetTextEdit);
 
     // Load settings
 
@@ -108,7 +110,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->actionCut, SIGNAL(triggered()), this->widgetTextEdit, SLOT(cut()));
     connect(this->ui->actionPaste, SIGNAL(triggered()), this->widgetTextEdit, SLOT(paste()));
     connect(this->ui->actionOpenConfigFolder, SIGNAL(triggered()), &ConfigManager::Instance, SLOT(openThemeFolder()));
-
+    connect(this->ui->actionFindReplace, SIGNAL(triggered()), this, SLOT(openFindReplaceWidget()));
+    connect(_widgetFindReplace->pushButtonClose(), SIGNAL(clicked()), this, SLOT(closeFindReplaceWidget()));
+    this->closeFindReplaceWidget();
     connect(this->ui->actionPdfLatex,SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getBuilder(),SLOT(pdflatex()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(pdfChanged()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(updatePdf()));
     connect(this->ui->actionView, SIGNAL(triggered()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(jumpToPdfFromSource()));
@@ -148,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->_leftLayout->setSpacing(4);
     this->_leftLayout->addWidget(this->widgetTextEdit);
+    this->_leftLayout->addWidget(this->_widgetFindReplace);
     this->_leftLayout->addWidget(this->_widgetConsole);
 
     ui->gridLayout->setColumnMinimumWidth(0,40);
@@ -294,7 +299,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
         this->setCursor(Qt::SizeHorCursor);
 
 
-        if(_mousePressed)
+        if(_mousePressed && event->pos().x() > 500)
         {
             this->ui->gridLayout->setColumnMinimumWidth(2,this->width()-event->pos().x());
             //qDebug()<<this->width()-event->pos().x();
@@ -405,4 +410,16 @@ void MainWindow::initTheme()
         this->widgetLineNumber->setAutoFillBackground(true);
         this->widgetLineNumber->setPalette(Pal);
     }
+}
+
+void MainWindow::openFindReplaceWidget()
+{
+    this->_widgetFindReplace->setMaximumHeight(110);
+    this->_widgetFindReplace->setMinimumHeight(110);
+}
+
+void MainWindow::closeFindReplaceWidget()
+{
+    this->_widgetFindReplace->setMaximumHeight(0);
+    this->_widgetFindReplace->setMinimumHeight(0);
 }
