@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'widgetfindreplace.h'
 **
-** Created: Sun Jul 7 10:36:32 2013
+** Created: Sun Jul 7 17:24:43 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_WidgetFindReplace[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       6,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -31,16 +31,20 @@ static const uint qt_meta_data_WidgetFindReplace[] = {
        0,       // signalCount
 
  // slots: signature, parameters, type, tag, flags
-      24,   19,   18,   18, 0x0a,
-      34,   18,   18,   18, 0x2a,
-      41,   18,   18,   18, 0x0a,
+      42,   24,   19,   18, 0x0a,
+      62,   57,   19,   18, 0x2a,
+      72,   18,   19,   18, 0x2a,
+      79,   18,   18,   18, 0x0a,
+      89,   18,   19,   18, 0x0a,
+     106,   18,   18,   18, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_WidgetFindReplace[] = {
-    "WidgetFindReplace\0\0from\0find(int)\0"
-    "find()\0replace()\0"
+    "WidgetFindReplace\0\0bool\0from,canStartOver\0"
+    "find(int,bool)\0from\0find(int)\0find()\0"
+    "replace()\0replaceAndFind()\0replaceAll()\0"
 };
 
 void WidgetFindReplace::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -49,9 +53,16 @@ void WidgetFindReplace::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         Q_ASSERT(staticMetaObject.cast(_o));
         WidgetFindReplace *_t = static_cast<WidgetFindReplace *>(_o);
         switch (_id) {
-        case 0: _t->find((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 1: _t->find(); break;
-        case 2: _t->replace(); break;
+        case 0: { bool _r = _t->find((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2])));
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
+        case 1: { bool _r = _t->find((*reinterpret_cast< int(*)>(_a[1])));
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
+        case 2: { bool _r = _t->find();
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
+        case 3: _t->replace(); break;
+        case 4: { bool _r = _t->replaceAndFind();
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
+        case 5: _t->replaceAll(); break;
         default: ;
         }
     }
@@ -89,9 +100,9 @@ int WidgetFindReplace::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 6;
     }
     return _id;
 }

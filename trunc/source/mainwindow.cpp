@@ -416,6 +416,7 @@ void MainWindow::openFindReplaceWidget()
 {
     this->_widgetFindReplace->setMaximumHeight(110);
     this->_widgetFindReplace->setMinimumHeight(110);
+    this->_widgetFindReplace->open();
 }
 
 void MainWindow::closeFindReplaceWidget()

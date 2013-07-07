@@ -2,6 +2,7 @@
 #include "ui_widgetfindreplace.h"
 #include "widgettextedit.h"
 #include <QDebug>
+#include <QString>
 
 WidgetFindReplace::WidgetFindReplace(WidgetTextEdit *parent) :
     QWidget(parent),
@@ -17,6 +18,8 @@ WidgetFindReplace::WidgetFindReplace(WidgetTextEdit *parent) :
     connect(ui->pushButtonReplaceAndFind, SIGNAL(clicked()), this, SLOT(replaceAndFind()));
     connect(ui->pushButtonReplaceAll, SIGNAL(clicked()), this, SLOT(replaceAll()));
 
+    connect(ui->lineEditFind, SIGNAL(returnPressed()), this, SLOT(find()));
+
 }
 
 WidgetFindReplace::~WidgetFindReplace()
@@ -27,6 +30,20 @@ WidgetFindReplace::~WidgetFindReplace()
 QPushButton * WidgetFindReplace::pushButtonClose()
 {
     return ui->pushButtonClose;
+}
+void WidgetFindReplace::open()
+{
+    this->ui->lineEditFind->setFocus();
+    QString selectedText = _widgetTextEdit->textCursor().selectedText();
+    if(!selectedText.isEmpty())
+    {
+        this->ui->lineEditFind->setText(selectedText);
+        this->ui->lineEditFind->selectAll();
+    }
+    else
+    {
+        this->ui->lineEditFind->setText("");
+    }
 }
 
 bool WidgetFindReplace::find(int from, bool canStartOver)

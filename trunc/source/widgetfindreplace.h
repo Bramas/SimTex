@@ -18,6 +18,7 @@ public:
     ~WidgetFindReplace();
 
     QPushButton * pushButtonClose();
+    void open();
 
 public slots:
     bool find(int from = -1, bool canStartOver = true);
