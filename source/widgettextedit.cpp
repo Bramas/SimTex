@@ -52,7 +52,7 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     updatingIndentation(false),
     currentFile(new File(this)),
     textHeight(0),
-    firstVisibleBlock(0),
+    _firstVisibleBlock(0),
     blocksInfo(new BlockInfo[1]),
     _lineCount(0),
     _syntaxHighlighter(0),
@@ -69,7 +69,6 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     connect(this,SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
     //connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(update()));
     connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this->viewport(),SLOT(update()));
-    connect(this->document()->documentLayout(), SIGNAL(updateBlock(QTextBlock)), this, SLOT(onBlockUpdate(QTextBlock)));
 
     //this->setCurrentFont(QFont("Consolas", 17));
     //this->setCurrentFont(QFont("Consolas", 17));
@@ -181,24 +180,15 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     }
 
 
-
     if(this->blocksInfo[0].height != -1)
     {
-        int lastFirstVisibleBlock = this->firstVisibleBlock;
-        this->firstVisibleBlock = -1;
-        for(int i=1; i< this->document()->blockCount(); ++i)
-        {
-            //qDebug()<<"block "<<i<<" top : "<<blocksInfo[i].top<<" height : "<<blocksInfo[i].height<<"  scroll : "<<this->verticalScrollBar()->value();
-            if(this->firstVisibleBlock == -1 && blockTop(i)+blockHeight(i) > scrollHeight)
-            {
-                this->firstVisibleBlock = i;
-                //qDebug()<<this->firstVisibleBlock<<" , "<<blockTop(i)<<"+"<<blockHeight(i)<<" > "<<scrollHeight;
-            }
+        int lastFirstVisibleBlock = _firstVisibleBlock;
+        _firstVisibleBlock = -1;
 
-        }
-        if(lastFirstVisibleBlock != this->firstVisibleBlock)
+        this->_firstVisibleBlock = this->firstVisibleBlock().blockNumber();
+        if(lastFirstVisibleBlock != _firstVisibleBlock)
         {
-            emit updateFirstVisibleBlock(this->firstVisibleBlock,blocksInfo[this->firstVisibleBlock].top);
+            emit updateFirstVisibleBlock(_firstVisibleBlock,blockBoundingGeometry(this->firstVisibleBlock()).translated(contentOffset()).top());
         }
         else
         {
@@ -206,12 +196,6 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
         }
     }
 
-}
-void WidgetTextEdit::onBlockUpdate(const QTextBlock &textBlock)
-{
-    qDebug()<<"update "<<textBlock.blockNumber();
-    blocksInfo[textBlock.blockNumber()].top = textBlock.layout()->boundingRect().top();
-    blocksInfo[textBlock.blockNumber()].height = textBlock.layout()->boundingRect().height();
 }
 
 int WidgetTextEdit::scrollHeight()
@@ -423,7 +407,7 @@ void WidgetTextEdit::initIndentation(void)
     blocksInfo[0].top = 0;
     blocksInfo[0].height = this->blockHeight(textBlock);
     blocksInfo[0].position = 0;
-    this->firstVisibleBlock = -1;
+    _firstVisibleBlock = -1;
     this->_lastInitiedBlock = this->document()->blockCount();
     for(int i=1; i< this->document()->blockCount(); ++i)
     {
@@ -504,7 +488,7 @@ void WidgetTextEdit::updateIndentation(void)
     blocksInfo[0].top = 0;
     blocksInfo[0].height = this->blockHeight(textBlock);
     blocksInfo[0].position = 0;
-     this->firstVisibleBlock = -1;
+     _firstVisibleBlock = -1;
     //qDebug()<<"block Count "<<this->document()->blockCount();
     this->_lastInitiedBlock = this->document()->blockCount();
    for(int i=1; i < this->document()->blockCount(); ++i)

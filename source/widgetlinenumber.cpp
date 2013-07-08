@@ -101,7 +101,6 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
     QFontMetrics fm(font);
     painter.setFont(font);
 
-    QTextBlock textBlock = widgetTextEdit->document()->findBlockByNumber(this->firstVisibleBlock);
 
     //qDebug()<<"line";
     int l;
@@ -120,44 +119,56 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
 
     int right = this->width()-5;
     int fontHeight = fm.height();
-    int cumulatedPosition = this->firstVisibleBlockTop;
-    if(this->firstVisibleBlock == 1)
+    /*
+    int top = widgetTextEdit->blockTop(firstVisibleBlock);
+    int bottom = top + widgetTextEdit->blockHeight(firstVisibleBlock);
+    QTextBlock textBlock = widgetTextEdit->document()->findBlockByNumber(this->firstVisibleBlock);
+
+    for(l = this->firstVisibleBlock; l < widgetTextEdit->document()->blockCount(); ++l)
     {
-        painter.drawText(0, this->scrollOffset+5, right-9, fontHeight, Qt::AlignRight, QString::number(1));
-    }
-    this->firstVisibleBlock;
-    for(l = this->firstVisibleBlock+1; l <= widgetTextEdit->document()->blockCount(); ++l)
-    {
-        //qDebug()<<l;//<<"  "<<this->widgetTextEdit->blockGeometry(textBlock).bottom();
-        //if(this->widgetTextEdit->blockBottom(textBlock) < this->widgetTextEdit->verticalScrollBar()->value())//  !textBlock.isVisible())
-        //{
-        //    textBlock = textBlock.next();
-        //    continue;
-        //}
-        if(!textBlock.isValid() || cumulatedPosition - this->firstVisibleBlockTop > this->height())
+        if(!textBlock.isValid() || top > this->height())
         {
             break;
         }
-        painter.drawText(0,this->scrollOffset+cumulatedPosition+5, right-9, fontHeight, Qt::AlignRight, QString::number(l));
+        painter.drawText(0,top+5+fontHeight, right-9, fontHeight, Qt::AlignRight, QString::number(l+1));
         if(l == _startBlock + 1)
         {
             painter.setPen(blockRangePen);
-            painter.drawLine(right,this->scrollOffset+cumulatedPosition+15,right,this->scrollOffset+cumulatedPosition+widgetTextEdit->blockHeight(textBlock));
-            painter.drawRect(right-3,this->scrollOffset+cumulatedPosition+10,6,6);
+            painter.drawLine(right,this->scrollOffset+top+15,right,this->scrollOffset+top+widgetTextEdit->blockHeight(textBlock));
+            painter.drawRect(right-3,this->scrollOffset+top+10,6,6);
             painter.setPen(defaultPen);
         }
         if(l > _startBlock + 1 && l < _endBlock + 2)
         {
             painter.setPen(blockRangePen);
-            painter.drawLine(right,this->scrollOffset+cumulatedPosition,right,this->scrollOffset+cumulatedPosition+widgetTextEdit->blockHeight(textBlock));
+            painter.drawLine(right,this->scrollOffset+top,right,this->scrollOffset+top+widgetTextEdit->blockHeight(textBlock));
             painter.setPen(defaultPen);
         }
 
-        cumulatedPosition += widgetTextEdit->blockHeight(textBlock);
+        top = bottom;
+        bottom = top + widgetTextEdit->blockHeight(textBlock);
         textBlock = textBlock.next();
     }
+*/
+    QTextBlock block = widgetTextEdit->document()->findBlockByNumber(this->firstVisibleBlock);
+    int blockNumber = firstVisibleBlock;
+    int top = widgetTextEdit->blockAbsoluteTop(block);
+    int bottom = top + widgetTextEdit->blockHeight(block);
+//![extraAreaPaintEvent_1]
 
-    // Block Range
+//![extraAreaPaintEvent_2]
+    while (block.isValid() && top <= event->rect().bottom()) {
+        if (block.isVisible() && bottom >= event->rect().top()) {
+            QString number = QString::number(blockNumber + 1);
+            painter.drawText(0, top, right-9, fontHeight,
+                             Qt::AlignRight, number);
+        }
+
+        block = block.next();
+        top = bottom;
+        bottom = top + widgetTextEdit->blockHeight(block);
+        ++blockNumber;
+    }
 
 }
 

@@ -26,6 +26,7 @@
 #include <QTextBlock>
 #include <QTextLayout>
 #include <QMutex>
+#include <QRectF>
 #include "file.h"
 
 class FileStructure;
@@ -48,11 +49,13 @@ class WidgetTextEdit : public QPlainTextEdit
     Q_OBJECT
 public:
     explicit WidgetTextEdit(QWidget *parent);
-    int blockHeight(int blockNumber) { return this->document()->findBlockByNumber(blockNumber).layout()->boundingRect().height(); }
-    int blockHeight(const QTextBlock &textBlock) { return textBlock.layout()->boundingRect().height(); }
+    int blockHeight(int blockNumber) { return blockHeight(this->document()->findBlockByNumber(blockNumber));  }
+    int blockHeight(const QTextBlock &textBlock) { return blockBoundingGeometry(textBlock).height(); }
     int blockWidth(const QTextBlock &textBlock) { return textBlock.layout()->boundingRect().width(); }
-    int blockTop(int blockNumber) { return this->blocksInfo[blockNumber].top; }
-    int blockTop(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top; }
+    int blockTop(int blockNumber) { return blockTop(this->document()->findBlockByNumber(blockNumber)); }
+    int blockTop(const QTextBlock &textBlock) { return blockBoundingGeometry(textBlock).top(); }
+    int blockAbsoluteTop(int blockNumber) { return blockAbsoluteTop(this->document()->findBlockByNumber(blockNumber)); }
+    int blockAbsoluteTop(const QTextBlock &textBlock) { return blockBoundingGeometry(textBlock).translated(contentOffset()).top(); }
     int blockBottom(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top + this->blocksInfo[textBlock.blockNumber()].height; }
     QRectF blockGeometry(QTextBlock &textBlock) { return textBlock.layout()->boundingRect(); }
 
@@ -60,7 +63,7 @@ public:
     int getTextHeight() { return this->textHeight; }
     File * getCurrentFile() { return this->currentFile; }
     void setText(const QString &text);
-    int getFirstVisibleBlock() { return this->firstVisibleBlock; }
+    int getFirstVisibleBlock() { return this->_firstVisibleBlock; }
     BlockInfo * getBlocksInfo() { return this->blocksInfo; }
 
     int scrollHeight();
@@ -82,7 +85,6 @@ public slots:
     void setFocus() { QPlainTextEdit::setFocus(); }
     void setFocus(QKeyEvent * event) { QPlainTextEdit::setFocus(); this->keyPressEvent(event); }
     void goToLine(int line);
-    void onBlockUpdate(const QTextBlock &textBlock);
 protected:
     void insertFromMimeData(const QMimeData * source);
 
@@ -115,7 +117,7 @@ private:
     BlockInfo * blocksInfo;
     File * currentFile;
     int textHeight;
-    int firstVisibleBlock;
+    int _firstVisibleBlock;
     int _lineCount;
     int _lastInitiedBlock;
     WidgetInsertCommand * _widgetInsertCommand;
