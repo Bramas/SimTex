@@ -48,8 +48,10 @@ class WidgetTextEdit : public QPlainTextEdit
     Q_OBJECT
 public:
     explicit WidgetTextEdit(QWidget *parent);
+    int blockHeight(int blockNumber) { return this->document()->findBlockByNumber(blockNumber).layout()->boundingRect().height(); }
     int blockHeight(const QTextBlock &textBlock) { return textBlock.layout()->boundingRect().height(); }
     int blockWidth(const QTextBlock &textBlock) { return textBlock.layout()->boundingRect().width(); }
+    int blockTop(int blockNumber) { return this->blocksInfo[blockNumber].top; }
     int blockTop(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top; }
     int blockBottom(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top + this->blocksInfo[textBlock.blockNumber()].height; }
     QRectF blockGeometry(QTextBlock &textBlock) { return textBlock.layout()->boundingRect(); }
@@ -80,6 +82,7 @@ public slots:
     void setFocus() { QPlainTextEdit::setFocus(); }
     void setFocus(QKeyEvent * event) { QPlainTextEdit::setFocus(); this->keyPressEvent(event); }
     void goToLine(int line);
+    void onBlockUpdate(const QTextBlock &textBlock);
 protected:
     void insertFromMimeData(const QMimeData * source);
 
@@ -114,6 +117,7 @@ private:
     int textHeight;
     int firstVisibleBlock;
     int _lineCount;
+    int _lastInitiedBlock;
     WidgetInsertCommand * _widgetInsertCommand;
 
 

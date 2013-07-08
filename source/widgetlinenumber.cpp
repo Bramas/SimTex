@@ -125,6 +125,7 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
     {
         painter.drawText(0, this->scrollOffset+5, right-9, fontHeight, Qt::AlignRight, QString::number(1));
     }
+    this->firstVisibleBlock;
     for(l = this->firstVisibleBlock+1; l <= widgetTextEdit->document()->blockCount(); ++l)
     {
         //qDebug()<<l;//<<"  "<<this->widgetTextEdit->blockGeometry(textBlock).bottom();
@@ -133,7 +134,7 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
         //    textBlock = textBlock.next();
         //    continue;
         //}
-        if(!textBlock.isValid())
+        if(!textBlock.isValid() || cumulatedPosition - this->firstVisibleBlockTop > this->height())
         {
             break;
         }

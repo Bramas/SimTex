@@ -58,7 +58,8 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     _syntaxHighlighter(0),
     _completionEngine(new CompletionEngine(this)),
     _indentationInited(false),
-    _widgetInsertCommand(new WidgetInsertCommand(this))
+    _widgetInsertCommand(new WidgetInsertCommand(this)),
+    _lastInitiedBlock(1)
 
 {
     blocksInfo[0].height = -1;
@@ -68,6 +69,7 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     connect(this,SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
     //connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(update()));
     connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this->viewport(),SLOT(update()));
+    connect(this->document()->documentLayout(), SIGNAL(updateBlock(QTextBlock)), this, SLOT(onBlockUpdate(QTextBlock)));
 
     //this->setCurrentFont(QFont("Consolas", 17));
     //this->setCurrentFont(QFont("Consolas", 17));
@@ -87,10 +89,13 @@ void WidgetTextEdit::setText(const QString &text)
 {
     this->_indentationInited = false;
     QPlainTextEdit::setPlainText(text);
+
+    _lineCount = this->document()->blockCount();
+    _lastInitiedBlock = 1;
 /* TODO : Run initIndentation in a thread */
     //QtConcurrent::run(this,&WidgetTextEdit::initIndentation);
     this->initIndentation();
-    this->updateIndentation();
+    //this->updateIndentation();
     this->update();
     this->viewport()->update();
 }
@@ -100,6 +105,27 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     //qDebug()<<this->document()->blockCount();
 
     //this->setLineWrapColumnOrWidth(this->width()*0.8);
+
+    if(_lastInitiedBlock < this->document()->blockCount())
+    {
+        //qDebug()<<"update "<<_lastInitiedBlock;
+        QTextBlock textBlock = this->document()->findBlockByNumber(_lastInitiedBlock-1);
+        for(int i=_lastInitiedBlock; i< this->document()->blockCount(); ++i)
+        {
+
+            blocksInfo[i].top = blocksInfo[i-1].top + this->blockHeight(textBlock);
+            blocksInfo[i].position = blocksInfo[i-1].position + textBlock.text().length()+1;
+            //qDebug()<<i<<" : top = "<<blocksInfo[i].top;
+            textBlock=textBlock.next();
+
+            blocksInfo[i].height =this->blockHeight(textBlock);
+            if(this->_lastInitiedBlock > i && blocksInfo[i].height == 0)
+            {
+                this->_lastInitiedBlock = i;
+                //break;
+            }
+        }
+    }
 
     QPlainTextEdit::paintEvent(event);
     QPainter painter(viewport());
@@ -124,8 +150,6 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
 
     int scrollHeight =  this->scrollHeight();
 
-    qDebug()<<"--------------------";
-    qDebug()<<scrollHeight<<"   "<<(this->document()->blockCount()>1 ? blocksInfo[1].top: false);
 
     painter.translate(15,0);
     painter.rotate(-90);
@@ -133,6 +157,8 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     {
 
         value = iterator.next();
+        value->top = this->blockTop(value->startBlock);
+        value->height = this->blockTop(value->endBlock) + this->blockHeight(value->endBlock) - this->blockTop(value->startBlock);
         if(value->top + value->height < scrollHeight ||
            scrollHeight + this->height() < value->top   )
         {
@@ -163,9 +189,10 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
         for(int i=1; i< this->document()->blockCount(); ++i)
         {
             //qDebug()<<"block "<<i<<" top : "<<blocksInfo[i].top<<" height : "<<blocksInfo[i].height<<"  scroll : "<<this->verticalScrollBar()->value();
-            if(this->firstVisibleBlock == -1 && blocksInfo[i].top+blocksInfo[i].height > scrollHeight)
+            if(this->firstVisibleBlock == -1 && blockTop(i)+blockHeight(i) > scrollHeight)
             {
                 this->firstVisibleBlock = i;
+                //qDebug()<<this->firstVisibleBlock<<" , "<<blockTop(i)<<"+"<<blockHeight(i)<<" > "<<scrollHeight;
             }
 
         }
@@ -180,10 +207,16 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     }
 
 }
+void WidgetTextEdit::onBlockUpdate(const QTextBlock &textBlock)
+{
+    qDebug()<<"update "<<textBlock.blockNumber();
+    blocksInfo[textBlock.blockNumber()].top = textBlock.layout()->boundingRect().top();
+    blocksInfo[textBlock.blockNumber()].height = textBlock.layout()->boundingRect().height();
+}
 
 int WidgetTextEdit::scrollHeight()
 {
-    int lineHeight = this->document()->begin().layout()->lineAt(0).height();
+    int lineHeight = ConfigManager::Instance.getTextCharFormats("normal").font().pointSize()+7;
     return this->verticalScrollBar()->value() * lineHeight;
 }
 
@@ -386,25 +419,30 @@ void WidgetTextEdit::initIndentation(void)
     FileStructureInfo * value;
 
 
+    qDebug()<<" Init Indentation ";
     blocksInfo[0].top = 0;
     blocksInfo[0].height = this->blockHeight(textBlock);
     blocksInfo[0].position = 0;
     this->firstVisibleBlock = -1;
+    this->_lastInitiedBlock = this->document()->blockCount();
     for(int i=1; i< this->document()->blockCount(); ++i)
     {
+
         blocksInfo[i].top = blocksInfo[i-1].top + this->blockHeight(textBlock);
         blocksInfo[i].position = blocksInfo[i-1].position + textBlock.text().length()+1;
-
+        //qDebug()<<i<<" : top = "<<blocksInfo[i].top;
         textBlock=textBlock.next();
 
         blocksInfo[i].height =this->blockHeight(textBlock);
+        if(this->_lastInitiedBlock > i && blocksInfo[i].height == 0)
+        {
+            this->_lastInitiedBlock = i;
+        }
     }
     //update the entire text height
     this->textHeight = blocksInfo[this->document()->blockCount()-1].top + blocksInfo[this->document()->blockCount()-1].height;
 
-    QTextBlockFormat myClassFormat;
     QListIterator<FileStructureInfo*> iterator(*this->fileStructure->info());
-    QTextCursor cursor(this->textCursor());
     while(iterator.hasNext())
     {
         value = iterator.next();
@@ -441,42 +479,51 @@ void WidgetTextEdit::initIndentation(void)
 
 void WidgetTextEdit::updateIndentation(void)
 {
-    if(this->updatingIndentation)
+    if(this->updatingIndentation || ! _indentationInited)
     {
         return;
     }
     this->updatingIndentation = true;
-    delete blocksInfo;
-    blocksInfo = new BlockInfo[this->document()->blockCount()];
 
     if(this->document()->blockCount() != _lineCount)
     {
+        qDebug()<<_lineCount<<" "<<this->document()->blockCount();
         this->currentFile->insertLine(this->textCursor().blockNumber(), this->document()->blockCount() - _lineCount);
         emit lineCountChanged(this->document()->blockCount());
+        delete blocksInfo;
+        blocksInfo = new BlockInfo[this->document()->blockCount()];
+        _lineCount = this->document()->blockCount();
+
     }
-    _lineCount = this->document()->blockCount();
+
 
 
     QTextBlock textBlock = this->document()->begin();
 
 
-
     blocksInfo[0].top = 0;
     blocksInfo[0].height = this->blockHeight(textBlock);
     blocksInfo[0].position = 0;
-
-    this->firstVisibleBlock = -1;
+     this->firstVisibleBlock = -1;
     //qDebug()<<"block Count "<<this->document()->blockCount();
-    for(int i=1; i < this->document()->blockCount(); ++i)
+    this->_lastInitiedBlock = this->document()->blockCount();
+   for(int i=1; i < this->document()->blockCount(); ++i)
     {
         blocksInfo[i].top = blocksInfo[i-1].top + blocksInfo[i-1].height;
         blocksInfo[i].position = blocksInfo[i-1].position + textBlock.text().length()+1;
 
+        //qDebug()<<i<<" : top = "<<blocksInfo[i].top;
+
         textBlock=textBlock.next();
 
         blocksInfo[i].height = this->blockHeight(textBlock);
+
+        if(this->_lastInitiedBlock > i && blocksInfo[i].height == 0)
+        {
+            this->_lastInitiedBlock = i;
+        }
     }
-    this->textHeight = blocksInfo[this->document()->blockCount()-1].top + blocksInfo[this->document()->blockCount()-1].height;
+    //this->textHeight = blocksInfo[this->document()->blockCount()-1].top + blocksInfo[this->document()->blockCount()-1].height;
 
     this->matchCommand();
 
@@ -514,9 +561,10 @@ void WidgetTextEdit::updateIndentation(void)
     if(this->textCursor().block().blockFormat().leftMargin() != 25*indentation[this->textCursor().blockNumber()].level)
         for(int i = this->textCursor().blockNumber(); i < indentation[this->textCursor().blockNumber()].next; ++i)
         {
-            myClassFormat.setLeftMargin(25*indentation[i].level);
+            this->setBlockLeftMargin(this->textCursor().block(),25*indentation[i].level);
+            /*myClassFormat.setLeftMargin(25*indentation[i].level);
             cursor.setPosition(blocksInfo[i].position);
-            cursor.setBlockFormat(myClassFormat);
+            cursor.setBlockFormat(myClassFormat);*/
         }
     this->updatingIndentation = false;
 
