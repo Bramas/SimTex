@@ -54,7 +54,6 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     currentFile(new File(this)),
     textHeight(0),
     _firstVisibleBlock(0),
-    blocksInfo(new BlockInfo[1]),
     _lineCount(0),
     _syntaxHighlighter(0),
     _completionEngine(new CompletionEngine(this)),
@@ -63,7 +62,6 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     _lastInitiedBlock(1)
 
 {
-    blocksInfo[0].height = -1;
 
     connect(this,SIGNAL(textChanged()),this->currentFile,SLOT(setModified()));
     connect(this,SIGNAL(textChanged()),this,SLOT(updateIndentation()));
@@ -102,31 +100,6 @@ void WidgetTextEdit::setText(const QString &text)
 }
 void WidgetTextEdit::paintEvent(QPaintEvent *event)
 {
-
-    //qDebug()<<this->document()->blockCount();
-
-    //this->setLineWrapColumnOrWidth(this->width()*0.8);
-
-    if(_lastInitiedBlock < this->document()->blockCount())
-    {
-        //qDebug()<<"update "<<_lastInitiedBlock;
-        QTextBlock textBlock = this->document()->findBlockByNumber(_lastInitiedBlock-1);
-        for(int i=_lastInitiedBlock; i< this->document()->blockCount(); ++i)
-        {
-
-            blocksInfo[i].top = blocksInfo[i-1].top + this->blockHeight(textBlock);
-            blocksInfo[i].position = blocksInfo[i-1].position + textBlock.text().length()+1;
-            //qDebug()<<i<<" : top = "<<blocksInfo[i].top;
-            textBlock=textBlock.next();
-
-            blocksInfo[i].height =this->blockHeight(textBlock);
-            if(this->_lastInitiedBlock > i && blocksInfo[i].height == 0)
-            {
-                this->_lastInitiedBlock = i;
-                //break;
-            }
-        }
-    }
 
     QPlainTextEdit::paintEvent(event);
     QPainter painter(viewport());
@@ -397,8 +370,6 @@ void WidgetTextEdit::initIndentation(void)
         this->updatingIndentation = false;
         return;
     }
-    delete this->blocksInfo;
-    this->blocksInfo = new BlockInfo[this->document()->blockCount()];
 
 
 
@@ -415,6 +386,8 @@ void WidgetTextEdit::initIndentation(void)
     //update the entire text height
 
     QListIterator<FileStructureInfo*> iterator(*this->fileStructure->info());
+    BlockInfo * blocksInfo = new BlockInfo[this->document()->blockCount()];
+
     while(iterator.hasNext())
     {
         value = iterator.next();
@@ -433,6 +406,7 @@ void WidgetTextEdit::initIndentation(void)
         textBlock = this->document()->findBlockByNumber(idx);
         this->setBlockLeftMargin(textBlock, blocksInfo[idx].leftMargin);
     }
+    delete blocksInfo;
 
     this->currentFile->refreshLineNumber();
     this->_indentationMutex.lock();
@@ -451,11 +425,8 @@ void WidgetTextEdit::updateIndentation(void)
 
     if(this->document()->blockCount() != _lineCount)
     {
-        qDebug()<<_lineCount<<" "<<this->document()->blockCount();
         this->currentFile->insertLine(this->textCursor().blockNumber(), this->document()->blockCount() - _lineCount);
         emit lineCountChanged(this->document()->blockCount());
-        delete blocksInfo;
-        blocksInfo = new BlockInfo[this->document()->blockCount()];
         _lineCount = this->document()->blockCount();
 
     }
@@ -514,10 +485,9 @@ void WidgetTextEdit::matchAll()
 void WidgetTextEdit::displayWidgetInsertCommand()
 {
     QTextLine line = this->textCursor().block().layout()->lineForTextPosition(this->textCursor().positionInBlock());
-    qreal left = line.cursorToX(this->textCursor().positionInBlock());
     qreal top = line.position().y() + line.height() + 5;
     QRect geo = _widgetInsertCommand->geometry();
-    geo.moveTo(QPoint(0, top + this->blockTop(this->textCursor().block())-this->verticalScrollBar()->value()));
+    geo.moveTo(QPoint(0, top + this->blockAbsoluteTop(this->textCursor().block())));
     if(geo.bottom() > this->height())
     {
         geo.translate(QPoint(0,-geo.height()-line.height()));
@@ -541,11 +511,11 @@ void WidgetTextEdit::matchCommand()
         //QFontMetrics fm(ConfigManager::Instance.getTextCharFormats("normal").font());
         int length = command.matchedLength();
         possibleCommand = possibleCommand.right(length);
-
-        QTextLine line = this->textCursor().block().layout()->lineForTextPosition(this->textCursor().positionInBlock());
-        qreal left = line.cursorToX(this->textCursor().positionInBlock());
+        int pos = this->textCursor().positionInBlock();
+        QTextLine line = this->textCursor().block().layout()->lineForTextPosition(pos);
+        qreal left = 0;//line.cursorToX(pos);
         qreal top = line.position().y() + line.height() + 5;
-        this->_completionEngine->proposeCommand(left,top + this->blockTop(this->textCursor().block())-this->verticalScrollBar()->value(),possibleCommand);
+        this->_completionEngine->proposeCommand(left,top + this->blockAbsoluteTop(this->textCursor().block()),possibleCommand);
         if(this->_completionEngine->isVisible())// && e->key() == Qt::Key_Down)
         {
             this->_completionEngine->setFocus();

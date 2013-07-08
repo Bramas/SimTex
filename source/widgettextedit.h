@@ -56,7 +56,7 @@ public:
     int blockTop(const QTextBlock &textBlock) { return blockBoundingGeometry(textBlock).top(); }
     int blockAbsoluteTop(int blockNumber) { return blockAbsoluteTop(this->document()->findBlockByNumber(blockNumber)); }
     int blockAbsoluteTop(const QTextBlock &textBlock) { return blockBoundingGeometry(textBlock).translated(contentOffset()).top(); }
-    int blockBottom(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top + this->blocksInfo[textBlock.blockNumber()].height; }
+    int blockBottom(const QTextBlock &textBlock) { return blockBoundingGeometry(textBlock).translated(contentOffset()).bottom(); }
     QRectF blockGeometry(QTextBlock &textBlock) { return textBlock.layout()->boundingRect(); }
 
 
@@ -64,7 +64,6 @@ public:
     File * getCurrentFile() { return this->currentFile; }
     void setText(const QString &text);
     int getFirstVisibleBlock() { return this->_firstVisibleBlock; }
-    BlockInfo * getBlocksInfo() { return this->blocksInfo; }
 
     int scrollHeight();
 
@@ -117,7 +116,6 @@ private:
     QMutex _formatMutex;
     bool _indentationInited;
     FileStructure * fileStructure;
-    BlockInfo * blocksInfo;
     File * currentFile;
     int textHeight;
     int _firstVisibleBlock;
