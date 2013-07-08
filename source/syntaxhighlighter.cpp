@@ -23,11 +23,12 @@
 #include <QTextCharFormat>
 #include <QTextDocument>
 #include <QDebug>
+#include <QPlainTextEdit>
 #include "blockdata.h"
 #include "configmanager.h"
 
-SyntaxHighlighter::SyntaxHighlighter(QTextEdit *parent) :
-    QSyntaxHighlighter(parent)
+SyntaxHighlighter::SyntaxHighlighter(QPlainTextEdit *parent) :
+    QSyntaxHighlighter(parent->document())
 {
 }
 

@@ -47,7 +47,7 @@
 #define abs(a) ((a) > 0 ? (a) : (-(a)))
 
 WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
-    QTextEdit(parent),
+    QPlainTextEdit(parent),
     fileStructure(new FileStructure(this)),
     updatingIndentation(false),
     currentFile(new File(this)),
@@ -86,7 +86,7 @@ void WidgetTextEdit::scrollTo(int p)
 void WidgetTextEdit::setText(const QString &text)
 {
     this->_indentationInited = false;
-    QTextEdit::setText(text);
+    QPlainTextEdit::setPlainText(text);
 /* TODO : Run initIndentation in a thread */
     //QtConcurrent::run(this,&WidgetTextEdit::initIndentation);
     this->initIndentation();
@@ -101,7 +101,7 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
 
     //this->setLineWrapColumnOrWidth(this->width()*0.8);
 
-    QTextEdit::paintEvent(event);
+    QPlainTextEdit::paintEvent(event);
     QPainter painter(viewport());
 
 
@@ -197,7 +197,7 @@ void WidgetTextEdit::onCursorPositionChange()
 void WidgetTextEdit::resizeEvent(QResizeEvent *event)
 {
     this->updateIndentation();
-    QTextEdit::resizeEvent(event);
+    QPlainTextEdit::resizeEvent(event);
     update();
     //this->updateGeometry();
     //this->update();
@@ -275,7 +275,7 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
         this->setTextCursor(cur);
         return;
     }
-    QTextEdit::keyPressEvent(e);
+    QPlainTextEdit::keyPressEvent(e);
     /*//qDebug()<<"ok"<<e->key()<<"  "<<Qt::Key_Enter;
     if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Enter - 1)
     {
@@ -328,7 +328,7 @@ void WidgetTextEdit::wheelEvent(QWheelEvent * event)
     }
     else
     {
-        QTextEdit::wheelEvent(event);
+        QPlainTextEdit::wheelEvent(event);
     }
     update();
 }
@@ -516,7 +516,7 @@ void WidgetTextEdit::insertFromMimeData(const QMimeData *source)
 {
     QMimeData * source2 =new QMimeData();
     source2->setData(QString("text/plain"),QByteArray(source->text().toLatin1()));
-    QTextEdit::insertFromMimeData(source2);
+    QPlainTextEdit::insertFromMimeData(source2);
    /* if(source->hasUrls())
     {
         this->currentFile->open(source->urls().first().toLocalFile());//this->currentFile->open()

@@ -24,12 +24,12 @@
 
 #include <QSyntaxHighlighter>
 
-class QTextEdit;
+class QPlainTextEdit;
 
 class SyntaxHighlighter : public QSyntaxHighlighter
 {
 public:
-    SyntaxHighlighter(QTextEdit * parent);
+    SyntaxHighlighter(QPlainTextEdit * parent);
 
 protected:
     virtual void highlightBlock(const QString &text);

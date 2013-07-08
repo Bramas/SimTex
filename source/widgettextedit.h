@@ -22,7 +22,7 @@
 #ifndef WIDGETTEXTEDIT_H
 #define WIDGETTEXTEDIT_H
 
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QTextBlock>
 #include <QTextLayout>
 #include <QMutex>
@@ -43,7 +43,7 @@ struct BlockInfo
 };
 
 
-class WidgetTextEdit : public QTextEdit
+class WidgetTextEdit : public QPlainTextEdit
 {
     Q_OBJECT
 public:
@@ -75,8 +75,8 @@ public slots:
     void onCursorPositionChange(void);
     void matchCommand();
     void matchAll();
-    void setFocus() { QTextEdit::setFocus(); }
-    void setFocus(QKeyEvent * event) { QTextEdit::setFocus(); this->keyPressEvent(event); }
+    void setFocus() { QPlainTextEdit::setFocus(); }
+    void setFocus(QKeyEvent * event) { QPlainTextEdit::setFocus(); this->keyPressEvent(event); }
     void goToLine(int line);
 protected:
     void insertFromMimeData(const QMimeData * source);
