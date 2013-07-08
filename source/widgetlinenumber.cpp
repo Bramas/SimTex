@@ -89,7 +89,7 @@ void WidgetLineNumber::paintEvent(QPaintEvent *event)
     if(!widgetTextEdit) return;
 
     //update info about the scroll position
-    this->scrollOffset = -this->widgetTextEdit->verticalScrollBar()->value();
+    this->scrollOffset = -this->widgetTextEdit->scrollHeight();
 
 
     QPainter painter(this);

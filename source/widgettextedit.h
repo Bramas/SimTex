@@ -61,6 +61,8 @@ public:
     int getFirstVisibleBlock() { return this->firstVisibleBlock; }
     BlockInfo * getBlocksInfo() { return this->blocksInfo; }
 
+    int scrollHeight();
+
     bool isCursorVisible();
     void setSyntaxHighlighter(SyntaxHighlighter * syntaxHighlighter) { this->_syntaxHighlighter = syntaxHighlighter; }
     void displayWidgetInsertCommand();

@@ -120,9 +120,12 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     FileStructureInfo * value;
     int top = 0;
     int height = 0;
-    //qDebug()<<"--------------------";
 
 
+    int scrollHeight =  this->scrollHeight();
+
+    qDebug()<<"--------------------";
+    qDebug()<<scrollHeight<<"   "<<(this->document()->blockCount()>1 ? blocksInfo[1].top: false);
 
     painter.translate(15,0);
     painter.rotate(-90);
@@ -130,22 +133,22 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     {
 
         value = iterator.next();
-        if(value->top + value->height < this->verticalScrollBar()->value() ||
-           this->verticalScrollBar()->value() + this->height() < value->top   )
+        if(value->top + value->height < scrollHeight ||
+           scrollHeight + this->height() < value->top   )
         {
             continue;
         }
-        top = max(value->top - this->verticalScrollBar()->value(),0);
+        top = max(value->top - scrollHeight,0);
         height = fm.width(value->name);
         //qDebug()<<value->top<<","<<value->endBlock<<"    "<<(value->height + value->top - this->verticalScrollBar()->value())<<" , "<<(height + 30);
-        if(value->height + value->top - this->verticalScrollBar()->value() <  height + 30)
+        if(value->height + value->top - scrollHeight <  height + 30)
         {
-            top = value->top + value->height -30 -height - this->verticalScrollBar()->value();
+            top = value->top + value->height -30 -height - scrollHeight;
             //qDebug()<<"pas assez "<<(value->height + value->top - this->verticalScrollBar()->value())<<" > "<<(height + 30);
         }
 
         painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats("leftStructure").background().color()));
-        painter.drawRect(- value->top - value->height -4  + this->verticalScrollBar()->value(),25*(value->level-2)+5,value->height-2,25);
+        painter.drawRect(- value->top - value->height -4  + scrollHeight,25*(value->level-2)+5,value->height-2,25);
 
         painter.setPen(QPen(ConfigManager::Instance.getTextCharFormats("leftStructure").foreground().color()));
         painter.drawText(-top-height-20,25*(value->level-1),value->name);
@@ -160,7 +163,7 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
         for(int i=1; i< this->document()->blockCount(); ++i)
         {
             //qDebug()<<"block "<<i<<" top : "<<blocksInfo[i].top<<" height : "<<blocksInfo[i].height<<"  scroll : "<<this->verticalScrollBar()->value();
-            if(this->firstVisibleBlock == -1 && blocksInfo[i].top+blocksInfo[i].height > this->verticalScrollBar()->value())
+            if(this->firstVisibleBlock == -1 && blocksInfo[i].top+blocksInfo[i].height > scrollHeight)
             {
                 this->firstVisibleBlock = i;
             }
@@ -176,6 +179,12 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
         }
     }
 
+}
+
+int WidgetTextEdit::scrollHeight()
+{
+    int lineHeight = this->document()->begin().layout()->lineAt(0).height();
+    return this->verticalScrollBar()->value() * lineHeight;
 }
 
 bool WidgetTextEdit::isCursorVisible()
@@ -336,12 +345,14 @@ void WidgetTextEdit::setBlockLeftMargin(const QTextBlock &textBlock, int leftMar
 {
     //_formatMutex.lock();
     //if(!textBlock.isValid()) return;
-    int blockNumber = textBlock.blockNumber();
+/*    int blockNumber = textBlock.blockNumber();
     QTextBlockFormat format;
     QTextCursor cursor(this->textCursor());
     format.setLeftMargin(leftMargin);
     cursor.setPosition(textBlock.position());
     cursor.setBlockFormat(format);
+*/
+    textBlock.layout()->setPosition(QPointF(leftMargin,0));
 
     //_formatMutex.unlock();
     //if(blockNumber < this->document()->blockCount() - 1)
