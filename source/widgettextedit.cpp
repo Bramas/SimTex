@@ -39,6 +39,7 @@
 #include <QPalette>
 #include "syntaxhighlighter.h"
 #include "completionengine.h"
+#include "documentlayout.h"
 #include <math.h>
 #include <QtCore>
 
@@ -73,7 +74,7 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     //this->setCurrentFont(QFont("Consolas", 17));
     //this->setCurrentFont(QFont("Consolas", 17));
 
-
+    this->document()->setDocumentLayout(new DocumentLayout(this->document()));
 
     this->setText("");
 
@@ -151,7 +152,7 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
 
     painter.translate(15,0);
     painter.rotate(-90);
-    while(iterator.hasNext())
+/*    while(iterator.hasNext())
     {
 
         value = iterator.next();
@@ -178,22 +179,21 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
         painter.drawText(-top-height-20,25*(value->level-1),value->name);
     }
 
+*/
 
-    if(this->blocksInfo[0].height != -1)
+    int lastFirstVisibleBlock = _firstVisibleBlock;
+    _firstVisibleBlock = -1;
+
+    this->_firstVisibleBlock = this->firstVisibleBlock().blockNumber();
+    if(lastFirstVisibleBlock != _firstVisibleBlock)
     {
-        int lastFirstVisibleBlock = _firstVisibleBlock;
-        _firstVisibleBlock = -1;
-
-        this->_firstVisibleBlock = this->firstVisibleBlock().blockNumber();
-        if(lastFirstVisibleBlock != _firstVisibleBlock)
-        {
-            emit updateFirstVisibleBlock(_firstVisibleBlock,blockBoundingGeometry(this->firstVisibleBlock()).translated(contentOffset()).top());
-        }
-        else
-        {
-            emit updatedWithSameFirstVisibleBlock();
-        }
+        emit updateFirstVisibleBlock(_firstVisibleBlock,blockBoundingGeometry(this->firstVisibleBlock()).translated(contentOffset()).top());
     }
+    else
+    {
+        emit updatedWithSameFirstVisibleBlock();
+    }
+
 
 }
 
@@ -217,6 +217,7 @@ void WidgetTextEdit::onCursorPositionChange()
     this->highlightCurrentLine();
     matchAll();
     this->currentFile->getViewer()->setLine(this->textCursor().blockNumber()+1);
+
 }
 
 void WidgetTextEdit::resizeEvent(QResizeEvent *event)
@@ -362,15 +363,21 @@ void WidgetTextEdit::setBlockLeftMargin(const QTextBlock &textBlock, int leftMar
 {
     //_formatMutex.lock();
     //if(!textBlock.isValid()) return;
-/*    int blockNumber = textBlock.blockNumber();
+//*
     QTextBlockFormat format;
     QTextCursor cursor(this->textCursor());
-    format.setLeftMargin(leftMargin);
+    format.setTextIndent(leftMargin);
     cursor.setPosition(textBlock.position());
     cursor.setBlockFormat(format);
-*/
+/*/
+    QAbstractTextDocumentLayout * layout =  this->document()->documentLayout();
+
+
     textBlock.layout()->setPosition(QPointF(leftMargin,0));
 
+
+
+ // */
     //_formatMutex.unlock();
     //if(blockNumber < this->document()->blockCount() - 1)
    // QtConcurrent::run(this, &WidgetTextEdit::setBlockLeftMargin, this->document()->findBlockByNumber(blockNumber+1), leftMargin);
@@ -812,3 +819,76 @@ void WidgetTextEdit::highlightCurrentLine(void)
 
     setExtraSelections(extraSelections);
 }
+/*
+void WidgetTextEdit::mousePressEvent(QMouseEvent *e)
+{
+    QTextBlock block = firstVisibleBlock();
+    int top = blockAbsoluteTop(block);
+    int bottom = top + blockHeight(block);
+    while(block.isValid() && e->pos().y() > bottom)
+    {
+       block = block.next();
+       top = bottom;
+       bottom = top + blockHeight(block);
+    }
+
+    if(e->pos().y() >= top && e->pos().y() <= bottom)
+    {
+        int blockNumber = block.blockNumber();
+        BlockIndentation * indentation = this->fileStructure->indentations();
+        int margin = 25*indentation[blockNumber].level;
+        QMouseEvent * newEvent = new QMouseEvent(e->type(), e->pos() - QPoint(margin,0), e->globalPos() - QPoint(margin,0), e->button(), e->buttons(), e->modifiers() );
+        QPlainTextEdit::mousePressEvent(newEvent);
+        return;
+    }
+    QPlainTextEdit::mousePressEvent(e);
+}
+
+void WidgetTextEdit::mouseReleaseEvent(QMouseEvent *e)
+{
+    QTextBlock block = firstVisibleBlock();
+    int top = blockAbsoluteTop(block);
+    int bottom = top + blockHeight(block);
+    while(block.isValid() && e->pos().y() > bottom)
+    {
+       block = block.next();
+       top = bottom;
+       bottom = top + blockHeight(block);
+    }
+
+    if(e->pos().y() >= top && e->pos().y() <= bottom)
+    {
+        int blockNumber = block.blockNumber();
+        BlockIndentation * indentation = this->fileStructure->indentations();
+        int margin = 25*indentation[blockNumber].level;
+        QMouseEvent * newEvent = new QMouseEvent(e->type(), e->pos() - QPoint(40,0), e->globalPos() - QPoint(40,0), e->button(), e->buttons(), e->modifiers() );
+        QPlainTextEdit::mouseReleaseEvent(newEvent);
+        return;
+    }
+    QPlainTextEdit::mouseReleaseEvent(e);
+}
+
+
+void WidgetTextEdit::mouseMoveEvent(QMouseEvent *e)
+{
+    QTextBlock block = firstVisibleBlock();
+    int top = blockAbsoluteTop(block);
+    int bottom = top + blockHeight(block);
+    while(block.isValid() && e->pos().y() > bottom)
+    {
+       block = block.next();
+       top = bottom;
+       bottom = top + blockHeight(block);
+    }
+
+    if(e->pos().y() >= top && e->pos().y() <= bottom)
+    {
+        int blockNumber = block.blockNumber();
+        BlockIndentation * indentation = this->fileStructure->indentations();
+        int margin = 25*indentation[blockNumber].level;
+        QMouseEvent * newEvent = new QMouseEvent(e->type(), e->pos() - QPoint(margin,0), e->globalPos() - QPoint(margin,0), e->button(), e->buttons(), e->modifiers() );
+        QPlainTextEdit::mouseMoveEvent(newEvent);
+        return;
+    }
+    QPlainTextEdit::mouseMoveEvent(e);
+}*/

@@ -173,7 +173,7 @@ void WidgetPdfDocument::initDocument()
     scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
 
 
-    //jumpToPdfFromSource(_file->getFilename(),_widgetTextEdit->textCursor().blockNumber());
+    jumpToPdfFromSource();
     update();
 }
 

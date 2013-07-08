@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     widgetconsole.cpp \
     dialogclose.cpp \
     widgetinsertcommand.cpp \
-    widgetfindreplace.cpp
+    widgetfindreplace.cpp \
+    documentlayout.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -59,7 +60,8 @@ HEADERS  += mainwindow.h \
     widgetconsole.h \
     dialogclose.h \
     widgetinsertcommand.h \
-    widgetfindreplace.h
+    widgetfindreplace.h \
+    documentlayout.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
