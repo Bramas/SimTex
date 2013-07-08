@@ -92,9 +92,9 @@ protected:
 
 private:
     void initIndentation(void);
-    void paintEvent(QPaintEvent *event);
-    void keyPressEvent(QKeyEvent *e);
-    void resizeEvent(QResizeEvent * event);
+    //void paintEvent(QPaintEvent *event);
+    //void keyPressEvent(QKeyEvent *e);
+    //void resizeEvent(QResizeEvent * event);
     void wheelEvent(QWheelEvent * event);
     void highlightCurrentLine(void);
 

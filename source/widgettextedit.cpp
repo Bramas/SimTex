@@ -63,16 +63,15 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
 
 {
 
-    connect(this,SIGNAL(textChanged()),this->currentFile,SLOT(setModified()));
-    connect(this,SIGNAL(textChanged()),this,SLOT(updateIndentation()));
-    connect(this,SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
-    //connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(update()));
-    connect(this->verticalScrollBar(),SIGNAL(valueChanged(int)),this->viewport(),SLOT(update()));
+    connect(this, SIGNAL(textChanged()),this->currentFile,SLOT(setModified()));
+    //connect(this, SIGNAL(textChanged()),this,SLOT(updateIndentation()));
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(onCursorPositionChange()));
+    //connect(this->verticalScrollBar(), SIGNAL(valueChanged(int)),this->viewport(),SLOT(update()));
 
     //this->setCurrentFont(QFont("Consolas", 17));
     //this->setCurrentFont(QFont("Consolas", 17));
 
-    this->document()->setDocumentLayout(new DocumentLayout(this->document()));
+    //this->document()->setDocumentLayout(new DocumentLayout(this->document()));
 
     this->setText("");
 
@@ -85,23 +84,24 @@ void WidgetTextEdit::scrollTo(int p)
 
 void WidgetTextEdit::setText(const QString &text)
 {
-    this->_indentationInited = false;
+    //this->_indentationInited = false;
     QPlainTextEdit::setPlainText(text);
 
-    _lineCount = this->document()->blockCount();
-    _lastInitiedBlock = 1;
+   return;
+   _lineCount = this->document()->blockCount();
     emit lineCountChanged(_lineCount);
 /* TODO : Run initIndentation in a thread */
     //QtConcurrent::run(this,&WidgetTextEdit::initIndentation);
     this->initIndentation();
     //this->updateIndentation();
     this->update();
-    this->viewport()->update();
+    //this->viewport()->update();
 }
+/*
 void WidgetTextEdit::paintEvent(QPaintEvent *event)
 {
-
     QPlainTextEdit::paintEvent(event);
+    return;
     QPainter painter(viewport());
 
 
@@ -152,7 +152,7 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
         painter.drawText(-top-height-20,25*(value->level-1),value->name);
     }
 
-*/
+
 
     int lastFirstVisibleBlock = _firstVisibleBlock;
     _firstVisibleBlock = -1;
@@ -168,7 +168,7 @@ void WidgetTextEdit::paintEvent(QPaintEvent *event)
     }
 
 
-}
+}*/
 
 int WidgetTextEdit::scrollHeight()
 {
@@ -185,6 +185,12 @@ bool WidgetTextEdit::isCursorVisible()
 
 void WidgetTextEdit::onCursorPositionChange()
 {
+    if(this->textCursor().selectedText().isEmpty())
+    {
+        qDebug()<<this->textCursor().block().layout()->lineForTextPosition(this->textCursor().positionInBlock()).cursorToX(this->textCursor().positionInBlock());
+
+    }
+        return;
     QList<QTextEdit::ExtraSelection> selections;
     setExtraSelections(selections);
     this->highlightCurrentLine();
@@ -192,7 +198,7 @@ void WidgetTextEdit::onCursorPositionChange()
     this->currentFile->getViewer()->setLine(this->textCursor().blockNumber()+1);
 
 }
-
+/*
 void WidgetTextEdit::resizeEvent(QResizeEvent *event)
 {
     this->updateIndentation();
@@ -201,8 +207,8 @@ void WidgetTextEdit::resizeEvent(QResizeEvent *event)
     //this->updateGeometry();
     //this->update();
     //this->viewport()->update();
-}
-
+}*/
+/*
 void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
 {
     if(e->key() == Qt::Key_Space && (e->modifiers() & Qt::CTRL))
@@ -230,7 +236,7 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
     }
     if(e->key() == Qt::Key_Dollar)
     {
-        /* TODO : use beginEditBlock */
+
         QTextCursor cur = this->textCursor();
         int start = cur.selectionStart();
         int end = cur.selectionEnd();
@@ -275,12 +281,9 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
         return;
     }
     QPlainTextEdit::keyPressEvent(e);
-    /*//qDebug()<<"ok"<<e->key()<<"  "<<Qt::Key_Enter;
-    if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Enter - 1)
-    {
 
-    }*/
 }
+*/
 void WidgetTextEdit::wheelEvent(QWheelEvent * event)
 {
 
@@ -417,7 +420,7 @@ void WidgetTextEdit::initIndentation(void)
 
 void WidgetTextEdit::updateIndentation(void)
 {
-    if(this->updatingIndentation || ! _indentationInited)
+    if(this->updatingIndentation)// || ! _indentationInited)
     {
         return;
     }
@@ -513,7 +516,7 @@ void WidgetTextEdit::matchCommand()
         possibleCommand = possibleCommand.right(length);
         int pos = this->textCursor().positionInBlock();
         QTextLine line = this->textCursor().block().layout()->lineForTextPosition(pos);
-        qreal left = 0;//line.cursorToX(pos);
+        qreal left = line.cursorToX(pos);
         qreal top = line.position().y() + line.height() + 5;
         this->_completionEngine->proposeCommand(left,top + this->blockAbsoluteTop(this->textCursor().block()),possibleCommand);
         if(this->_completionEngine->isVisible())// && e->key() == Qt::Key_Down)
