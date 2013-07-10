@@ -99,6 +99,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Connect menubar Actions
 
+    connect(this->ui->actionDeleteLastOpenFiles,SIGNAL(triggered()),this,SLOT(clearLastOpened()));
+    connect(this->ui->actionNouveau,SIGNAL(triggered()),this,SLOT(newFile()));
     connect(this->ui->actionOpen,SIGNAL(triggered()),this,SLOT(open()));
     connect(this->ui->actionSave,SIGNAL(triggered()),this,SLOT(save()));
     connect(this->ui->actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
@@ -193,24 +195,42 @@ void MainWindow::focus()
 {
     this->activateWindow();
 }
-void MainWindow::closeEvent(QCloseEvent * event)
+bool MainWindow::closeCurrentFile()
 {
     if(widgetTextEdit->toPlainText().isEmpty() || !widgetTextEdit->getCurrentFile()->isModified())
     {
-        event->accept();
-        return;
+        return true;
     }
-    qDebug()<<"Closing";
     DialogClose dialogClose(this);
     dialogClose.setMessage(tr(QString::fromUtf8("Le fichier %1 n'a pas été enregistré.").toLatin1()).arg(this->widgetTextEdit->getCurrentFile()->getFilename()));
     dialogClose.exec();
     if(dialogClose.confirmed())
+    {
+        return true;
+    }
+    return false;
+}
+
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+
+    if(this->closeCurrentFile())
     {
         event->accept();
         return;
     }
     event->ignore();
 
+}
+
+void MainWindow::newFile()
+{
+    if(!this->closeCurrentFile())
+    {
+        return;
+    }
+    this->widgetTextEdit->getCurrentFile()->create();
+    this->widgetTextEdit->setText("");
 }
 
 void MainWindow::openLast()
@@ -228,6 +248,10 @@ void MainWindow::openLast()
 }
 void MainWindow::open(QString filename)
 {
+    if(!this->closeCurrentFile())
+    {
+        return;
+    }
     //get the filname
     if(filename.isEmpty())
     {
@@ -261,6 +285,14 @@ void MainWindow::open(QString filename)
     this->ui->statusBar->showMessage(basename+" - "+this->widgetTextEdit->getCurrentFile()->codec());
 
 }
+void MainWindow::clearLastOpened()
+{
+    QSettings settings;
+    settings.setValue("lastFiles", QStringList());
+    this->ui->menuOuvrir_R_cent->clear();
+    this->ui->menuOuvrir_R_cent->insertAction(0,this->ui->actionDeleteLastOpenFiles);
+}
+
 void MainWindow::save()
 {
     if(this->widgetTextEdit->getCurrentFile()->getFilename().isEmpty())

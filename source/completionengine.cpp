@@ -68,7 +68,7 @@ void CompletionEngine::proposeCommand(int top, int left, QString commandBegin)
         this->parentWidget()->setFocus();
         return;
     }
-    QRegExp commandRegex = QRegExp("^\\"+QString(commandBegin).replace('{',"\\{"));
+    QRegExp commandRegex = QRegExp("^\\"+QString(commandBegin).replace('{',"\\{"), Qt::CaseInsensitive);
     this->addCustomWordFromSource(); //dont know where to put it but it seems to be a fast function so it's ok!
     QStringList found = this->_words.filter(commandRegex);//, Qt::CaseInsensitive));
     QStringList customFound = this->_customWords.filter(commandRegex);//, Qt::CaseInsensitive));
@@ -111,7 +111,7 @@ QString CompletionEngine::acceptedWord()
         return QString("");
     }
     QString word = this->selectedItems().first()->text();
-    return word.right(word.size() - _commandBegin.size());
+    return word;//.right(word.size() - _commandBegin.size());
 }
 
 void CompletionEngine::keyPressEvent(QKeyEvent *event)
@@ -160,5 +160,13 @@ void CompletionEngine::addCustomWordFromSource()
     {
         _customWords.append("\\ref{"+patternLabel.capturedTexts().last()+"}");
         index = source.indexOf(patternLabel, index + 1);
+    }
+
+    QRegExp patternBibitem("\\\\bibitem\\{([^\\}]*)\\}");
+    index = source.indexOf(patternBibitem);
+    while(index != -1)
+    {
+        _customWords.append("\\cite{"+patternBibitem.capturedTexts().last()+"}");
+        index = source.indexOf(patternBibitem, index + 1);
     }
 }

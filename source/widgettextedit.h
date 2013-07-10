@@ -26,6 +26,7 @@
 #include <QTextBlock>
 #include <QTextLayout>
 #include <QMutex>
+#include <QAbstractTextDocumentLayout>
 #include "file.h"
 
 class FileStructure;
@@ -48,19 +49,23 @@ class WidgetTextEdit : public QTextEdit
     Q_OBJECT
 public:
     explicit WidgetTextEdit(QWidget *parent);
+    int blockHeight(int blockCount) { return blockHeight(this->document()->findBlockByNumber(blockCount)); }
     int blockHeight(const QTextBlock &textBlock) { return textBlock.layout()->boundingRect().height(); }
+    int blockWidth(int blockCount) { return blockWidth(this->document()->findBlockByNumber(blockCount)); }
     int blockWidth(const QTextBlock &textBlock) { return textBlock.layout()->boundingRect().width(); }
-    int blockTop(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top; }
-    int blockBottom(const QTextBlock &textBlock) { return this->blocksInfo[textBlock.blockNumber()].top + this->blocksInfo[textBlock.blockNumber()].height; }
+    int blockTop(int blockCount) { return blockTop(this->document()->findBlockByNumber(blockCount)); }
+    int blockTop(const QTextBlock &textBlock) { return this->document()->documentLayout()->blockBoundingRect(textBlock).top(); }
+    int blockBottom(int blockCount) { return blockBottom(this->document()->findBlockByNumber(blockCount)); }
+    int blockBottom(const QTextBlock &textBlock) { return this->document()->documentLayout()->blockBoundingRect(textBlock).bottom(); }
+
     QRectF blockGeometry(QTextBlock &textBlock) { return textBlock.layout()->boundingRect(); }
 
 
-    int getTextHeight() { return this->textHeight; }
+    int textHeight() { return this->document()->documentLayout()->blockBoundingRect(this->document()->end()).bottom(); }
     File * getCurrentFile() { return this->currentFile; }
     void setText(const QString &text);
     void insertText(const QString &text);
     int getFirstVisibleBlock() { return this->firstVisibleBlock; }
-    BlockInfo * getBlocksInfo() { return this->blocksInfo; }
 
     bool isCursorVisible();
     void setSyntaxHighlighter(SyntaxHighlighter * syntaxHighlighter) { this->_syntaxHighlighter = syntaxHighlighter; }
@@ -108,9 +113,7 @@ private:
     QMutex _formatMutex;
     bool _indentationInited;
     FileStructure * fileStructure;
-    BlockInfo * blocksInfo;
     File * currentFile;
-    int textHeight;
     int firstVisibleBlock;
     int _lineCount;
     WidgetInsertCommand * _widgetInsertCommand;

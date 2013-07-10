@@ -54,7 +54,7 @@ void WidgetScroller::paintEvent(QPaintEvent *event)
     this->scrollOffset = -this->widgetTextEdit->verticalScrollBar()->value();
     QFontMetrics fm(QFont("Consolas",2));
 
-    this->overlayRect = QRectF(0,-this->scrollOffset/2.0,this->widgetTextEdit->width()/4,height()*this->widgetTextEdit->height()/(this->widgetTextEdit->getTextHeight()+1));
+    this->overlayRect = QRectF(0,-this->scrollOffset/2.0,this->widgetTextEdit->width()/4,height()*this->widgetTextEdit->height()/(this->widgetTextEdit->textHeight()+1));
 
     QPainter painter(this);
 

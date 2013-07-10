@@ -46,14 +46,17 @@ class MainWindow : public QMainWindow
     
 public:
     explicit MainWindow(QWidget *parent = 0);
+    bool closeCurrentFile();
     ~MainWindow();
 
 public slots:
 
+    void newFile(void);
     void save(void);
     void saveAs(void);
     void open(QString filename = "");
     void openLast(void);
+    void clearLastOpened(void);
     void focus(void);
     void changeTheme(void);
     void openFindReplaceWidget(void);
