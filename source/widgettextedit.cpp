@@ -86,13 +86,17 @@ void WidgetTextEdit::scrollTo(int p)
 void WidgetTextEdit::setText(const QString &text)
 {
     this->_indentationInited = false;
-    QTextEdit::setText(text);
+    QTextEdit::setPlainText(text);
 /* TODO : Run initIndentation in a thread */
     //QtConcurrent::run(this,&WidgetTextEdit::initIndentation);
     this->initIndentation();
     this->updateIndentation();
     this->update();
     this->viewport()->update();
+}
+void WidgetTextEdit::insertText(const QString &text)
+{
+    QTextEdit::insertPlainText(text);
 }
 void WidgetTextEdit::paintEvent(QPaintEvent *event)
 {
@@ -515,8 +519,9 @@ void WidgetTextEdit::updateIndentation(void)
 void WidgetTextEdit::insertFromMimeData(const QMimeData *source)
 {
     QMimeData * source2 =new QMimeData();
-    source2->setData(QString("text/plain"),QByteArray(source->text().toLatin1()));
-    QTextEdit::insertFromMimeData(source2);
+    //source2->setData(QString("text/plain"),QByteArray(source->text().toLatin1()));
+    this->insertPlainText(source->text());
+    //QTextEdit::insertFromMimeData(source2);
    /* if(source->hasUrls())
     {
         this->currentFile->open(source->urls().first().toLocalFile());//this->currentFile->open()

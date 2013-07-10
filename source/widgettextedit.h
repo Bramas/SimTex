@@ -58,6 +58,7 @@ public:
     int getTextHeight() { return this->textHeight; }
     File * getCurrentFile() { return this->currentFile; }
     void setText(const QString &text);
+    void insertText(const QString &text);
     int getFirstVisibleBlock() { return this->firstVisibleBlock; }
     BlockInfo * getBlocksInfo() { return this->blocksInfo; }
 

@@ -395,7 +395,8 @@ void MainWindow::initTheme()
     }
     //this->widgetTextEdit->setPalette(QPalette(Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,Qt::white,ConfigManager::Instance.getTextCharFormats("normal").background().color()));
     this->widgetTextEdit->setStyleSheet(QString("QTextEdit { border: 1px solid ")+
-                                        ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("textedit-border").foreground().color())+"; "+
+                                        ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("textedit-border").foreground().color())+"; "+QString("color: ")+
+                                        ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").foreground().color())+"; "+
                                         QString("background-color: ")+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
                                 "; }");
     this->widgetTextEdit->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
