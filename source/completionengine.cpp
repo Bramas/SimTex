@@ -25,6 +25,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QTextStream>
+#include <QtCore/qmath.h>
 #include "widgettextedit.h"
 
 CompletionEngine::CompletionEngine(WidgetTextEdit *parent) :
@@ -60,7 +61,7 @@ void CompletionEngine::loadFile(QString filename)
 
 }
 
-void CompletionEngine::proposeCommand(int top, int left, QString commandBegin)
+void CompletionEngine::proposeCommand(int left, int top, int lineHeight, QString commandBegin)
 {
     this->_commandBegin = commandBegin;
     if(commandBegin.length()<4)
@@ -101,7 +102,16 @@ void CompletionEngine::proposeCommand(int top, int left, QString commandBegin)
     }
     this->setItemSelected(this->item(0),true);
     this->setCurrentRow(0,QItemSelectionModel::Rows);
-    this->setGeometry(top,left,300,300);
+
+    QRect geo = this->geometry();
+    left = qMin(left,parentWidget()->width()-geo.width());
+    geo.moveTo(QPoint(left, top));
+    qDebug()<<left<<" , "<<top;
+    if(geo.bottom() > parentWidget()->height())
+    {
+        geo.translate(QPoint(0,-geo.height()-lineHeight-6));
+    }
+    this->setGeometry(geo);
 }
 
 QString CompletionEngine::acceptedWord()

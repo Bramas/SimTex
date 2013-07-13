@@ -224,7 +224,6 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
     {
         QString insertWord = this->_completionEngine->acceptedWord();
         QRegExp command("\\\\[a-zA-Z\\{\\-_]+$");
-        QRegExp beginCommand("\\\\begin\\{([^\\}]+)\\}$");
         int pos = this->textCursor().positionInBlock();
         QString possibleCommand = this->textCursor().block().text().left(pos);
 
@@ -232,7 +231,7 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
         if(int index = possibleCommand.indexOf(command) != -1) // the possibleCommand is a command
         {
             QTextCursor cur(this->textCursor());
-            cur.setPosition(index + cur.block().position() - 1, QTextCursor::KeepAnchor);
+            cur.setPosition(cur.position() - command.matchedLength(), QTextCursor::KeepAnchor);
             //int length = command.matchedLength();
             //possibleCommand = possibleCommand.right(length);
             cur.removeSelectedText();
@@ -516,7 +515,7 @@ void WidgetTextEdit::matchCommand()
         QTextLine line = this->textCursor().block().layout()->lineForTextPosition(this->textCursor().positionInBlock());
         qreal left = line.cursorToX(this->textCursor().positionInBlock());
         qreal top = line.position().y() + line.height() + 5;
-        this->_completionEngine->proposeCommand(left,top + this->blockTop(this->textCursor().block())-this->verticalScrollBar()->value(),possibleCommand);
+        this->_completionEngine->proposeCommand(left,top + this->blockTop(this->textCursor().block())-this->verticalScrollBar()->value(), line.height(),possibleCommand);
         if(this->_completionEngine->isVisible())// && e->key() == Qt::Key_Down)
         {
             this->_completionEngine->setFocus();
