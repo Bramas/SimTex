@@ -437,7 +437,6 @@ void WidgetPdfDocument::jumpToPdfFromSourceView(int /*top*/)
     if(!this->_widgetTextEdit->isCursorVisible() && _file)
     {
         int centerBlockNumber = this->_widgetTextEdit->centerBlockNumber();
-        qDebug()<<centerBlockNumber;
         this->jumpToPdfFromSource(centerBlockNumber);
     }
 }
