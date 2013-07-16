@@ -789,3 +789,43 @@ void WidgetTextEdit::highlightCurrentLine(void)
 
     setExtraSelections(extraSelections);
 }
+void WidgetTextEdit::highlightSyncedLine(int line)
+{
+    QList<QTextEdit::ExtraSelection> extraSelections;// = this->extraSelections();
+
+
+    QTextCursor cursor = textCursor();
+    cursor.setPosition(this->document()->findBlockByNumber(line).position());
+    while(cursor.blockNumber() == line)
+    {
+        QTextEdit::ExtraSelection selection;
+        selection.format.setBackground(ConfigManager::Instance.getTextCharFormats("synced-line").background());
+        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+        selection.cursor = QTextCursor(cursor);
+        selection.cursor.clearSelection();
+        extraSelections.append(selection);
+        if(!cursor.movePosition(QTextCursor::Down))
+        {
+            break;
+        }
+    }
+
+    setExtraSelections(extraSelections);
+}
+
+int WidgetTextEdit::centerBlockNumber()
+{
+    int centerBlockNumber = this->firstVisibleBlock;
+
+    while(centerBlockNumber < this->document()->blockCount())
+    {
+        if(this->blockTop(centerBlockNumber) - this->verticalScrollBar()->value() > this->height() / 2)
+        {
+            break;
+        }
+        ++centerBlockNumber;
+    }
+
+    return centerBlockNumber - 1;
+
+}

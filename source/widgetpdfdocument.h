@@ -83,7 +83,7 @@ public:
 signals:
     void translated(int);
 public slots:
-    void jumpToPdfFromSourceView(int firstVisibleBlock, int);
+    void jumpToPdfFromSourceView(int);
     void jumpToPdfFromSource(int source_line = -1);
     void zoomIn();
     void zoomOut();

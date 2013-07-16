@@ -173,7 +173,7 @@ void WidgetPdfDocument::initDocument()
     scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
 
 
-    //jumpToPdfFromSource(_file->getFilename(),_widgetTextEdit->textCursor().blockNumber());
+    jumpToPdfFromSource();
     update();
 }
 
@@ -320,7 +320,16 @@ bool WidgetPdfDocument::checkLinksPress(const QPointF &pos)
         {
             int pageNumber = link.destination->pageNumber() - 1;
             int top = link.destination->top()*_document->page(pageNumber)->pageSize().height();
+            int left = link.destination->left()*_document->page(pageNumber)->pageSize().width();
+            int bottom = link.destination->bottom()*_document->page(pageNumber)->pageSize().height();
+            int right = link.destination->right()*_document->page(pageNumber)->pageSize().width();
             this->goToPage(pageNumber, top);
+
+            _syncPage = pageNumber;
+            _syncRect = QRectF(left, top, right-left, bottom-top);
+            _lastUpdate.start();
+            _timer.start(1);
+
             return true;
         }
     }
@@ -423,11 +432,13 @@ void WidgetPdfDocument::updatePdf()
     update();
 }
 
-void WidgetPdfDocument::jumpToPdfFromSourceView(int firstVisibleBlock, int i)
+void WidgetPdfDocument::jumpToPdfFromSourceView(int /*top*/)
 {
     if(!this->_widgetTextEdit->isCursorVisible() && _file)
     {
-        this->jumpToPdfFromSource(firstVisibleBlock);
+        int centerBlockNumber = this->_widgetTextEdit->centerBlockNumber();
+        qDebug()<<centerBlockNumber;
+        this->jumpToPdfFromSource(centerBlockNumber);
     }
 }
 
@@ -445,6 +456,8 @@ void WidgetPdfDocument::jumpToPdfFromSource(int source_line)
     {
       return;
     }
+
+    _widgetTextEdit->highlightSyncedLine(source_line);
 
     source_line = this->_file->getBuildedLine(source_line);
 
@@ -490,22 +503,11 @@ void WidgetPdfDocument::jumpToPdfFromSource(int source_line)
         }
         if (page > 0)
         {
-
-            //disconnect(pdfview, SIGNAL(currentPageChanged(int)), this, SLOT(checkPage(int)));
-
             _syncPage = page - 1;
             _syncRect = path.boundingRect();
             goToPage(_syncPage, _syncRect.y(), _syncRect.height());
             _lastUpdate.start();
             _timer.start(1);
-            /*
-            currentPage=page;
-            lastPage=currentPage;
-            pdfview->showRect(currentPage-1,r);
-            path.setFillRule(Qt::WindingFill);
-            QTimer::singleShot(500,this, SLOT(slotHighlight()) );
-            updateCurrentPage();
-            connect(pdfview, SIGNAL(currentPageChanged(int)), this, SLOT(checkPage(int)));*/
         }
     }
 }

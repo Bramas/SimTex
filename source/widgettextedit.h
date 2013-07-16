@@ -70,6 +70,10 @@ public:
     bool isCursorVisible();
     void setSyntaxHighlighter(SyntaxHighlighter * syntaxHighlighter) { this->_syntaxHighlighter = syntaxHighlighter; }
     void displayWidgetInsertCommand();
+
+    int centerBlockNumber();
+    void highlightSyncedLine(int line);
+
 signals:
     void updateFirstVisibleBlock(int,int);
     void updatedWithSameFirstVisibleBlock();
