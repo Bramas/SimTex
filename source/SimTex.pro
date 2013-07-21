@@ -92,6 +92,10 @@ win32 {
 
     RC_FILE = win.rc
 }
-unix{
+unix:!mac{
     LIBS += -L/usr/local/lib -lpoppler-qt4
+}
+mac{
+    LIBS += -lz -L/usr/local/lib -lpoppler-qt4
+    #CONFIG += x86 x86_64
 }

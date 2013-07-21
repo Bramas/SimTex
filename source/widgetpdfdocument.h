@@ -32,11 +32,17 @@
 
 #include "synctex_parser.h"
 #include <QPoint>
+
+#if __APPLE__
+    #include <poppler/qt4/poppler-qt4.h>
+#else
 #if linux
     #include <poppler/qt4/poppler-qt4.h>
 #else
     #include <poppler-qt4.h>
 #endif
+#endif
+
 
 class File;
 class QImage;
