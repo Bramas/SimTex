@@ -100,5 +100,6 @@ unix:!mac{
 }
 mac{
     LIBS += -lz -L/usr/local/lib -lpoppler-qt4
+    ICON = simtex.icns
     #CONFIG += x86 x86_64
 }
