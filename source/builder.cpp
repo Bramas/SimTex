@@ -42,6 +42,16 @@ void Builder::pdflatex()
     process->start("pdflatex -output-directory=\""+this->file->getPath()+"\" -aux-directory="+this->file->getAuxPath()+" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"");
 }
 
+void Builder::bibtex()
+{
+    this->file->save();
+    emit started();
+    _lastOutput = QString("");
+    _simpleOutPut.clear();
+    _basename = this->file->fileInfo().baseName();
+    qDebug()<<"bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"";
+    process->start("bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"");
+}
 void Builder::onFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     //qDebug()<<_lastOutput;
@@ -71,6 +81,12 @@ bool Builder::checkOutput()
         _simpleOutPut << "Output written on \""+this->_basename+".pdf\"";
         return true;
     }
+    if(index = _lastOutput.indexOf("Database file ") != -1)
+    {
+        _simpleOutPut << "Success";
+        return true;
+    }
+
 
     QStringList lines = _lastOutput.split('\n');
     bool errorState = false;

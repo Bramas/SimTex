@@ -36,6 +36,7 @@ public:
     const QStringList & simpleOutput() const { return _simpleOutPut; }
 public slots:
     void pdflatex();
+    void bibtex();
     void onFinished(int exitCode,QProcess::ExitStatus exitStatus);
     void onStandartOutputReady();
 
