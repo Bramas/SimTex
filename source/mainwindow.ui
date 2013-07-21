@@ -50,7 +50,7 @@
      <x>0</x>
      <y>0</y>
      <width>991</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -81,6 +81,7 @@
      <string>Compiler</string>
     </property>
     <addaction name="actionPdfLatex"/>
+    <addaction name="actionBibtex"/>
     <addaction name="separator"/>
     <addaction name="actionAutoView"/>
     <addaction name="actionView"/>
@@ -231,6 +232,11 @@
   <action name="actionDeleteLastOpenFiles">
    <property name="text">
     <string>Supprimer l'historique</string>
+   </property>
+  </action>
+  <action name="actionBibtex">
+   <property name="text">
+    <string>Bibtex</string>
    </property>
   </action>
  </widget>

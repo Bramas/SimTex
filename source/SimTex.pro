@@ -12,7 +12,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = SimTex
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     widgetlinenumber.cpp \
@@ -75,7 +74,11 @@ FORMS    += mainwindow.ui \
 #LIBS         += G:\poppler\bin\poppler-cpp.dll
 #LIBS         += G:\poppler\bin\libpng14-14.dll
 
-target.path = SimTexwin32
+isEmpty( PREFIX ) {
+    PREFIX=/usr
+}
+DEFINES += PREFIX=\\\"$${PREFIX}\\\"
+target.path = $${PREFIX}/bin
 
 INSTALLS = target
 
@@ -93,5 +96,5 @@ win32 {
     RC_FILE = win.rc
 }
 unix{
-    LIBS += -L/usr/local/lib -lpoppler-qt4
+    LIBS += -lz -L/usr/lib -L/usr/local/lib -lpoppler-qt4
 }
