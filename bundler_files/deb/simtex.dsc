@@ -1,6 +1,7 @@
 Format: 1.0
 Source: simtex
-Version: 0.1.10
+Version: 0.1.10-2
+Standards-Version: 3.8.3
 Binary: simtex
 Maintainer: Quentin BRAMAS <quentin@bramas.fr>
 Architecture: any
