@@ -50,7 +50,7 @@ ConfigManager::ConfigManager() :
 
     QCoreApplication::setOrganizationName("Ultratools");
     QCoreApplication::setOrganizationDomain("ultratools.org");
-    QCoreApplication::setApplicationName("TexSim");
+    QCoreApplication::setApplicationName("SimTex");
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
     QSettings settings;
