@@ -42,8 +42,8 @@
 ConfigManager ConfigManager::Instance;
 
 ConfigManager::ConfigManager() :
-    textCharFormats(new QMap<QString,QTextCharFormat>()),
-    mainWindow(0)
+    mainWindow(0),
+    textCharFormats(new QMap<QString,QTextCharFormat>())
 {
 
     qDebug()<<"Init ConfigManager";
@@ -52,6 +52,8 @@ ConfigManager::ConfigManager() :
     QCoreApplication::setOrganizationDomain("ultratools.org");
     QCoreApplication::setApplicationName("SimTex");
     QSettings::setDefaultFormat(QSettings::IniFormat);
+
+    checkRevision();
 
     QSettings settings;
     settings.beginGroup("theme");
@@ -75,115 +77,11 @@ ConfigManager::ConfigManager() :
         textCharFormats->insert("normal",charFormat);
     }
     return;
-    /*
-    if(!settings.value("theme").toString().compare("dark"))
-    {
-        //font.setBold(QFont::Normal);
-        charFormat.setForeground(QColor(248,248,242));
-        charFormat.setFont(font);
-        charFormat.setBackground(QColor(58,60,50));
-        textCharFormats->insert("linenumber",charFormat);
-
-        charFormat.setForeground(QColor(14,16,15));
-        charFormat.setFont(font);
-        textCharFormats->insert("textedit-border",charFormat);
-
-
-        charFormat.setBackground(QColor(48,50,44));
-        textCharFormats->insert("selected-line",charFormat);
-
-        charFormat.setForeground(QColor(248,248,242));
-        charFormat.setFont(font);
-        charFormat.setBackground(QColor(39,40,34));
-        textCharFormats->insert("normal",charFormat);
-
-
-
-
-        charFormat.setForeground(QColor(117,113,94));
-        charFormat.setFont(font);
-        textCharFormats->insert("comment",charFormat);
-
-
-        charFormat.setForeground(QColor(118,227,75));
-        charFormat.setFont(font);
-        textCharFormats->insert("math",charFormat);
-
-        charFormat.setForeground(QColor(249,39,114));
-        charFormat.setFont(font);
-        textCharFormats->insert("command",charFormat);
-
-
-        font.setBold(QFont::Bold);
-        charFormat.setForeground(QColor(249,39,114));
-        charFormat.setFont(font);
-        textCharFormats->insert("structure",charFormat);
-
-    //    font.setBold(QFont::Normal);
-        font.setBold(QFont::Bold);
-        charFormat.setForeground(QColor(158,158,152));
-        charFormat.setBackground(QColor(58,60,50));
-        charFormat.setFont(font);
-        textCharFormats->insert("leftStructure",charFormat);
-    }
-    else
-    {
-
-        //font.setBold(QFont::Normal);
-        charFormat.setForeground(QColor(63,62,51));
-        charFormat.setFont(font);
-        charFormat.setBackground(QColor(220,220,220));
-        textCharFormats->insert("linenumber",charFormat);
-
-        charFormat.setForeground(QColor(200,200,200));
-        charFormat.setFont(font);
-        textCharFormats->insert("textedit-border",charFormat);
-
-        charFormat.setBackground(QColor(230,230,230));
-        textCharFormats->insert("selected-line",charFormat);
-
-        charFormat.setForeground(QColor(53,52,41));
-        charFormat.setFont(font);
-        charFormat.setBackground(QColor(250,250,250));
-        textCharFormats->insert("normal",charFormat);
-
-
-        charFormat.setForeground(QColor(117,113,94));
-        charFormat.setFont(font);
-        textCharFormats->insert("comment",charFormat);
-
-
-
-        charFormat.setForeground(QColor(229,30,104));
-        charFormat.setFont(font);
-        textCharFormats->insert("command",charFormat);
-
-
-        font.setBold(QFont::DemiBold);
-        charFormat.setForeground(QColor(38,133,0));
-        charFormat.setFont(font);
-        textCharFormats->insert("math",charFormat);
-
-        font.setBold(QFont::Bold);
-        charFormat.setForeground(QColor(209,24,94));
-        charFormat.setFont(font);
-        textCharFormats->insert("structure",charFormat);
-
-
-    //    font.setBold(QFont::Normal);
-        font.setBold(QFont::Bold);
-        charFormat.setForeground(QColor(153,152,151));
-        charFormat.setBackground(QColor(235,235,235));
-        charFormat.setFont(font);
-        textCharFormats->insert("leftStructure",charFormat);
-    }// */
 
 }
 void ConfigManager::setMainWindow(QWidget * mainWindow)
 {
     this->mainWindow = mainWindow;
-
-    //this->save();
 }
 
 
@@ -311,44 +209,6 @@ QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharF
         index = string.indexOf(pattern, index + length);
     }
     return charFormat;
-/*
-    if(charFormat.font() != defaultFormat.font())
-    {
-        config += QString("font(");
-        if(charFormat.font().family().compare(defaultFormat.font().family()))
-        {
-            config += QString("\"")+charFormat.font().family()+QString("\" ");
-        }
-        if(charFormat.font().pointSize() != defaultFormat.font().pointSize())
-        {
-            config += QString::number(charFormat.font().pointSize())+QString(" ");
-        }
-        if(charFormat.font().bold() != defaultFormat.font().bold())
-        {
-            config += (charFormat.font().bold()?"bold":"normal")+QString(" ");
-        }
-        config +=QString(") ");
-    }
-
-    if(charFormat.foreground().style() != Qt::NoBrush)
-    {
-        config += " foreground("+QString::number(charFormat.foreground().color().red())+
-                ", "+QString::number(charFormat.foreground().color().green())+
-                ", "+QString::number(charFormat.foreground().color().blue())+
-                ") ";
-    }
-    if(charFormat.background().style() != Qt::NoBrush)
-    {
-        config += " background("+QString::number(charFormat.background().color().red())+
-                    ", "+QString::number(charFormat.background().color().green())+
-                    ", "+QString::number(charFormat.background().color().blue())+
-                    ") ";
-    }
-    if(config.isEmpty())
-    {
-        config = "inherit";
-    }
-    return config;*/
 }
 
 void ConfigManager::changePointSizeBy(int delta)
@@ -394,12 +254,9 @@ void ConfigManager::save()
     {
         dir.mkpath(dataLocation);
     }
-    //qDebug()<<QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-    //return;
     QSettings settings;
     settings.beginGroup("theme");
     QSettings file(dataLocation+dir.separator()+settings.value("theme").toString()+".sim-theme",QSettings::IniFormat);
-//    file.beginGroup("Theme");
 
     QMapIterator<QString,QTextCharFormat> it(*this->textCharFormats);
     QString key;
@@ -491,10 +348,47 @@ QStringList ConfigManager::themesList()
 #endif
     if(dataLocation.isEmpty())
     {
-            //QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
+        //QMessageBox::warning(this->mainWindow,QObject::tr("Attention"), QObject::tr("QStandardPaths::DataLocation est introuvable."));
         return QStringList();
     }
     QDir dir(dataLocation);
     return dir.entryList(QDir::Files | QDir::Readable, QDir::Name).filter(QRegExp("\\.sim-theme"));
+}
+
+
+void ConfigManager::checkRevision()
+{
+    QSettings settings;
+
+    int fromVersion = settings.value("revision",0).toInt();
+
+    switch(fromVersion)
+    {
+
+        case 0:
+            qDebug()<<"First launch of SimTex";
+            QString dataLocation("");
+            QString documentLocation("");
+        #if QT_VERSION < 0x050000
+            dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+            documentLocation = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+        #else
+            dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+            documentLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        #endif
+            if(dataLocation.isEmpty())
+            {
+                return;
+            }
+            QDir dir;
+            dir.mkpath(dataLocation);
+            QFile theme;
+            theme.copy(":data/theme/dark.sim-theme", dataLocation+dir.separator()+"dark.sim-theme");
+            theme.copy(":data/theme/light.sim-theme", dataLocation+dir.separator()+"light.sim-theme");
+
+            settings.setValue("lastFolder",documentLocation);
+
+     }
+     settings.setValue("revision",1);
 }
 

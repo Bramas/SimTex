@@ -192,7 +192,6 @@ void SyntaxHighlighter::highlightBlock(const QString &text)
 }
 void SyntaxHighlighter::highlightExpression(const QString &text, const QString &pattern, const QTextCharFormat &format)
 {
-    int length;
     QRegExp expression(pattern);
     int index = text.indexOf(expression);
     while (index >= 0) {

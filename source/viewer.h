@@ -43,8 +43,8 @@ signals:
 
 private:
 
-    QProcess * process;
     File * file;
+    QProcess * process;
     int currentLine;
 };
 

@@ -41,13 +41,13 @@ public slots:
     void updateText(void);
 
 private:
-    WidgetTextEdit * widgetTextEdit;
-    int scrollOffset;
-    QWidget *parent;
+    QRect boudingRect;
     bool mousePressed;
     int mousePressedAt;
     QRectF overlayRect;
-    QRect boudingRect;
+    QWidget *parent;
+    int scrollOffset;
+    WidgetTextEdit * widgetTextEdit;
 
     void paintEvent(QPaintEvent * event);
     void mousePressEvent(QMouseEvent * event);

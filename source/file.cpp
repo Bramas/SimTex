@@ -31,13 +31,13 @@
 #define AUTO_SAVE 120000
 
 File::File(WidgetTextEdit* widgetTextEdit,QString filename) :
-    filename(filename),
+    _autoSaveTimer(new QTimer),
     builder(new Builder(this)),
-    viewer(new Viewer(this)),
-    _widgetTextEdit(widgetTextEdit),
     _codec(QTextCodec::codecForLocale()->name()),
+    filename(filename),
     _modified(false),
-    _autoSaveTimer(new QTimer)
+    viewer(new Viewer(this)),
+    _widgetTextEdit(widgetTextEdit)
 {
     connect(_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()));
 }
@@ -73,7 +73,7 @@ void File::save(QString filename)
     _autoSaveTimer->start(AUTO_SAVE);
 }
 
-const QString& File::open(QString filename, QString codec)
+const QString File::open(QString filename, QString codec)
 {
     // Get the filename
 
@@ -85,7 +85,7 @@ const QString& File::open(QString filename, QString codec)
             //this->filename = QFileDialog::getOpenFileName(this->_parent,tr("Ouvrir un fichier"));
             if(this->filename.isEmpty())
             {
-                return "";
+                return QString("");
             }
         }
     }
@@ -97,7 +97,7 @@ const QString& File::open(QString filename, QString codec)
 
     QFile file(this->filename);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return "";
+        return QString("");
 
     this->data = QString("");
 
@@ -117,7 +117,7 @@ const QString& File::open(QString filename, QString codec)
     if(codec.isEmpty() && data.contains(QString::fromUtf8("�")))
     {
         this->open(this->filename,"ISO 8859-1");
-        return "";
+        return QString("");
     }
     this->_codec = in.codec()->name();
     this->_widgetTextEdit->setText(this->data);

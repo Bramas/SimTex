@@ -31,6 +31,13 @@ int main(int argc, char *argv[])
 
 
     MainWindow w;
+
+    if(argc > 1)
+    {
+        QString filename = argv[1];
+        w.open(filename);
+    }
+
     w.show();
     
     return a.exec();

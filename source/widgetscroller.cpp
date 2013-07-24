@@ -43,10 +43,10 @@ WidgetScroller::WidgetScroller(QWidget *parent) :
 void WidgetScroller::updateText(void)
 {
     QFontMetrics fm(QFont("Consolas",2));
-    this->boudingRect = fm.boundingRect(0,0,this->widgetTextEdit->width()/4,9999999999,Qt::AlignLeft,this->widgetTextEdit->document()->toPlainText());
+    this->boudingRect = fm.boundingRect(0,0,this->widgetTextEdit->width()/4,99999999,Qt::AlignLeft,this->widgetTextEdit->document()->toPlainText());
 }
 
-void WidgetScroller::paintEvent(QPaintEvent *event)
+void WidgetScroller::paintEvent(QPaintEvent * /*event*/)
 {
     if(!widgetTextEdit) return;
 
@@ -61,7 +61,7 @@ void WidgetScroller::paintEvent(QPaintEvent *event)
     this->setGeometry(QRect(this->geometry().left(),this->geometry().top(),this->widgetTextEdit->width()/4,height()));
     painter.setFont(QFont("Consolas",2));
 
-    painter.drawText(QRect(0, this->scrollOffset * (boudingRect.height()-height())/(height()-this->overlayRect.height()),this->widgetTextEdit->width()/4,9999999999),Qt::TextWordWrap,this->widgetTextEdit->document()->toPlainText());
+    painter.drawText(QRect(0, this->scrollOffset * (boudingRect.height()-height())/(height()-this->overlayRect.height()),this->widgetTextEdit->width()/4,99999999),Qt::TextWordWrap,this->widgetTextEdit->document()->toPlainText());
 
     painter.setBrush(QBrush(QColor(0,0,0,100)));
 
@@ -78,7 +78,7 @@ void WidgetScroller::mousePressEvent(QMouseEvent *event)
         emit changed(event->pos().y()*2);
     }
 }
-void WidgetScroller::mouseReleaseEvent(QMouseEvent *event)
+void WidgetScroller::mouseReleaseEvent(QMouseEvent */*event*/)
 {
     mousePressed = false;
 }

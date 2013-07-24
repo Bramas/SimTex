@@ -42,16 +42,16 @@ int WidgetPdfDocument::PageMargin = 20;
 
 WidgetPdfDocument::WidgetPdfDocument(QWidget *parent) :
     QWidget(parent),
-    _widgetTextEdit(0),
     _document(0),
+    _documentHeight(0),
     _file(0),
-    _mousePressed(false),
     _loadedPages(0),
+    _mousePressed(false),
     _pages(0),
-    _zoom(1),
-    _scroll(new QScrollBar(Qt::Vertical, this)),
     scanner(NULL),
-    _documentHeight(0)
+    _scroll(new QScrollBar(Qt::Vertical, this)),
+    _widgetTextEdit(0),
+    _zoom(1)
 
 {
     this->setMouseTracking(true);
@@ -347,7 +347,7 @@ void WidgetPdfDocument::mousePressEvent(QMouseEvent * event)
     this->_mousePressed = true;
     this->setCursor(Qt::ClosedHandCursor);
 }
-void WidgetPdfDocument::mouseReleaseEvent(QMouseEvent * event)
+void WidgetPdfDocument::mouseReleaseEvent(QMouseEvent * /*event*/)
 {
     this->_mousePressed = false;
     this->setCursor(Qt::OpenHandCursor);

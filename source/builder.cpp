@@ -33,18 +33,31 @@ Builder::Builder(File * file) :
 
 void Builder::pdflatex()
 {
-    this->file->save();
+    if(this->file->getFilename().isEmpty())
+    {
+        return;
+    }
     emit started();
     _lastOutput = QString("");
     _simpleOutPut.clear();
     _basename = this->file->fileInfo().baseName();
-    qDebug()<<"pdflatex -aux-directory=\""+this->file->getAuxPath()+"\" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"";
-    process->start("pdflatex -output-directory=\""+this->file->getPath()+"\" -aux-directory="+this->file->getAuxPath()+" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"");
+
+    QString command = "pdflatex -output-directory=\""+this->file->getPath()+"\" -aux-directory="+this->file->getAuxPath()+" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"";
+
+    if(this->process->state() != QProcess::NotRunning)
+    {
+        this->process->kill();
+    }
+    qDebug()<<command;
+    process->start(command);
 }
 
 void Builder::bibtex()
 {
-    this->file->save();
+    if(this->file->getFilename().isEmpty())
+    {
+        return;
+    }
     emit started();
     _lastOutput = QString("");
     _simpleOutPut.clear();
@@ -52,7 +65,7 @@ void Builder::bibtex()
     qDebug()<<"bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"";
     process->start("bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"");
 }
-void Builder::onFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void Builder::onFinished(int /*exitCode*/, QProcess::ExitStatus /*exitStatus*/)
 {
     //qDebug()<<_lastOutput;
     this->file->refreshLineNumber();
@@ -75,13 +88,12 @@ void Builder::onStandartOutputReady()
 
 bool Builder::checkOutput()
 {
-    int index;
-    if(index = _lastOutput.indexOf("Output written on ") != -1)
+    if(_lastOutput.indexOf("Output written on ") != -1)
     {
         _simpleOutPut << "Output written on \""+this->_basename+".pdf\"";
         return true;
     }
-    if(index = _lastOutput.indexOf("Database file ") != -1)
+    if(_lastOutput.indexOf("Database file ") != -1)
     {
         _simpleOutPut << "Success";
         return true;

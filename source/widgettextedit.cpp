@@ -48,14 +48,14 @@
 
 WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
     QTextEdit(parent),
-    fileStructure(new FileStructure(this)),
-    updatingIndentation(false),
+    _completionEngine(new CompletionEngine(this)),
     currentFile(new File(this)),
+    fileStructure(new FileStructure(this)),
     firstVisibleBlock(0),
+    _indentationInited(false),
     _lineCount(0),
     _syntaxHighlighter(0),
-    _completionEngine(new CompletionEngine(this)),
-    _indentationInited(false),
+    updatingIndentation(false),
     _widgetInsertCommand(new WidgetInsertCommand(this))
 
 {
@@ -228,12 +228,10 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
         QString possibleCommand = this->textCursor().block().text().left(pos);
 
 
-        if(int index = possibleCommand.indexOf(command) != -1) // the possibleCommand is a command
+        if(possibleCommand.indexOf(command) != -1) // the possibleCommand is a command
         {
             QTextCursor cur(this->textCursor());
             cur.setPosition(cur.position() - command.matchedLength(), QTextCursor::KeepAnchor);
-            //int length = command.matchedLength();
-            //possibleCommand = possibleCommand.right(length);
             cur.removeSelectedText();
             this->insertPlainText(insertWord);
             this->setFocus();
@@ -345,18 +343,11 @@ void WidgetTextEdit::wheelEvent(QWheelEvent * event)
 }
 void WidgetTextEdit::setBlockLeftMargin(const QTextBlock &textBlock, int leftMargin)
 {
-    //_formatMutex.lock();
-    //if(!textBlock.isValid()) return;
-    int blockNumber = textBlock.blockNumber();
     QTextBlockFormat format;
     QTextCursor cursor(this->textCursor());
     format.setLeftMargin(leftMargin);
     cursor.setPosition(textBlock.position());
     cursor.setBlockFormat(format);
-
-    //_formatMutex.unlock();
-    //if(blockNumber < this->document()->blockCount() - 1)
-   // QtConcurrent::run(this, &WidgetTextEdit::setBlockLeftMargin, this->document()->findBlockByNumber(blockNumber+1), leftMargin);
 }
 
 void WidgetTextEdit::initIndentation(void)
@@ -663,11 +654,9 @@ void WidgetTextEdit::matchLat()
         if( data )
         {
             QVector<LatexBlockInfo *> infos = data->latexblocks();
-            int pos = textCursor().block().position();
             if (infos.size()==0)
             {
                 emit setBlockRange(-1,-1);
-                //endBlock=-1;
             }
             for ( int i=0; i<infos.size(); ++i )
             {
@@ -685,7 +674,6 @@ bool WidgetTextEdit::matchLeftLat(	QTextBlock currentBlock, int index, int numLe
 {
     BlockData *data = static_cast<BlockData *>( currentBlock.userData() );
     QVector<LatexBlockInfo *> infos = data->latexblocks();
-    int docPos = currentBlock.position();
 
     // Match in same line?
     for ( ; index<infos.size(); ++index ) {
@@ -717,7 +705,6 @@ bool WidgetTextEdit::matchRightLat(QTextBlock currentBlock, int index, int numRi
 
     BlockData *data = static_cast<BlockData *>( currentBlock.userData() );
     QVector<LatexBlockInfo *> infos = data->latexblocks();
-    int docPos = currentBlock.position();
 
     // Match in same line?
     for (int j=index; j>=0; --j ) {

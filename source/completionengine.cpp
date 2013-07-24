@@ -76,8 +76,8 @@ void CompletionEngine::proposeCommand(int left, int top, int lineHeight, QString
     found.append(customFound);
     found.sort();
 
-    if(found.empty() ||
-            found.count() == 1 && (found.first().length() == commandBegin.length() || found.first().indexOf('#')  == commandBegin.length()))
+    if(found.empty() || (
+            found.count() == 1 && (found.first().length() == commandBegin.length() || found.first().indexOf('#')  == commandBegin.length())))
     {
         found.clear();
         this->parentWidget()->setFocus();
@@ -90,7 +90,7 @@ void CompletionEngine::proposeCommand(int left, int top, int lineHeight, QString
     int dieseIndex;
     foreach(const QString &word, found)
     {
-        if(dieseIndex = word.indexOf(QRegExp("#")) != -1)
+        if((dieseIndex = word.indexOf(QRegExp("#"))) != -1)
         {
             this->insertItem(idx++,word.left(word.length() - dieseIndex - 1));
         }

@@ -9,7 +9,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = simtex
+TARGET = SimTex
 TEMPLATE = app
 
 SOURCES += main.cpp\
@@ -96,7 +96,7 @@ win32 {
     RC_FILE = win.rc
 }
 unix:!mac{
-    LIBS += -lz -L/usr/local/lib -lpoppler-qt4
+    LIBS += -L/usr/local/lib -lpoppler-qt4
 }
 mac{
     LIBS += -lz -L/usr/local/lib -lpoppler-qt4

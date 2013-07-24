@@ -52,6 +52,8 @@ public:
 public slots:
 
     void newFile(void);
+    void pdflatex(void);
+    void bibtex(void);
     void save(void);
     void saveAs(void);
     void open(QString filename = "");
@@ -71,16 +73,16 @@ private:
     Ui::MainWindow *ui;
     void initTheme();
 
-    WidgetLineNumber * widgetLineNumber;
-    WidgetTextEdit * widgetTextEdit;
-    WidgetScroller * widgetScroller;
-    WidgetPdfViewer * _widgetPdfViewer;
-    WidgetConsole * _widgetConsole;
-    WidgetFindReplace * _widgetFindReplace;
-    DialogWelcome * dialogWelcome;
     DialogConfig * dialogConfig;
+    DialogWelcome * dialogWelcome;
     QVBoxLayout * _leftLayout;
     SyntaxHighlighter * _syntaxHighlighter;
+    WidgetConsole * _widgetConsole;
+    WidgetFindReplace * _widgetFindReplace;
+    WidgetLineNumber * widgetLineNumber;
+    WidgetPdfViewer * _widgetPdfViewer;
+    WidgetScroller * widgetScroller;
+    WidgetTextEdit * widgetTextEdit;
     int _editorWidth;
     bool _mousePressed;
     bool _resizeConsole;

@@ -84,7 +84,7 @@ void WidgetLineNumber::updateWidth(int lineCount)
 
 }
 
-void WidgetLineNumber::paintEvent(QPaintEvent *event)
+void WidgetLineNumber::paintEvent(QPaintEvent * /*event*/)
 {
     if(!widgetTextEdit) return;
 

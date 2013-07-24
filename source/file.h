@@ -60,7 +60,7 @@ public:
      * if filename is empty, the filename given during the constructor is used.
      * if filename is not empty, it will replace the current filename.
      */
-    const QString& open(QString filename = "", QString codec = "");
+    const QString open(QString filename = "", QString codec = "");
     /**
      * @brief save the file
      * @param filename
@@ -171,14 +171,14 @@ public slots:
     }
 
 private:
-    QString filename;
-    QString data;
+    QTimer * _autoSaveTimer;
     Builder * builder;
+    QString _codec;
+    QString data;
+    QString filename;
+    bool _modified;
     Viewer * viewer;
     WidgetTextEdit * _widgetTextEdit;
-    bool _modified;
-    QString _codec;
-    QTimer * _autoSaveTimer;
 
     QMap<int,int> _lineNumberSinceLastBuild;
 };

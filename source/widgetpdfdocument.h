@@ -114,33 +114,31 @@ private:
     void checkLinksOver(const QPointF &pos);
     bool checkLinksPress(const QPointF &pos);
 
-    QElapsedTimer _lastUpdate;
-    QTimer _timer;
 
-    WidgetTextEdit * _widgetTextEdit;
-    QScrollBar * _scroll;
-    File* _file;
     Poppler::Document* _document;
-    QPoint _pressAt;
-    QPoint _painterTranslateWhenMousePressed;
-    QPoint _painterTranslate;
-    bool _mousePressed;
-    qreal _zoom;
     int _documentHeight;
-
-    QImage ** _pages;
-    bool * _loadedPages;
-    QPainterPath path;
-
-    QRectF _syncRect;
-    int _syncPage;
-
-    synctex_scanner_t scanner;
-
-    QList<Link> _links;
-
     static QImage * EmptyImage;
+    File* _file;
+    QElapsedTimer _lastUpdate;
+    QList<Link> _links;
+    bool * _loadedPages;
+    bool _mousePressed;
     static int PageMargin;
+    QImage ** _pages;
+    QPainterPath path;
+    QPoint _pressAt;
+    QPoint _painterTranslate;
+    QPoint _painterTranslateWhenMousePressed;
+    synctex_scanner_t scanner;
+    QScrollBar * _scroll;
+    int _syncPage;
+    QRectF _syncRect;
+    QTimer _timer;
+    WidgetTextEdit * _widgetTextEdit;
+    qreal _zoom;
+
+
+
 };
 
 #endif // WIDGETPDFDOCUMENT_H

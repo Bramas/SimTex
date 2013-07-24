@@ -66,17 +66,19 @@ public:
     QStringList themesList();
     const QString& theme() { return _theme; }
 
+    void checkRevision();
+
 public slots:
     void openThemeFolder();
 
 private:
     ConfigManager();
 
+    QMutex _charFormatMutex;
     QWidget * mainWindow;
     QSettings settings;
     QMap<QString,QTextCharFormat> * textCharFormats;
     QString _theme;
-    QMutex _charFormatMutex;
 };
 
 

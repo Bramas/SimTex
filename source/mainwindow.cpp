@@ -53,15 +53,15 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    widgetTextEdit(new WidgetTextEdit(this)),
-    widgetLineNumber(new WidgetLineNumber(this)),
-    widgetScroller(new WidgetScroller),
-    dialogWelcome(new DialogWelcome(this)),
     dialogConfig(new DialogConfig(this)),
-    _widgetPdfViewer(new WidgetPdfViewer(this)),
-    _mousePressed(false),
+    dialogWelcome(new DialogWelcome(this)),
     _leftLayout(new QVBoxLayout()),
     _widgetConsole(new WidgetConsole()),
+    widgetLineNumber(new WidgetLineNumber(this)),
+    _widgetPdfViewer(new WidgetPdfViewer(this)),
+    widgetScroller(new WidgetScroller),
+    widgetTextEdit(new WidgetTextEdit(this)),
+    _mousePressed(false),
     _resizeConsole(false)
 {
     ui->setupUi(this);
@@ -115,8 +115,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->actionFindReplace, SIGNAL(triggered()), this, SLOT(openFindReplaceWidget()));
     connect(_widgetFindReplace->pushButtonClose(), SIGNAL(clicked()), this, SLOT(closeFindReplaceWidget()));
     this->closeFindReplaceWidget();
-    connect(this->ui->actionPdfLatex,SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getBuilder(),SLOT(pdflatex()));
-    connect(this->ui->actionBibtex,SIGNAL(triggered()),this->widgetTextEdit->getCurrentFile()->getBuilder(),SLOT(bibtex()));
+    connect(this->ui->actionPdfLatex,SIGNAL(triggered()),this,SLOT(pdflatex()));
+    connect(this->ui->actionBibtex,SIGNAL(triggered()),this,SLOT(bibtex()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(pdfChanged()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(updatePdf()));
     connect(this->ui->actionView, SIGNAL(triggered()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(jumpToPdfFromSource()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
@@ -175,6 +175,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->dialogConfig,SIGNAL(accepted()),_syntaxHighlighter,SLOT(rehighlight()));
 
 
+    this->newFile();
 
     this->setMouseTracking(true);
 
@@ -232,6 +233,10 @@ void MainWindow::newFile()
     }
     this->widgetTextEdit->getCurrentFile()->create();
     this->widgetTextEdit->setText("");
+
+
+    this->_widgetPdfViewer->widgetPdfDocument()->setFile(this->widgetTextEdit->getCurrentFile());
+    this->_widgetConsole->setBuilder(this->widgetTextEdit->getCurrentFile()->getBuilder());
 }
 
 void MainWindow::openLast()
@@ -253,19 +258,22 @@ void MainWindow::open(QString filename)
     {
         return;
     }
+    QSettings settings;
     //get the filname
     if(filename.isEmpty())
     {
-        filename = QFileDialog::getOpenFileName(this,tr("Ouvrir un fichier"));
+        filename = QFileDialog::getOpenFileName(this,tr("Ouvrir un fichier"),settings.value("lastFolder").toString(),tr("Latex (*.tex *.latex);;BibTex(*.bib)"));
 
         if(filename.isEmpty())
         {
             return;
         }
     }
-    QString basename(filename);
+    QFileInfo info(filename);
+    settings.setValue("lastFolder",info.path());
+    QString basename = info.baseName();
     //window title
-    this->setWindowTitle(basename.replace(QRegExp("^.*[\\\\\\/]([^\\\\\\/]*)$"),"\\1")+" - SimTex");
+    this->setWindowTitle(basename+" - SimTex");
     //udpate the settings
     {
         QSettings settings;
@@ -293,6 +301,18 @@ void MainWindow::clearLastOpened()
     this->ui->menuOuvrir_R_cent->clear();
     this->ui->menuOuvrir_R_cent->insertAction(0,this->ui->actionDeleteLastOpenFiles);
 }
+
+void MainWindow::pdflatex()
+{
+    this->save();
+    this->widgetTextEdit->getCurrentFile()->getBuilder()->pdflatex();
+}
+void MainWindow::bibtex()
+{
+    this->save();
+    this->widgetTextEdit->getCurrentFile()->getBuilder()->bibtex();
+}
+
 
 void MainWindow::save()
 {
@@ -325,9 +345,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
 
     //qDebug()<<event->pos().x()<<"    editor : "<<widgetTextEdit->width()+47<<","<<widgetTextEdit->width()+54<<"  y: "<<event->pos().y();
-    if(_mousePressed || event->pos().x() > widgetTextEdit->width()+47
+    if(_mousePressed || ( event->pos().x() > widgetTextEdit->width()+47
        && event->pos().x() < widgetTextEdit->width()+54
-       && event->pos().y() > 30)
+       && event->pos().y() > 30) )
     {
         this->setCursor(Qt::SizeHorCursor);
 
@@ -377,7 +397,7 @@ void MainWindow::mousePressEvent(QMouseEvent * event)
         this->_resizeConsole = true;
     }
 }
-void MainWindow::mouseReleaseEvent(QMouseEvent * event)
+void MainWindow::mouseReleaseEvent(QMouseEvent * /*event*/)
 {
 
     QSettings settings;
@@ -432,6 +452,10 @@ void MainWindow::initTheme()
                                         QString("background-color: ")+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
                                 "; }");
     this->widgetTextEdit->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
+    QTextCursor cur = this->widgetTextEdit->textCursor();
+    cur.setCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
+    this->widgetTextEdit->setTextCursor(cur);
+
 
     {
         QPalette Pal(palette());

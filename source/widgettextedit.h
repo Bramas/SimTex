@@ -40,7 +40,7 @@ struct BlockInfo
     int height;
     int position;
     int leftMargin;
-    BlockInfo() : leftMargin(0), top(0), height(0), position(0) {}
+    BlockInfo() : top(0), height(0), position(0), leftMargin(0) {}
 };
 
 
@@ -110,16 +110,16 @@ private:
     bool matchRightLat(QTextBlock currentBlock, int index, int numLeftLat, int bpos);
     void createLatSelection(int start, int end);
 
-    SyntaxHighlighter * _syntaxHighlighter;
     CompletionEngine * _completionEngine;
-    bool updatingIndentation;
-    QMutex _indentationMutex;
+    File * currentFile;
+    FileStructure * fileStructure;
+    int firstVisibleBlock;
     QMutex _formatMutex;
     bool _indentationInited;
-    FileStructure * fileStructure;
-    File * currentFile;
-    int firstVisibleBlock;
+    QMutex _indentationMutex;
     int _lineCount;
+    SyntaxHighlighter * _syntaxHighlighter;
+    bool updatingIndentation;
     WidgetInsertCommand * _widgetInsertCommand;
 
 

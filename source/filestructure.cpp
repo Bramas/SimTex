@@ -25,9 +25,9 @@
 #include <QTextBlock>
 
 FileStructure::FileStructure(WidgetTextEdit *parent) :
-    widgetTextEdit(parent),
+    blockIndentations(new BlockIndentation[0]),
     structureInfo(new QList<FileStructureInfo*>()),
-    blockIndentations(new BlockIndentation[0])
+    widgetTextEdit(parent)
 {
 
 }

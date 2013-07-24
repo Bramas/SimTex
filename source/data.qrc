@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>data/icons/appicon.png</file>
+        <file>data/theme/dark.sim-theme</file>
+        <file>data/theme/light.sim-theme</file>
     </qresource>
 </RCC>

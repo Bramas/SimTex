@@ -60,9 +60,8 @@ public slots:
     void updateStructure(void);
     
 private:
-    QList<FileStructureInfo*> * structureInfo;
     BlockIndentation * blockIndentations;
-
+    QList<FileStructureInfo*> * structureInfo;
     WidgetTextEdit * widgetTextEdit;
 };
 

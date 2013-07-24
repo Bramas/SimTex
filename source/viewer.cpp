@@ -39,7 +39,7 @@ void Viewer::view(QString)
     qDebug()<<"sumatrapdf -reuse-instance -forward-search "+this->file->getFilename()+" "+QString::number(this->currentLine);
 }
 
-void Viewer::onFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void Viewer::onFinished(int /*exitCode*/, QProcess::ExitStatus /*exitStatus*/)
 {
     emit finished();
 }
