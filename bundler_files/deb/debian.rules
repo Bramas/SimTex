@@ -47,11 +47,13 @@ install: build
 	# The DESTDIR Has To Be Exactly  /usr/src/packages/BUILD/debian/<nameOfPackage>
 	# make DESTDIR=/usr/src/packages/BUILD/debian/simtex install
 
+	mkdir -p /usr/src/packages/BUILD/debian/simtex/usr/share
 	mkdir -p /usr/src/packages/BUILD/debian/simtex/usr/bin
 	
 	#install -m 755 -p "simtex" "/usr/src/packages/BUILD/debian/simtex/usr/bin"
 	
 	cp simtex /usr/src/packages/BUILD/debian/simtex/usr/bin/simtex
+	cp -r share/* /usr/src/packages/BUILD/debian/simtex/usr/share
 	
 	# --- end custom part for installing
 
