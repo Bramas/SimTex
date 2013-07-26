@@ -35,7 +35,7 @@ Viewer::Viewer(File * file) :
 
 void Viewer::view(QString)
 {
-    process->start("sumatrapdf "+this->file->getFilename().replace(QRegExp("(.*)\.tex$"),"\\1.pdf")+" -reuse-instance -forward-search "+this->file->getFilename()+" "+QString::number(this->currentLine));
+    process->start("sumatrapdf "+this->file->getFilename().replace(QRegExp("(.*)\\.tex$"),"\\1.pdf")+" -reuse-instance -forward-search "+this->file->getFilename()+" "+QString::number(this->currentLine));
     qDebug()<<"sumatrapdf -reuse-instance -forward-search "+this->file->getFilename()+" "+QString::number(this->currentLine);
 }
 

@@ -32,7 +32,7 @@
 
 #include "synctex_parser.h"
 #include <QPoint>
-#if linux
+#if linux or __MAC_10_0
     #include <poppler/qt4/poppler-qt4.h>
 #else
     #include <poppler-qt4.h>

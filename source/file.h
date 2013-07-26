@@ -132,7 +132,7 @@ public:
      * @return the path where the pdf is located (filename but .tex is replaced by .pdf)
      */
     QString getPdfFilename(){
-        QString s(this->filename); return s.replace(QRegExp("\.tex$"),".pdf");
+        QString s(this->filename); return s.replace(QRegExp("\\.tex$"),".pdf");
     }
 
     /**
