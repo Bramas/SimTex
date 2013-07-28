@@ -22,18 +22,30 @@
 #ifndef BUILDER_H
 #define BUILDER_H
 #include <QObject>
-#include <QString>
+#include <QList>
 #include <QProcess>
 #include <QStringList>
 
 class File;
+
+
+
 
 class Builder : public QObject
 {
         Q_OBJECT
 public:
     Builder(File * file);
-    const QStringList & simpleOutput() const { return _simpleOutPut; }
+    struct Output{
+        QString type;
+        QString message;
+        QString line;
+    };
+
+    const QList<Builder::Output> & simpleOutput() const { return _simpleOutPut; }
+    static QString Error;
+    static QString Warning;
+
 public slots:
     void pdflatex();
     void bibtex();
@@ -42,7 +54,7 @@ public slots:
 
 signals:
     void statusChanged(QString);
-    void outputReady(QString);
+    void outputUpdated(QString);
     void pdfChanged();
     void error();
     void success();
@@ -54,7 +66,7 @@ private:
     QString _basename;
     QProcess * process;
     QString _lastOutput;
-    QStringList _simpleOutPut;
+    QList<Builder::Output> _simpleOutPut;
 };
 
 #endif // BUILDER_H

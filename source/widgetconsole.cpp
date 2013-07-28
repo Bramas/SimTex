@@ -36,9 +36,9 @@ WidgetConsole::WidgetConsole() :
     _height = 100;
     _collapsed = true;
     //this->setWidget(_mainWidget);
-    this->setMaximumHeight(0);
+    //this->setMaximumHeight(10);
     this->setMinimumHeight(0);
-    this->setSizePolicy(QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Minimum));
+    this->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     this->setMouseTracking(true);
     this->setReadOnly(true);
 
@@ -63,7 +63,7 @@ void WidgetConsole::setBuilder(Builder *builder)
     connect(_builder, SIGNAL(error()),this, SLOT(onError()));
     connect(_builder, SIGNAL(success()),this, SLOT(onSuccess()));
     connect(_builder, SIGNAL(started()), this, SLOT(clear()));
-    connect(_builder, SIGNAL(outputReady(QString)), this, SLOT(appendPlainText(QString)));
+    connect(_builder, SIGNAL(outputUpdated(QString)), this, SLOT(setPlainText(QString)));
 }
 
 void WidgetConsole::mouseMoveEvent(QMouseEvent * event)
@@ -100,8 +100,8 @@ void WidgetConsole::expand()
     if(_collapsed || this->maximumHeight()==0)
     {
         _collapsed = false;
-        this->setMaximumHeight(_height);
-        this->setMinimumHeight(_height);
+        //this->setMaximumHeight(_height);
+        //this->setMinimumHeight(_height);
     }
 }
 
@@ -111,17 +111,17 @@ void WidgetConsole::collapsed()
     {
         _collapsed = true;
 
-        this->setMaximumHeight(0);
-        this->setMinimumHeight(0);
+        //this->setMaximumHeight(0);
+        //this->setMinimumHeight(0);
     }
 }
 void WidgetConsole::onError()
 {
-    this->setPlainText(this->_builder->simpleOutput().join("\n"));
+    //this->setPlainText(this->_builder->simpleOutput().join("\n"));
     this->expand();
 }
 void WidgetConsole::onSuccess()
 {
-    this->setPlainText(this->_builder->simpleOutput().join("\n"));
+    //this->setPlainText(this->_builder->simpleOutput().join("\n"));
     this->collapsed();
 }

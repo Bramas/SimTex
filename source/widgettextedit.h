@@ -87,7 +87,7 @@ public slots:
     void matchAll();
     void setFocus() { QTextEdit::setFocus(); }
     void setFocus(QKeyEvent * event) { QTextEdit::setFocus(); this->keyPressEvent(event); }
-    void goToLine(int line);
+    void goToLine(int line, QString stringSelected = QString());
 protected:
     void insertFromMimeData(const QMimeData * source);
 

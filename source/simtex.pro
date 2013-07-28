@@ -34,7 +34,10 @@ SOURCES += main.cpp\
     widgetconsole.cpp \
     dialogclose.cpp \
     widgetinsertcommand.cpp \
-    widgetfindreplace.cpp
+    widgetfindreplace.cpp \
+    stylehelper.cpp \
+    minisplitter.cpp \
+    widgetsimpleoutput.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -58,7 +61,10 @@ HEADERS  += mainwindow.h \
     widgetconsole.h \
     dialogclose.h \
     widgetinsertcommand.h \
-    widgetfindreplace.h
+    widgetfindreplace.h \
+    stylehelper.h \
+    minisplitter.h \
+    widgetsimpleoutput.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \

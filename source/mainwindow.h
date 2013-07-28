@@ -30,6 +30,8 @@ class WidgetLineNumber;
 class WidgetScroller;
 class WidgetPdfViewer;
 class WidgetConsole;
+class WidgetSimpleOutput;
+class MiniSplitter;
 class DialogWelcome;
 class DialogConfig;
 class QVBoxLayout;
@@ -64,9 +66,6 @@ public slots:
     void openFindReplaceWidget(void);
     void closeFindReplaceWidget(void);
 protected:
-    void mousePressEvent(QMouseEvent *);
-    void mouseMoveEvent(QMouseEvent *);
-    void mouseReleaseEvent(QMouseEvent *);
     void closeEvent(QCloseEvent *);
     
 private:
@@ -76,12 +75,15 @@ private:
     DialogConfig * dialogConfig;
     DialogWelcome * dialogWelcome;
     QVBoxLayout * _leftLayout;
+    MiniSplitter * _mainSplitter;
+    MiniSplitter * _leftSplitter;
     SyntaxHighlighter * _syntaxHighlighter;
     WidgetConsole * _widgetConsole;
     WidgetFindReplace * _widgetFindReplace;
     WidgetLineNumber * widgetLineNumber;
     WidgetPdfViewer * _widgetPdfViewer;
     WidgetScroller * widgetScroller;
+    WidgetSimpleOutput * _widgetSimpleOutput;
     WidgetTextEdit * widgetTextEdit;
     int _editorWidth;
     bool _mousePressed;

@@ -23,6 +23,9 @@
 #include "file.h"
 #include <QDebug>
 
+QString Builder::Error = QObject::tr("Erreur");
+QString Builder::Warning = QObject::tr("Warning");
+
 Builder::Builder(File * file) :
     file(file),
     process(new QProcess())
@@ -83,24 +86,25 @@ void Builder::onStandartOutputReady()
 {
     QString output = this->process->readAllStandardOutput();
     _lastOutput.append(output);
-    emit outputReady(output);
+    emit outputUpdated(_lastOutput);
 }
 
 bool Builder::checkOutput()
 {
     if(_lastOutput.indexOf("Output written on ") != -1)
     {
-        _simpleOutPut << "Output written on \""+this->_basename+".pdf\"";
+        //_simpleOutPut << "Output written on \""+this->_basename+".pdf\"";
         return true;
     }
     if(_lastOutput.indexOf("Database file ") != -1)
     {
-        _simpleOutPut << "Success";
+        //_simpleOutPut << "Success";
         return true;
     }
 
 
     QStringList lines = _lastOutput.split('\n');
+    QString errorMessage;
     bool errorState = false;
     bool firsLineError = true;
 
@@ -108,16 +112,16 @@ bool Builder::checkOutput()
     {
         if(!errorState && line.length() && line.at(0) == QChar('!'))
         {
-            _simpleOutPut<<"\n"+line;
+            errorMessage = line;
             errorState = true;
-            firsLineError = true;
+            firsLineError = false;//true;
         }
         else
         if(errorState)
         {
             if(firsLineError)
             {
-                _simpleOutPut.last().append(line);
+
             }
             if(!line.length())
             {
@@ -126,7 +130,17 @@ bool Builder::checkOutput()
             else
             if(line.at(0) == QChar('l'))
             {
-                _simpleOutPut.last().append("\n"+line);
+                Builder::Output outputItem;
+
+                QString lineCopy = line;
+                lineCopy.replace(QRegExp("^l\\.([0-9]+).*$"),"\\1");
+                outputItem.line = lineCopy;
+                outputItem.type = Builder::Error;
+                lineCopy = line;
+                lineCopy.replace(QRegExp("^l\\.[0-9]+(.*)$"),"\\1");
+                outputItem.message = errorMessage+lineCopy;
+                _simpleOutPut.append(outputItem);
+
                 errorState = false;
             }
         }

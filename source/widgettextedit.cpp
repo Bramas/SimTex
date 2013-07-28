@@ -745,11 +745,27 @@ void WidgetTextEdit::createLatSelection( int start, int end )
     //endBlock=e;
 }
 
-void WidgetTextEdit::goToLine(int line)
+void WidgetTextEdit::goToLine(int line, QString stringSelected)
 {
     QTextCursor cursor(this->textCursor());
-    cursor.setPosition(this->document()->findBlockByNumber(line).position());
+    cursor.setPosition(this->document()->findBlockByNumber(line - 1).position());
     this->setTextCursor(cursor);
+    if(!stringSelected.isEmpty())
+    {
+        int index;
+        if((index = this->document()->findBlockByNumber(line - 1).text().indexOf(stringSelected)) != -1)
+        {
+            QList<QTextEdit::ExtraSelection> extraSelections = this->extraSelections();
+            QTextEdit::ExtraSelection selection;
+            selection.format.setBackground(QColor(255,0,0));
+            cursor.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,index);
+            cursor.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,stringSelected.length());
+            selection.cursor = QTextCursor(cursor);
+            selection.cursor.clearSelection();
+            extraSelections.append(selection);
+            this->setExtraSelections(extraSelections);
+        }
+    }
 }
 
 void WidgetTextEdit::highlightCurrentLine(void)
