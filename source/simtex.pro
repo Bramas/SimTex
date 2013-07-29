@@ -94,8 +94,6 @@ RESOURCES += \
     completion.qrc
 
 win32 {
-
-    INCLUDEPATH += C:/dev/Tools/poppler/include/poppler/qt4
     INCLUDEPATH += C:/dev/Qt/Tools/zlib/include
     LIBS += -LC:/dev/Tools/poppler/lib -lpoppler-qt4
 
