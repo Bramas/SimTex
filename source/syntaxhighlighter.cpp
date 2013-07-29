@@ -105,6 +105,7 @@ void SyntaxHighlighter::highlightBlock(const QString &text)
     QTextCharFormat formatMath = ConfigManager::Instance.getTextCharFormats("math");
     QTextCharFormat formatStructure = ConfigManager::Instance.getTextCharFormats("structure");
 
+
      setFormat(0, text.size(), formatNormal);
 
 

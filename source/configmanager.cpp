@@ -307,6 +307,7 @@ bool ConfigManager::load(QString theme)
 
     QStringList keys = file.allKeys();
 
+    DEBUG_THEME_PARSER(qDebug()<<"Style normal :");
     QTextCharFormat normal = this->stringToTextCharFormat(file.value("normal").toString());
     this->textCharFormats->insert("normal", normal);
     foreach(const QString& key, keys)
@@ -315,6 +316,8 @@ bool ConfigManager::load(QString theme)
         {
             continue;
         }
+
+        DEBUG_THEME_PARSER(qDebug()<<"Style "<<key<<" :");
         QTextCharFormat val = ConfigManager::stringToTextCharFormat(file.value(key).toString(), normal);
         this->textCharFormats->insert(key, val);
     }
