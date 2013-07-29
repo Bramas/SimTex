@@ -50,6 +50,7 @@ public slots:
     void pdflatex();
     void bibtex();
     void onFinished(int exitCode,QProcess::ExitStatus exitStatus);
+    void onError(QProcess::ProcessError processError);
     void onStandartOutputReady();
 
 signals:
@@ -64,6 +65,7 @@ private:
     bool checkOutput();
     File * file;
     QString _basename;
+    QString pdflatexExe;
     QProcess * process;
     QString _lastOutput;
     QList<Builder::Output> _simpleOutPut;

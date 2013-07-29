@@ -360,10 +360,17 @@ void WidgetPdfDocument::wheelEvent(QWheelEvent * event)
         qreal factor =  event->delta() > 0 ? 1.1 : 0.90;
         this->zoom(factor, event->pos());
     }
-    else
+    else if(event->orientation() == Qt::Vertical)
     {
         this->_painterTranslate.setY(this->_painterTranslate.y()+event->delta());
         emit translated( - _painterTranslate.y());
+        this->boundPainterTranslation();
+        update();
+    }
+    else
+    {
+        this->_painterTranslate.setX(this->_painterTranslate.x()+event->delta());
+        //emit translated( - _painterTranslate.y());
         this->boundPainterTranslation();
         update();
     }

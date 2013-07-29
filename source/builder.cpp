@@ -21,6 +21,7 @@
 
 #include "builder.h"
 #include "file.h"
+#include <QMessageBox>
 #include <QDebug>
 
 QString Builder::Error = QObject::tr("Erreur");
@@ -30,7 +31,13 @@ Builder::Builder(File * file) :
     file(file),
     process(new QProcess())
 {
+#if __MAC_10_6
+    pdflatexExe = "/usr/texbin/pdflatex";
+#else
+    pdflatexExe = "pdflatex";
+#endif
     connect(this->process,SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(onFinished(int,QProcess::ExitStatus)));
+    connect(this->process,SIGNAL(error(QProcess::ProcessError)), this, SLOT(onError(QProcess::ProcessError)));
     connect(this->process,SIGNAL(readyReadStandardOutput()), this, SLOT(onStandartOutputReady()));
 }
 
@@ -45,7 +52,7 @@ void Builder::pdflatex()
     _simpleOutPut.clear();
     _basename = this->file->fileInfo().baseName();
 
-    QString command = "pdflatex -output-directory=\""+this->file->getPath()+"\" -aux-directory="+this->file->getAuxPath()+" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"";
+    QString command = pdflatexExe+" -output-directory=\""+this->file->getPath()+"\" -aux-directory="+this->file->getAuxPath()+" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"";
 
     if(this->process->state() != QProcess::NotRunning)
     {
@@ -68,6 +75,13 @@ void Builder::bibtex()
     qDebug()<<"bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"";
     process->start("bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"");
 }
+
+void Builder::onError(QProcess::ProcessError processError)
+{
+    qDebug()<<process->errorString();
+    QMessageBox::warning(0, tr("Erreur"), tr("Erreur")+" "+QString::number(processError)+" : "+trUtf8("La compilation n'a pas pu démarrer."));
+}
+
 void Builder::onFinished(int /*exitCode*/, QProcess::ExitStatus /*exitStatus*/)
 {
     //qDebug()<<_lastOutput;
