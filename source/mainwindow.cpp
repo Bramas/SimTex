@@ -39,7 +39,6 @@
 #include "widgetsimpleoutput.h"
 
 #include <QAction>
-#include <QList>
 #include <QScrollBar>
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -51,6 +50,23 @@
 #include <QPalette>
 #include "configmanager.h"
 #include "widgetconsole.h"
+
+
+#include <QList>
+
+typedef QList<int> IntegerList;
+/*
+class IntegerList
+{
+public:
+    QList<int> list;
+};*/
+//QDataStream &operator<<(QDataStream &out, const IntegerList &myObj);
+//QDataStream &operator>>(QDataStream &in, IntegerList &myObj);
+
+//Q_DECLARE_METATYPE(IntegerList)
+Q_DECLARE_METATYPE(IntegerList)
+//qRegisterMetaType<IntegerList>("IntegerList");
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -84,7 +100,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QSettings settings;
     settings.beginGroup("mainwindow");
-    if(settings.contains("geometry")) this->setGeometry(settings.value("geometry").toRect());
+    if(settings.contains("geometry"))
+    {
+        this->setGeometry(settings.value("geometry").toRect());
+    }
 
 
     //define background
@@ -127,6 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->actionView, SIGNAL(triggered()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(jumpToPdfFromSource()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
     //connect(this->widgetTextEdit->getCurrentFile()->getViewer(), SIGNAL(finished()), this, SLOT(focus()));
+
 
     QAction * lastAction = this->ui->menuTh_me->actions().last();
     foreach(const QString& theme, ConfigManager::Instance.themesList())
@@ -173,9 +193,34 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Display only the editor :
     {
+        qRegisterMetaType<IntegerList>("IntegerList");
+        qRegisterMetaTypeStreamOperators<IntegerList>("IntegerList");
+        QSettings settings;
+        settings.beginGroup("mainwindow");
+
         QList<int> sizes;
-        sizes<<800<<0<<0<<0;
+        if(settings.contains("leftSplitterSizes"))
+        {
+            sizes = settings.value("leftSlitterSizes").value<QList<int> >();
+        }
+        //else
+        {
+            sizes<<800<<0<<0<<0;
+        }
         _leftSplitter->setSizes(sizes);
+        QList<int> mainSizes;
+        if(settings.contains("mainSplitterSizes"))
+        {
+            mainSizes = settings.value("mainSplitterSizes").value<IntegerList>();
+        }
+        //else
+        {
+            mainSizes << width() / 2 << width() / 2;
+        }
+
+        //qDebug()<< settings.value("mainSplitterSizes").value<IntegerList>();
+        //qDebug()<< mainSizes;
+        _mainSplitter->setSizes(mainSizes);
     }
 
     ui->gridLayout->setColumnMinimumWidth(0,40);
@@ -191,11 +236,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    qRegisterMetaType<IntegerList>("IntegerList");
+     qRegisterMetaTypeStreamOperators<IntegerList>("IntegerList");
     // Save settings
     {
         QSettings settings;
         settings.beginGroup("mainwindow");
         settings.setValue("geometry", this->geometry());
+
+        {
+            //IntegerList iList;
+            QList<int> iList;
+            iList = _mainSplitter->sizes();
+            settings.setValue("mainSplitterSizes", QVariant::fromValue(iList));
+//qDebug()<< settings.value("mainSplitterSizes").value<QList<int> >();
+        }
+        {
+            //IntegerList iList;
+            QList<int> iList;
+            iList = _leftSplitter->sizes();
+            settings.setValue("leftSplitterSizes", QVariant::fromValue(iList));
+        }
         settings.endGroup();
     }
     delete ui;
@@ -420,3 +481,4 @@ void MainWindow::closeFindReplaceWidget()
     this->_widgetFindReplace->setMaximumHeight(0);
     this->_widgetFindReplace->setMinimumHeight(0);
 }
+

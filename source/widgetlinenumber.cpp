@@ -79,7 +79,7 @@ void WidgetLineNumber::updateWidth(int lineCount)
         lineCount /= 10;
         ++ln;
     }
-    qDebug()<<ln*width + 8;
+    //qDebug()<<ln*width + 8;
     this->setMinimumWidth(ln*width + 8);
 
 }

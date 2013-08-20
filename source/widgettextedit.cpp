@@ -753,8 +753,10 @@ void WidgetTextEdit::goToLine(int line, QString stringSelected)
     if(!stringSelected.isEmpty())
     {
         int index;
+        qDebug()<<"search : "<<stringSelected;
         if((index = this->document()->findBlockByNumber(line - 1).text().indexOf(stringSelected)) != -1)
         {
+            qDebug()<<"found : "<<index;
             QList<QTextEdit::ExtraSelection> extraSelections = this->extraSelections();
             QTextEdit::ExtraSelection selection;
             selection.format.setBackground(QColor(255,0,0));
@@ -819,7 +821,6 @@ void WidgetTextEdit::highlightSyncedLine(int line)
 int WidgetTextEdit::centerBlockNumber()
 {
     int centerBlockNumber = this->firstVisibleBlock;
-
     while(centerBlockNumber < this->document()->blockCount())
     {
         if(this->blockTop(centerBlockNumber) - this->verticalScrollBar()->value() > this->height() / 2)
@@ -828,7 +829,6 @@ int WidgetTextEdit::centerBlockNumber()
         }
         ++centerBlockNumber;
     }
-
     return centerBlockNumber - 1;
 
 }

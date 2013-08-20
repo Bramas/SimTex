@@ -24,6 +24,8 @@
 #include <QColor>
 #include <QSettings>
 #include <QDesktopServices>
+#include <QProcess>
+#include <QFileDialog>
 #if QT_VERSION < 0x050000
     #include <QDesktopServices>
 #else
@@ -367,22 +369,27 @@ void ConfigManager::checkRevision()
 
     switch(fromVersion)
     {
-
+        default:
         case 0:
             qDebug()<<"First launch of SimTex";
             QString dataLocation("");
             QString documentLocation("");
+            QString programLocation("");
         #if QT_VERSION < 0x050000
             dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
             documentLocation = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+            programLocation = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation);
         #else
             dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
             documentLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+            programLocation = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
         #endif
-            if(dataLocation.isEmpty())
-            {
-                return;
-            }
+        if(dataLocation.isEmpty())
+        {
+            return;
+        }
+
+       {
             QDir dir;
             dir.mkpath(dataLocation);
             QFile theme;
@@ -390,6 +397,39 @@ void ConfigManager::checkRevision()
             theme.copy(":data/theme/light.sim-theme", dataLocation+dir.separator()+"light.sim-theme");
 
             settings.setValue("lastFolder",documentLocation);
+        }
+        QString pdflatexCommand = "pdflatex";
+#ifdef OS_WINDOWS
+        pdflatexCommand = "pdflatex.exe";
+        {
+            QDir dir(programLocation);
+            if(!dir.exists())
+            {
+                QStringList miktexDirs = dir.entryList(QDir::Dirs).filter(QRegExp("miktex",Qt::CaseInsensitive));
+                if(!miktexDirs.isEmpty())
+                {
+                    if(dir.cd(miktexDirs.first()) && dir.cd("miktex") && dir.cd("bin"))
+                    {
+                        settings.setValue("latexPath",dir.path()+dir.separator());
+                    }
+
+                }
+
+
+            }
+        }
+#endif
+        if(-2 == QProcess::execute(settings.value("latexPath").toString()+pdflatexCommand+" --version"))
+        {
+            qDebug()<<"latex not found ask for a the path";
+            //this->_latexFound = false;
+        }
+        else
+        {
+            qDebug()<<"latex found";
+            //qDebug()<<QFileDialog::getExistingDirectory(0, QObject::trUtf8("Choisir l'emplacement contenant l'executable latex."),programLocation);
+        }
+
 
      }
      settings.setValue("revision",1);

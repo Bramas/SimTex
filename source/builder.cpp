@@ -23,6 +23,7 @@
 #include "file.h"
 #include <QMessageBox>
 #include <QDebug>
+#include <QSettings>
 
 QString Builder::Error = QObject::tr("Erreur");
 QString Builder::Warning = QObject::tr("Warning");
@@ -34,7 +35,7 @@ Builder::Builder(File * file) :
 #if __MAC_10_6
     pdflatexExe = "/usr/texbin/pdflatex";
 #else
-    pdflatexExe = "pdflatex";
+    pdflatexExe = "pdflatex.exe";
 #endif
     connect(this->process,SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(onFinished(int,QProcess::ExitStatus)));
     connect(this->process,SIGNAL(error(QProcess::ProcessError)), this, SLOT(onError(QProcess::ProcessError)));
@@ -52,7 +53,8 @@ void Builder::pdflatex()
     _simpleOutPut.clear();
     _basename = this->file->fileInfo().baseName();
 
-    QString command = pdflatexExe+" -output-directory=\""+this->file->getPath()+"\" -aux-directory="+this->file->getAuxPath()+" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"";
+    QSettings settings;
+    QString command = settings.value("latexPath").toString()+pdflatexExe+" -output-directory=\""+this->file->getPath()+"\" -aux-directory="+this->file->getAuxPath()+" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"";
 
     if(this->process->state() != QProcess::NotRunning)
     {
@@ -69,11 +71,12 @@ void Builder::bibtex()
         return;
     }
     emit started();
+    QSettings settings;
     _lastOutput = QString("");
     _simpleOutPut.clear();
     _basename = this->file->fileInfo().baseName();
     qDebug()<<"bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"";
-    process->start("bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"");
+    process->start(settings.value("latexPath").toString()+"bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"");
 }
 
 void Builder::onError(QProcess::ProcessError processError)

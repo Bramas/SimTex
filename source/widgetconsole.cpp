@@ -84,7 +84,7 @@ void WidgetConsole::mousePressEvent(QMouseEvent *event)
     if(event->modifiers() == Qt::CTRL)
     {
         //this->setCursor(Qt::PointingHandCursor);
-        qDebug()<<this->textCursor().blockNumber();
+        //qDebug()<<this->textCursor().blockNumber();
         QString text = this->textCursor().block().text();
         if(text.length() && !text.left(2).compare("l."))
         {

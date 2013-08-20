@@ -64,7 +64,8 @@ HEADERS  += mainwindow.h \
     widgetfindreplace.h \
     stylehelper.h \
     minisplitter.h \
-    widgetsimpleoutput.h
+    widgetsimpleoutput.h \
+    zlib/zlib.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
@@ -94,10 +95,11 @@ RESOURCES += \
     completion.qrc
 
 win32 {
-    INCLUDEPATH += C:/dev/Qt/Tools/zlib/include
     LIBS += -LC:/dev/Tools/poppler/lib -lpoppler-qt4
 
     RC_FILE = win.rc
+
+    DEFINES += OS_WINDOWS
 }
 unix:!mac{
     LIBS += -lz -L/usr/local/lib -lpoppler-qt4
