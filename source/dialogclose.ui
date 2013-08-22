@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>379</width>
-    <height>161</height>
+    <width>492</width>
+    <height>136</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,11 +19,11 @@
      <x>30</x>
      <y>50</y>
      <width>311</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>n'a pas été enregistré</string>
+    <string>Si vous n'enregistrez pas, les changements seront perdus.</string>
    </property>
    <property name="wordWrap">
     <bool>true</bool>
@@ -34,38 +34,62 @@
     <rect>
      <x>30</x>
      <y>10</y>
-     <width>61</width>
-     <height>16</height>
+     <width>441</width>
+     <height>41</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>Attention !</string>
+    <string>Voulez-vous sauvegarder les changements effectués sur ce document ?</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="confirmAndClose">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>120</y>
-     <width>151</width>
-     <height>31</height>
+     <x>20</x>
+     <y>100</y>
+     <width>141</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>Ignorer et fermer</string>
+    <string>Ne pas sauvegarder</string>
    </property>
   </widget>
   <widget class="QPushButton" name="cancel">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>120</y>
-     <width>121</width>
-     <height>31</height>
+     <x>240</x>
+     <y>100</y>
+     <width>111</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="text">
     <string>Annuler</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="save">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>100</y>
+     <width>111</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Sauvegarder</string>
    </property>
    <property name="default">
     <bool>true</bool>

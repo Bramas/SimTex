@@ -24,11 +24,16 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QSettings>
+#include <QFontDatabase>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QFontDatabase::addApplicationFont(":/data/fonts/consola.ttf");
+    QFontDatabase::addApplicationFont(":/data/fonts/consolab.ttf");
+    QFontDatabase::addApplicationFont(":/data/fonts/consolai.ttf");
+    QFontDatabase::addApplicationFont(":/data/fonts/consolaz.ttf");
 
     MainWindow w;
 

@@ -277,6 +277,11 @@ bool MainWindow::closeCurrentFile()
     dialogClose.exec();
     if(dialogClose.confirmed())
     {
+        if(dialogClose.saved())
+        {
+            this->save();
+            return this->closeCurrentFile();
+        }
         return true;
     }
     return false;

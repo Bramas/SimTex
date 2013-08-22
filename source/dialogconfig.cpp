@@ -46,14 +46,14 @@ void DialogConfig::saveAndClose()
 {
     QSettings settings;
     settings.beginGroup("theme");
-    if(this->ui->radioButtonLightTheme->isChecked())
+    /*if(this->ui->radioButtonLightTheme->isChecked())
     {
         settings.setValue("theme",QString("light"));
     }
     else
     {
         settings.setValue("theme",QString("dark"));
-    }
+    }*/
 
     settings.setValue("pointSize",this->ui->spinBoxPointSize->value());
     ConfigManager::Instance.setPointSize(this->ui->spinBoxPointSize->value());
@@ -68,7 +68,8 @@ void DialogConfig::show()
 {
     QSettings settings;
     settings.beginGroup("theme");
-    if(!settings.value("theme",QString("dark")).toString().compare("dark"))
+
+    /*if(!settings.value("theme",QString("dark")).toString().compare("dark"))
     {
         this->ui->radioButtonDarkTheme->setChecked(true);
         this->ui->radioButtonLightTheme->setChecked(false);
@@ -77,7 +78,7 @@ void DialogConfig::show()
     {
         this->ui->radioButtonDarkTheme->setChecked(false);
         this->ui->radioButtonLightTheme->setChecked(true);
-    }
+    }*/
     this->ui->spinBoxPointSize->setValue(ConfigManager::Instance.getTextCharFormats("normal").font().pointSize());
     QDialog::show();
 }

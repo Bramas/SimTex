@@ -36,15 +36,18 @@ public:
     explicit DialogClose(QWidget *parent = 0);
     ~DialogClose();
     bool confirmed(void) { return _confirmed; }
+    bool saved(void) { return _saved; }
     void setMessage(QString message);
 
 public slots:
     void confirmAndClose(void);
+    void saveAndClose(void);
     
 private:
     Ui::DialogClose *ui;
 
     bool _confirmed;
+    bool _saved;
 };
 
 #endif // DIALOGCLOSE_H
