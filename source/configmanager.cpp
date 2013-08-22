@@ -369,7 +369,7 @@ void ConfigManager::checkRevision()
 
     switch(fromVersion)
     {
-        default:
+        //default:
         case 0:
             qDebug()<<"First launch of SimTex";
             QString dataLocation("");
@@ -392,9 +392,18 @@ void ConfigManager::checkRevision()
        {
             QDir dir;
             dir.mkpath(dataLocation);
-            QFile theme;
-            theme.copy(":data/theme/dark.sim-theme", dataLocation+dir.separator()+"dark.sim-theme");
-            theme.copy(":data/theme/light.sim-theme", dataLocation+dir.separator()+"light.sim-theme");
+#ifdef OS_LINUX //do not know why but theme in the resource file does not work
+            QFile theme("./themes/dark.sim-theme");
+            QFile theme2("./themes/light.sim-theme");
+#else
+            QFile theme(":/themes/dark.sim-theme");
+            QFile theme2(":/themes/light.sim-theme");
+#endif
+            theme.copy(dataLocation+dir.separator()+"dark.sim-theme");
+            theme2.copy(dataLocation+dir.separator()+"light.sim-theme");
+	
+
+		
 
             settings.setValue("lastFolder",documentLocation);
         }

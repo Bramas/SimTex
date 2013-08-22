@@ -103,6 +103,7 @@ win32 {
 }
 unix:!mac{
     LIBS += -lz -L/usr/local/lib -lpoppler-qt4
+    DEFINES += OS_LINUX
 }
 mac{
     LIBS += -lz -L/usr/local/lib -lpoppler-qt4
