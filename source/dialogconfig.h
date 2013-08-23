@@ -28,6 +28,7 @@
 namespace Ui {
 class DialogConfig;
 }
+class QListWidgetItem;
 
 class DialogConfig : public QDialog
 {
@@ -40,6 +41,7 @@ public slots:
     void save(void);
     void saveAndClose(void);
     void show();
+    void changePage(int currentRow);
     
 private:
     Ui::DialogConfig *ui;

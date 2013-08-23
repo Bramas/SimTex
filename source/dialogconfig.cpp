@@ -32,8 +32,10 @@ DialogConfig::DialogConfig(QWidget *parent) :
     ui(new Ui::DialogConfig)
 {
     ui->setupUi(this);
-    connect(this->ui->pushButton,SIGNAL(clicked()),this,SLOT(saveAndClose()));
-    connect(this->ui->pushButton_2,SIGNAL(clicked()),this,SLOT(close()));
+    connect(this->ui->pushButton_saveAndQuit,SIGNAL(clicked()),this,SLOT(saveAndClose()));
+    connect(this->ui->pushButton_save,SIGNAL(clicked()),this,SLOT(save()));
+    connect(this->ui->pushButton_quit,SIGNAL(clicked()),this,SLOT(close()));
+    connect(this->ui->listWidget, SIGNAL(currentRowChanged( int )), this, SLOT(changePage( int )));
 }
 
 DialogConfig::~DialogConfig()
@@ -41,9 +43,18 @@ DialogConfig::~DialogConfig()
     delete ui;
 }
 
+void DialogConfig::changePage(int currentRow)
+{
+    //switch(currentRow)
+    {
+        //case 1:
+            this->ui->stackedWidget->setCurrentIndex(currentRow);
+    }
+}
 
 void DialogConfig::saveAndClose()
 {
+    this->save();
     QSettings settings;
     settings.beginGroup("theme");
     /*if(this->ui->radioButtonLightTheme->isChecked())
@@ -62,7 +73,13 @@ void DialogConfig::saveAndClose()
 
 void DialogConfig::save()
 {
-    //QFile file()
+
+
+    // Page Builder:
+
+    ConfigManager::Instance.setBibtexCommand(this->ui->lineEdit_bibtex->text());
+    ConfigManager::Instance.setPdflatexCommand(this->ui->lineEdit_pdflatex->text());
+    ConfigManager::Instance.setLatexPath(this->ui->lineEdit_latexPath->text());
 }
 void DialogConfig::show()
 {
@@ -79,6 +96,15 @@ void DialogConfig::show()
         this->ui->radioButtonDarkTheme->setChecked(false);
         this->ui->radioButtonLightTheme->setChecked(true);
     }*/
+
+
+    // Page Builder:
+
+    this->ui->lineEdit_bibtex->setText(ConfigManager::Instance.bibtexCommand());
+    this->ui->lineEdit_pdflatex->setText(ConfigManager::Instance.pdflatexCommand());
+    this->ui->lineEdit_latexPath->setText(ConfigManager::Instance.latexPath());
+
+
     this->ui->spinBoxPointSize->setValue(ConfigManager::Instance.getTextCharFormats("normal").font().pointSize());
     QDialog::show();
 }

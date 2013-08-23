@@ -65,7 +65,6 @@ private:
     bool checkOutput();
     File * file;
     QString _basename;
-    QString pdflatexExe;
     QProcess * process;
     QString _lastOutput;
     QList<Builder::Output> _simpleOutPut;

@@ -78,6 +78,27 @@ ConfigManager::ConfigManager() :
         charFormat.setBackground(QColor(250,250,250));
         textCharFormats->insert("normal",charFormat);
     }
+    settings.endGroup();
+    settings.beginGroup("builder");
+#if __MAC_10_6
+    if(!settings.contains("latexPath"))
+    {
+        settings.setValue("latexPath","/usr/texbin/");
+    }
+#endif
+    if(!settings.contains("bibtex"))
+    {
+        settings.setValue("bibtex","bibtex --include-directory=\"%2\" \"%3/%1\"");
+    }
+    if(!settings.contains("pdflatex"))
+    {
+#if OS_WINDOWS
+    settings.setValue("pdflatex", "pdflatex.exe -output-directory=\"%2\" -aux-directory=\"%3\" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+#else
+    settings.setValue("pdflatex", "pdflatex -output-directory=\"%2\" -aux-directory=\"%3\" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+#endif
+    }
+    settings.endGroup();
     return;
 
 }
@@ -369,7 +390,7 @@ void ConfigManager::checkRevision()
 
     switch(fromVersion)
     {
-        //default:
+        default:
         case 0:
             qDebug()<<"First launch of SimTex";
             QString dataLocation("");
@@ -419,7 +440,7 @@ void ConfigManager::checkRevision()
                 {
                     if(dir.cd(miktexDirs.first()) && dir.cd("miktex") && dir.cd("bin"))
                     {
-                        settings.setValue("latexPath",dir.path()+dir.separator());
+                        settings.setValue("builder/latexPath",dir.path()+dir.separator());
                     }
 
                 }
