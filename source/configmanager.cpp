@@ -236,6 +236,8 @@ QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharF
 
 void ConfigManager::changePointSizeBy(int delta)
 {
+    this->setPointSize(this->pointSize()+(delta>0?1:-1));
+    /*
     foreach(const QString &key, this->textCharFormats->keys())
     {
         QTextCharFormat format(this->textCharFormats->value(key));
@@ -243,11 +245,42 @@ void ConfigManager::changePointSizeBy(int delta)
         font.setPointSize(font.pointSize()+delta);
         format.setFont(font);
         this->textCharFormats->insert(key,format);
+    }*/
+}
+void ConfigManager::setReplaceDefaultFont(bool replace)
+{
+    QSettings settings;
+    settings.beginGroup("theme");
+    settings.setValue("replaceDefaultFont",replace);
+}
+void ConfigManager::replaceDefaultFont()
+{
+    QSettings settings;
+    settings.beginGroup("theme");
+    QString family = settings.value("fontFamily").toString();
+    foreach(const QString &key, this->textCharFormats->keys())
+    {
+        QTextCharFormat format(this->textCharFormats->value(key));
+        QFont font(format.font());
+        font.setFamily(family);
+        format.setFont(font);
+        this->textCharFormats->insert(key,format);
     }
+}
+
+void ConfigManager::setFontFamily(QString family)
+{
+    QSettings settings;
+    settings.beginGroup("theme");
+    settings.setValue("fontFamily",family);
+    this->replaceDefaultFont();
 }
 
 void ConfigManager::setPointSize(int size)
 {
+    QSettings settings;
+    settings.beginGroup("theme");
+    settings.setValue("pointSize",size);
     foreach(const QString &key, this->textCharFormats->keys())
     {
         QTextCharFormat format(this->textCharFormats->value(key));
@@ -330,8 +363,12 @@ bool ConfigManager::load(QString theme)
 
     QStringList keys = file.allKeys();
 
+    QSettings settings;
     DEBUG_THEME_PARSER(qDebug()<<"Style normal :");
     QTextCharFormat normal = this->stringToTextCharFormat(file.value("normal").toString());
+    QFont normalFont = normal.font();
+    normalFont.setPointSize(settings.value("theme/pointSize").toInt());
+    normal.setFont(normalFont);
     this->textCharFormats->insert("normal", normal);
     foreach(const QString& key, keys)
     {
@@ -343,6 +380,15 @@ bool ConfigManager::load(QString theme)
         DEBUG_THEME_PARSER(qDebug()<<"Style "<<key<<" :");
         QTextCharFormat val = ConfigManager::stringToTextCharFormat(file.value(key).toString(), normal);
         this->textCharFormats->insert(key, val);
+    }
+
+    {
+        QSettings settings;
+        settings.beginGroup("theme");
+        if(settings.value("replaceDefaultFont").toBool())
+        {
+            this->replaceDefaultFont();
+        }
     }
 
     return true;

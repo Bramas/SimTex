@@ -160,8 +160,8 @@ public slots:
     /**
      * @brief setModified
      */
-    void setModified() {
-        this->_modified = true;
+    void setModified(bool mod = true) {
+        this->_modified = mod;
     }
     void create(void)
     {

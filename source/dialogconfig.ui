@@ -48,7 +48,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="pageEditor">
     <widget class="QWidget" name="gridLayoutWidget">
@@ -94,7 +94,22 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QComboBox" name="comboBox_fontFamilly"/>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QCheckBox" name="checkBox_replaceDefaultFont">
+            <property name="text">
+             <string>Remplacer la police du thème</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_fontFamilly">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>

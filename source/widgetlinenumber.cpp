@@ -121,7 +121,8 @@ void WidgetLineNumber::paintEvent(QPaintEvent * /*event*/)
     int right = this->width()-5;
     int fontHeight = fm.height();
     int cumulatedPosition = this->firstVisibleBlockTop;
-    if(this->firstVisibleBlock == 1)
+    //qDebug()<<this->firstVisibleBlock;
+    if(this->firstVisibleBlock <= 1)
     {
         painter.drawText(0, this->scrollOffset+5, right-9, fontHeight, Qt::AlignRight, QString::number(1));
     }
@@ -148,7 +149,7 @@ void WidgetLineNumber::paintEvent(QPaintEvent * /*event*/)
         if(l > _startBlock + 1 && l < _endBlock + 2)
         {
             painter.setPen(blockRangePen);
-            painter.drawLine(right,this->scrollOffset+cumulatedPosition,right,this->scrollOffset+cumulatedPosition+widgetTextEdit->blockHeight(textBlock));
+            painter.drawLine(right, this->scrollOffset+cumulatedPosition, right, this->scrollOffset+cumulatedPosition+widgetTextEdit->blockHeight(textBlock));
             painter.setPen(defaultPen);
         }
 

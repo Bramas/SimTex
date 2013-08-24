@@ -50,6 +50,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     bool closeCurrentFile();
+    void setTheme(QString theme);
     ~MainWindow();
 
 public slots:

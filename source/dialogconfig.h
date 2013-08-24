@@ -29,13 +29,14 @@ namespace Ui {
 class DialogConfig;
 }
 class QListWidgetItem;
+class MainWindow;
 
 class DialogConfig : public QDialog
 {
     Q_OBJECT
     
 public:
-    explicit DialogConfig(QWidget *parent = 0);
+    explicit DialogConfig(MainWindow * parent = 0);
     ~DialogConfig();
 public slots:
     void save(void);
@@ -46,6 +47,7 @@ public slots:
 private:
     Ui::DialogConfig *ui;
     QSettings settings;
+    MainWindow * _parent;
 };
 
 #endif // DIALOGCONFIG_H

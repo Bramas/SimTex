@@ -268,7 +268,7 @@ void MainWindow::focus()
 }
 bool MainWindow::closeCurrentFile()
 {
-    if(widgetTextEdit->toPlainText().isEmpty() || !widgetTextEdit->getCurrentFile()->isModified())
+    if(!widgetTextEdit->getCurrentFile()->isModified())
     {
         return true;
     }
@@ -309,9 +309,20 @@ void MainWindow::newFile()
     this->widgetTextEdit->setText("");
 
 
+
     this->_widgetPdfViewer->widgetPdfDocument()->setFile(this->widgetTextEdit->getCurrentFile());
     this->_widgetConsole->setBuilder(this->widgetTextEdit->getCurrentFile()->getBuilder());
     this->_widgetSimpleOutput->setBuilder(this->widgetTextEdit->getCurrentFile()->getBuilder());
+
+    int pos = this->widgetTextEdit->textCursor().position();
+    this->widgetTextEdit->selectAll();
+    this->widgetTextEdit->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
+    QTextCursor cur(this->widgetTextEdit->textCursor());
+    cur.setPosition(pos);
+    this->widgetTextEdit->setTextCursor(cur);
+    this->_syntaxHighlighter->rehighlight();
+
+    this->widgetTextEdit->getCurrentFile()->setModified(false);
 }
 
 void MainWindow::openLast()
@@ -419,15 +430,20 @@ void MainWindow::saveAs()
 void MainWindow::changeTheme()
 {
     QString text = dynamic_cast<QAction*>(this->sender())->text();
+    this->setTheme(text);
+
+}
+void MainWindow::setTheme(QString theme)
+{
     foreach(QAction * action, this->ui->menuTh_me->actions())
     {
-        if(action->text().compare(text))
+        if(action->text().compare(theme))
             action->setChecked(false);
         else
             action->setChecked(true);
 
     }
-    ConfigManager::Instance.load(text);
+    ConfigManager::Instance.load(theme);
     this->_syntaxHighlighter->rehighlight();
     this->initTheme();
     this->widgetTextEdit->onCursorPositionChange();
@@ -461,7 +477,7 @@ void MainWindow::initTheme()
     QTextCursor cur = this->widgetTextEdit->textCursor();
     cur.setCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
     this->widgetTextEdit->setTextCursor(cur);
-
+    this->widgetTextEdit->setCurrentFont(ConfigManager::Instance.getTextCharFormats("normal").font());
 
     {
         QPalette Pal(palette());

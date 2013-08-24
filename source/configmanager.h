@@ -54,6 +54,10 @@ public:
 
     void changePointSizeBy(int delta);
     void setPointSize(int size);
+    void setReplaceDefaultFont(bool replace);
+    bool isDefaultFontReplaced() { QSettings settings; return settings.value("theme/replaceDefaultFont").toBool(); }
+    int pointSize() { QSettings settings; return settings.value("theme/pointSize").toInt(); }
+    void setFontFamily(QString family);
 
     void setMainWindow(QWidget * mainWindow);
     void save(void);
@@ -80,6 +84,7 @@ public slots:
     void openThemeFolder();
 
 private:
+    void replaceDefaultFont();
     ConfigManager();
 
     QMutex _charFormatMutex;

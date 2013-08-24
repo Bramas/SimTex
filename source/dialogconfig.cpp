@@ -22,13 +22,17 @@
 #include "dialogconfig.h"
 #include "configmanager.h"
 #include "ui_dialogconfig.h"
+#include "mainwindow.h"
 
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include <QFontDatabase>
+#include <QRegExp>
 
-DialogConfig::DialogConfig(QWidget *parent) :
+DialogConfig::DialogConfig(MainWindow *parent) :
     QDialog(parent),
+    _parent(parent),
     ui(new Ui::DialogConfig)
 {
     ui->setupUi(this);
@@ -36,6 +40,7 @@ DialogConfig::DialogConfig(QWidget *parent) :
     connect(this->ui->pushButton_save,SIGNAL(clicked()),this,SLOT(save()));
     connect(this->ui->pushButton_quit,SIGNAL(clicked()),this,SLOT(close()));
     connect(this->ui->listWidget, SIGNAL(currentRowChanged( int )), this, SLOT(changePage( int )));
+    connect(this->ui->checkBox_replaceDefaultFont, SIGNAL(toggled(bool)), this->ui->comboBox_fontFamilly, SLOT(setEnabled(bool)));
 }
 
 DialogConfig::~DialogConfig()
@@ -55,8 +60,6 @@ void DialogConfig::changePage(int currentRow)
 void DialogConfig::saveAndClose()
 {
     this->save();
-    QSettings settings;
-    settings.beginGroup("theme");
     /*if(this->ui->radioButtonLightTheme->isChecked())
     {
         settings.setValue("theme",QString("light"));
@@ -66,13 +69,26 @@ void DialogConfig::saveAndClose()
         settings.setValue("theme",QString("dark"));
     }*/
 
-    settings.setValue("pointSize",this->ui->spinBoxPointSize->value());
-    ConfigManager::Instance.setPointSize(this->ui->spinBoxPointSize->value());
     this->accept();
 }
+/*
+void DialogConfig::toogleDefaultFont()
+{
 
+}
+*/
 void DialogConfig::save()
 {
+    // Page Editor
+    //
+
+    ConfigManager::Instance.setReplaceDefaultFont(this->ui->checkBox_replaceDefaultFont->isChecked());
+    _parent->setTheme(this->ui->comboBox_themes->currentText());
+    ConfigManager::Instance.setPointSize(this->ui->spinBoxPointSize->value());
+    if(this->ui->checkBox_replaceDefaultFont->isChecked())
+    {
+        ConfigManager::Instance.setFontFamily(this->ui->comboBox_fontFamilly->currentText());
+    }
 
 
     // Page Builder:
@@ -104,7 +120,32 @@ void DialogConfig::show()
     this->ui->lineEdit_pdflatex->setText(ConfigManager::Instance.pdflatexCommand());
     this->ui->lineEdit_latexPath->setText(ConfigManager::Instance.latexPath());
 
+    // Page Editor
 
+    this->ui->checkBox_replaceDefaultFont->setChecked(ConfigManager::Instance.isDefaultFontReplaced());
+    this->ui->comboBox_fontFamilly->clear();
+    QFontDatabase database;
+    QString currentFamily = ConfigManager::Instance.getTextCharFormats("normal").font().family();
+    foreach (const QString &family, database.families())
+    {
+        this->ui->comboBox_fontFamilly->addItem(family);
+        if(!currentFamily.compare(family,Qt::CaseInsensitive))
+        {
+            this->ui->comboBox_fontFamilly->setCurrentIndex(this->ui->comboBox_fontFamilly->count()-1);
+        }
+    }
+    QString currentTheme = ConfigManager::Instance.theme();
+    foreach(QString theme, ConfigManager::Instance.themesList())
+    {
+        this->ui->comboBox_themes->addItem(theme.remove(QRegExp("\\.[^.]*$")));
+        if(!currentTheme.compare(theme,Qt::CaseInsensitive))
+        {
+            this->ui->comboBox_themes->setCurrentIndex(this->ui->comboBox_themes->count()-1);
+        }
+    }
     this->ui->spinBoxPointSize->setValue(ConfigManager::Instance.getTextCharFormats("normal").font().pointSize());
+
+
+
     QDialog::show();
 }
