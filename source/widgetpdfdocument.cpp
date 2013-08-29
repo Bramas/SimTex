@@ -170,7 +170,8 @@ void WidgetPdfDocument::initDocument()
     this->initScroll();
 
     QString syncFile = QFileInfo(this->_file->getFilename()).canonicalFilePath();
-    scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
+    //scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
+    scanner = synctex_scanner_new_with_output_file(syncFile.toLatin1().data(), NULL, 1);
 
     qDebug()<<"scanner==NULL : "<<(scanner==NULL);
 
