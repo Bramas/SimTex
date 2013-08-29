@@ -88,14 +88,14 @@ ConfigManager::ConfigManager() :
 #endif
     if(!settings.contains("bibtex"))
     {
-        settings.setValue("bibtex","bibtex --include-directory=\"%2\" \"%3/%1\"");
+        settings.setValue("bibtex","bibtex \"%1\"");
     }
     if(!settings.contains("pdflatex"))
     {
 #if OS_WINDOWS
-    settings.setValue("pdflatex", "pdflatex.exe -output-directory=\"%2\" -aux-directory=\"%3\" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+    settings.setValue("pdflatex", "pdflatex.exe -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
 #else
-    settings.setValue("pdflatex", "pdflatex -output-directory=\"%2\" -aux-directory=\"%3\" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+    settings.setValue("pdflatex", "pdflatex -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
 #endif
     }
     settings.endGroup();

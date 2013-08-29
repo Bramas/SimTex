@@ -50,8 +50,9 @@ void Builder::pdflatex()
     _basename = this->file->fileInfo().baseName();
 
     QSettings settings;
+    process->setWorkingDirectory(this->file->getPath());
     //QString command = settings.value("latexPath").toString()+pdflatexExe+" -output-directory=\""+this->file->getPath()+"\" -aux-directory="+this->file->getAuxPath()+" -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \""+this->file->getFilename()+"\"";
-    QString command = ConfigManager::Instance.pdflatexCommand(true).arg(_basename).arg(this->file->getPath()).arg(this->file->getAuxPath());
+    QString command = ConfigManager::Instance.pdflatexCommand(true).arg(_basename);//.arg(this->file->getPath()).arg(this->file->getAuxPath());
     qDebug()<<"start pdflatex : "<<command;
     if(this->process->state() != QProcess::NotRunning)
     {
@@ -73,7 +74,7 @@ void Builder::bibtex()
     _basename = this->file->fileInfo().baseName();
 
     process->setWorkingDirectory(this->file->getPath());
-    QString command = ConfigManager::Instance.bibtexCommand(true).arg(_basename).arg(".simtex");//this->file->getPath()).arg();//this->file->getAuxPath());
+    QString command = ConfigManager::Instance.bibtexCommand(true).arg(_basename);//.arg(".simtex");//this->file->getPath()).arg();//this->file->getAuxPath());
     qDebug()<<command;
     process->start(command);
     //process->start(settings.value("latexPath").toString()+"bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"");
