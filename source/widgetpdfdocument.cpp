@@ -172,6 +172,7 @@ void WidgetPdfDocument::initDocument()
     QString syncFile = QFileInfo(this->_file->getFilename()).canonicalFilePath();
     scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
 
+    qDebug()<<"scanner==NULL : "<<(scanner==NULL);
 
     jumpToPdfFromSource();
     update();
@@ -458,9 +459,9 @@ void WidgetPdfDocument::jumpToPdfFromSource(int source_line)
     }
     QString sourceFile = this->_file->getFilename();
 
-    if (scanner == NULL)
+    if(scanner == NULL)
     {
-      return;
+        return;
     }
 
     _widgetTextEdit->highlightSyncedLine(source_line);

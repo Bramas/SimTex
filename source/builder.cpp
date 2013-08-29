@@ -72,7 +72,8 @@ void Builder::bibtex()
     _simpleOutPut.clear();
     _basename = this->file->fileInfo().baseName();
 
-    QString command = ConfigManager::Instance.bibtexCommand(true).arg(_basename).arg(this->file->getPath()).arg(this->file->getAuxPath());
+    process->setWorkingDirectory(this->file->getPath());
+    QString command = ConfigManager::Instance.bibtexCommand(true).arg(_basename).arg(".simtex");//this->file->getPath()).arg();//this->file->getAuxPath());
     qDebug()<<command;
     process->start(command);
     //process->start(settings.value("latexPath").toString()+"bibtex --include-directory=\""+this->file->getPath()+"\" \""+this->file->getAuxPath()+"/"+_basename+"\"");

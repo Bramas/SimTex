@@ -2566,7 +2566,7 @@ synctex_scanner_t synctex_scanner_new_with_output_file(const char * output, cons
 	gzFile file = NULL;
 	char * synctex = NULL;
 	synctex_scanner_t scanner = NULL;
-	synctex_io_mode_t io_mode = 0;
+    synctex_io_mode_t io_mode = 0;
 	/*  Here we assume that int are smaller than void * */
 	if (sizeof(int)>sizeof(void*)) {
 		_synctex_error("INTERNAL INCONSISTENCY: int's are unexpectedly bigger than pointers, bailing out.");
@@ -2600,7 +2600,7 @@ synctex_scanner_t synctex_scanner_new_with_output_file(const char * output, cons
 		_synctex_error("!  synctex_scanner_new_with_output_file: Memory problem (2), scanner's output is not reliable.");
 	} else if (scanner->output != strcpy(scanner->output,output)) {
 		_synctex_error("!  synctex_scanner_new_with_output_file: Copy problem, scanner's output is not reliable.");
-	}
+    }
 	scanner->synctex = synctex;/*  Now the scanner owns synctex */
 	SYNCTEX_FILE = file;
 	return parse? synctex_scanner_parse(scanner):scanner;
