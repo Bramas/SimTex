@@ -87,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ConfigManager::Instance.setMainWindow(this);
+    ConfigManager::Instance.init();
     //setWindowFlags(Qt::FramelessWindowHint);
     widgetLineNumber->setWidgetTextEdit(widgetTextEdit);
     widgetScroller->setWidgetTextEdit(widgetTextEdit);
@@ -152,6 +153,7 @@ MainWindow::MainWindow(QWidget *parent) :
     foreach(const QString& theme, ConfigManager::Instance.themesList())
     {
         QAction * action = new QAction(theme.left(theme.size()-10), this->ui->menuTh_me);
+        action->setPriority(QAction::LowPriority);
         action->setCheckable(true);
         if(!theme.left(theme.size()-10).compare(ConfigManager::Instance.theme()))
         {
@@ -168,6 +170,7 @@ MainWindow::MainWindow(QWidget *parent) :
     foreach(const QString& file, lastFiles)
     {
         QAction * action = new QAction(file, this->ui->menuOuvrir_R_cent);
+        action->setPriority(QAction::LowPriority);
         this->ui->menuOuvrir_R_cent->insertAction(lastAction,action);
         connect(action, SIGNAL(triggered()), this, SLOT(openLast()));
     }
@@ -228,6 +231,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(this->ui->actionSettings,SIGNAL(triggered()),this->dialogConfig,SLOT(show()));
     connect(this->dialogConfig,SIGNAL(accepted()),_syntaxHighlighter,SLOT(rehighlight()));
+
+    dialogConfig->addEditableActions(this->findChildren<QAction *>());
 
 
     this->newFile();

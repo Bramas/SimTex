@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="0.2.0"
+VERSION="0.2.2"
 
 SCRIPT=$(readlink -f $0)
 # Absolute path this script is in, thus /home/user/bin
@@ -12,5 +12,5 @@ cp -r ../source/* /tmp/simtex-$VERSION
 mkdir /tmp/simtex-$VERSION/share
 cp -r deb/share/* /tmp/simtex-$VERSION/share
 cd /tmp
-tar czf $SCRIPTPATH/simtex-$VERSION.tar.gz simtex-$VERSION
+tar czf $SCRIPTPATH/simtex.tar.gz simtex-$VERSION
 #mv /tmp/simtex-0.1.10.tar.gz /tmp/myscript/simtex-$VERSION.tar.gz

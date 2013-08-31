@@ -12,6 +12,16 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = simtex
 TEMPLATE = app
 
+APPLICATION_NAME = \\\"'SimTex'\\\"
+DEFINES += "APPLICATION_NAME=$${APPLICATION_NAME}"
+VERSION = \\\"'0.2.3'\\\"
+DEFINES += "CURRENT_VERSION=$${VERSION}"
+
+# config_revision is used to make so task for migration
+# we increment it each time we need to make a task for those who update the soft
+# see configManager::checkRevision() for more information
+DEFINES += "CURRENT_CONFIG_REVISION=2"
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     widgetlinenumber.cpp \

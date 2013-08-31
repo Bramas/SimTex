@@ -149,3 +149,22 @@ void DialogConfig::show()
 
     QDialog::show();
 }
+
+void DialogConfig::addEditableActions(const QList<QAction *> &actions)
+{
+        int row = this->ui->tableWidget_keyBinding->rowCount();
+        foreach (QAction *action, actions) {
+            if(action->objectName().isEmpty() ||
+                    action->priority() == QAction::LowPriority)
+            {
+                continue;
+            }
+            this->ui->tableWidget_keyBinding->insertRow(row);
+            this->ui->tableWidget_keyBinding->setItem(row, 0, new QTableWidgetItem(action->text()));
+            this->ui->tableWidget_keyBinding->setItem(row, 1, new QTableWidgetItem(action->shortcut().toString()));
+            this->ui->tableWidget_keyBinding->item(row,0)->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+            ++row;
+        }
+        _actionsList.append(actions);
+
+}

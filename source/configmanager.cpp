@@ -48,13 +48,16 @@ ConfigManager::ConfigManager() :
     textCharFormats(new QMap<QString,QTextCharFormat>())
 {
 
-    qDebug()<<"Init ConfigManager";
-
     QCoreApplication::setOrganizationName("Ultratools");
     QCoreApplication::setOrganizationDomain("ultratools.org");
     QCoreApplication::setApplicationName("SimTex");
     QSettings::setDefaultFormat(QSettings::IniFormat);
+ }
 
+void ConfigManager::init()
+{
+
+    qDebug()<<"Init ConfigManager";
     checkRevision();
 
     QSettings settings;
@@ -434,46 +437,48 @@ void ConfigManager::checkRevision()
 
     int fromVersion = settings.value("revision",0).toInt();
 
+    QString dataLocation("");
+    QString documentLocation("");
+    QString programLocation("");
+#if QT_VERSION < 0x050000
+    dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    documentLocation = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    programLocation = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation);
+#else
+    dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    documentLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    programLocation = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+#endif
     switch(fromVersion)
     {
-        default:
         case 0:
             qDebug()<<"First launch of SimTex";
-            QString dataLocation("");
-            QString documentLocation("");
-            QString programLocation("");
-        #if QT_VERSION < 0x050000
-            dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-            documentLocation = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
-            programLocation = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation);
-        #else
-            dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-            documentLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-            programLocation = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
-        #endif
         if(dataLocation.isEmpty())
         {
             return;
         }
+        settings.setValue("lastFolder",documentLocation);
 
        {
             QDir dir;
             dir.mkpath(dataLocation);
-#ifdef OS_LINUX //do not know why but theme in the resource file does not work
-            QFile theme("./themes/dark.sim-theme");
-            QFile theme2("./themes/light.sim-theme");
-#else
-            QFile theme(":/themes/dark.sim-theme");
-            QFile theme2(":/themes/light.sim-theme");
-#endif
-            theme.copy(dataLocation+dir.separator()+"dark.sim-theme");
-            theme2.copy(dataLocation+dir.separator()+"light.sim-theme");
-	
-
-		
-
-            settings.setValue("lastFolder",documentLocation);
         }
+        case 1:
+        qDebug()<<"SimTex 1=>2";
+        {
+            QDir dir;
+            //#ifdef OS_LINUX //do not know why but theme in the resource file does not work
+            //            QFile theme("./themes/dark.sim-theme");
+            //            QFile theme2("./themes/light.sim-theme");
+            //#else
+                        QFile theme(":/themes/dark.sim-theme");
+                        QFile theme2(":/themes/light.sim-theme");
+            //#endif
+                        theme.copy(dataLocation+dir.separator()+"dark.sim-theme");
+                        theme2.copy(dataLocation+dir.separator()+"light.sim-theme");
+        }
+
+
         QString pdflatexCommand = "pdflatex";
 #ifdef OS_WINDOWS
         pdflatexCommand = "pdflatex.exe";
@@ -505,9 +510,7 @@ void ConfigManager::checkRevision()
             qDebug()<<"latex found";
             //qDebug()<<QFileDialog::getExistingDirectory(0, QObject::trUtf8("Choisir l'emplacement contenant l'executable latex."),programLocation);
         }
-
-
      }
-     settings.setValue("revision",1);
+     settings.setValue("revision",CURRENT_CONFIG_REVISION);
 }
 

@@ -50,7 +50,7 @@
      <x>0</x>
      <y>0</y>
      <width>991</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -164,8 +164,17 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Afficher automatiquement le pdf</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+   <property name="priority">
+    <enum>QAction::LowPriority</enum>
    </property>
   </action>
   <action name="actionNouveau">

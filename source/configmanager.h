@@ -80,6 +80,7 @@ public:
     void setPdflatexCommand(QString command) { QSettings settings; settings.setValue("builder/pdflatex", command); }
     void setLatexPath(QString path) { QSettings settings; settings.setValue("builder/latexPath", path); }
 
+    void init();
 public slots:
     void openThemeFolder();
 

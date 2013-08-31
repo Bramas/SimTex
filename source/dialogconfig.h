@@ -24,6 +24,7 @@
 
 #include <QDialog>
 #include <QSettings>
+#include <QList>
 
 namespace Ui {
 class DialogConfig;
@@ -37,6 +38,7 @@ class DialogConfig : public QDialog
     
 public:
     explicit DialogConfig(MainWindow * parent = 0);
+    void addEditableActions(const QList<QAction *> & actions);
     ~DialogConfig();
 public slots:
     void save(void);
@@ -45,6 +47,7 @@ public slots:
     void changePage(int currentRow);
     
 private:
+    QList<QAction*> _actionsList;
     Ui::DialogConfig *ui;
     QSettings settings;
     MainWindow * _parent;

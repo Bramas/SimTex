@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QSettings>
 #include <QFontDatabase>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont(":/data/fonts/consolai.ttf");
     QFontDatabase::addApplicationFont(":/data/fonts/consolaz.ttf");
 
+    qDebug()<<QString("Start ")+APPLICATION_NAME+QString(" version ")+CURRENT_VERSION;
     MainWindow w;
 
     if(argc > 1)
