@@ -98,7 +98,7 @@ void WidgetTextEdit::insertText(const QString &text)
 }
 void WidgetTextEdit::paintEvent(QPaintEvent *event)
 {
-    QTextEdit::paintEvent(event);
+    //QTextEdit::paintEvent(event);
     QPainter painter(viewport());
 
 

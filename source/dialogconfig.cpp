@@ -23,6 +23,7 @@
 #include "configmanager.h"
 #include "ui_dialogconfig.h"
 #include "mainwindow.h"
+#include "dialogkeysequence.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -41,6 +42,7 @@ DialogConfig::DialogConfig(MainWindow *parent) :
     connect(this->ui->pushButton_quit,SIGNAL(clicked()),this,SLOT(close()));
     connect(this->ui->listWidget, SIGNAL(currentRowChanged( int )), this, SLOT(changePage( int )));
     connect(this->ui->checkBox_replaceDefaultFont, SIGNAL(toggled(bool)), this->ui->comboBox_fontFamilly, SLOT(setEnabled(bool)));
+    connect(this->ui->tableWidget_keyBinding, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(configureShortCut(QTableWidgetItem*)));
 }
 
 DialogConfig::~DialogConfig()
@@ -84,10 +86,14 @@ void DialogConfig::save()
 
     // Page Shortcut
 
+    QSettings settings;
+    settings.beginGroup("shortcuts");
     for (int row = 0; row < this->ui->tableWidget_keyBinding->rowCount(); ++row) {
         QAction *action = _actionsList[row];
         action->setShortcut(QKeySequence(this->ui->tableWidget_keyBinding->item(row, 1)->text()));
+        settings.setValue(action->text(),action->shortcut());
     }
+
 }
 void DialogConfig::show()
 {
@@ -155,8 +161,38 @@ void DialogConfig::addEditableActions(const QList<QAction *> &actions)
             this->ui->tableWidget_keyBinding->setItem(row, 0, new QTableWidgetItem(action->text()));
             this->ui->tableWidget_keyBinding->setItem(row, 1, new QTableWidgetItem(action->shortcut().toString()));
             this->ui->tableWidget_keyBinding->item(row,0)->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+            _actionsList.append(action);
             ++row;
         }
-        _actionsList.append(actions);
 
+}
+
+void DialogConfig::configureShortCut(QTableWidgetItem *item)
+{
+    QString shortcut,data,newshortcut;
+    if (item && item->column() == 1)
+    {
+        shortcut=item->text();
+        data=item->data(Qt::UserRole).toString();
+        //if (data=="key")
+        {
+            DialogKeySequence * keydlg = new DialogKeySequence(this);
+            keydlg->setKeySequence(QKeySequence(shortcut));
+            if ( keydlg->exec() )
+            {
+                newshortcut=keydlg->ui.lineEdit->text();
+                if (!newshortcut.isEmpty())
+                {
+                    item->setText(newshortcut);
+                    //item->setData(Qt::UserRole,QString("key"));
+                }
+                else
+                {
+                    item->setText("");//"none");
+                    //item->setData(Qt::UserRole,QString("key"));
+                }
+            }
+            delete (keydlg);
+        }
+    }
 }

@@ -50,7 +50,7 @@
      <x>0</x>
      <y>0</y>
      <width>991</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -159,6 +159,9 @@
    <property name="text">
     <string>Préférences</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
   </action>
   <action name="actionAutoView">
    <property name="checkable">
@@ -181,10 +184,16 @@
    <property name="text">
     <string>Nouveau</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actionEncodage">
    <property name="text">
     <string>Encodage</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
   <action name="actionExit">
@@ -196,25 +205,40 @@
    <property name="text">
     <string>Annuler</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
   </action>
   <action name="actionRedo">
    <property name="text">
     <string>Refaire</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
    </property>
   </action>
   <action name="actionCut">
    <property name="text">
     <string>Couper</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
   </action>
   <action name="actionCopy">
    <property name="text">
     <string>Copier</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
   </action>
   <action name="actionPaste">
    <property name="text">
     <string>Coller</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
   <action name="actionFindReplace">
@@ -237,6 +261,9 @@
    <property name="text">
     <string>Ouvrir le dossier thème</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
   </action>
   <action name="actionDeleteLastOpenFiles">
    <property name="text">
@@ -246,6 +273,9 @@
   <action name="actionBibtex">
    <property name="text">
     <string>Bibtex</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+B</string>
    </property>
   </action>
  </widget>

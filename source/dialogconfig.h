@@ -31,6 +31,7 @@ class DialogConfig;
 }
 class QListWidgetItem;
 class MainWindow;
+class QTableWidgetItem;
 
 class DialogConfig : public QDialog
 {
@@ -45,6 +46,7 @@ public slots:
     void saveAndClose(void);
     void show();
     void changePage(int currentRow);
+    void configureShortCut(QTableWidgetItem *item);
     
 private:
     QList<QAction*> _actionsList;

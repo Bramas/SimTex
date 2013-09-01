@@ -193,6 +193,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _leftSplitter->addWidget(this->_widgetConsole);
 
     _leftSplitter->setCollapsible(3,true);
+    _leftSplitter->setCollapsible(2,true);
 
     //Display only the editor :
     {
@@ -202,27 +203,49 @@ MainWindow::MainWindow(QWidget *parent) :
         settings.beginGroup("mainwindow");
 
         QList<int> sizes;
-        if(settings.contains("leftSplitterSizes"))
+        if(settings.contains("leftSplitterEditorSize"))
         {
-            sizes = settings.value("leftSlitterSizes").value<QList<int> >();
+            sizes << settings.value("leftSplitterEditorSize").toInt();
         }
-        //else
+        else
         {
-            sizes<<800<<0<<0<<0;
+            sizes<<800;
+        }
+        if(settings.contains("leftSplitterReplaceSize"))
+        {
+            sizes << settings.value("leftSplitterReplaceSize").toInt();
+        }
+        else
+        {
+            sizes<<0;
+        }
+        if(settings.contains("leftSplitterSimpleOutputSize"))
+        {
+            sizes << settings.value("leftSplitterSimpleOutputSize").toInt();
+        }
+        else
+        {
+            sizes<<0;
+        }
+        if(settings.contains("leftSplitterConsoleSize"))
+        {
+            sizes << settings.value("leftSplitterConsoleSize").toInt();
+        }
+        else
+        {
+            sizes<<0;
         }
         _leftSplitter->setSizes(sizes);
         QList<int> mainSizes;
-        if(settings.contains("mainSplitterSizes"))
+        if(settings.contains("mainSplitterEditorSize"))
         {
-            mainSizes = settings.value("mainSplitterSizes").value<IntegerList>();
+            mainSizes << settings.value("mainSplitterEditorSize").toInt();
+            mainSizes << width() - settings.value("mainSplitterEditorSize").toInt();
         }
-        //else
+        else
         {
             mainSizes << width() / 2 << width() / 2;
         }
-
-        //qDebug()<< settings.value("mainSplitterSizes").value<IntegerList>();
-        //qDebug()<< mainSizes;
         _mainSplitter->setSizes(mainSizes);
     }
 
@@ -232,7 +255,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->actionSettings,SIGNAL(triggered()),this->dialogConfig,SLOT(show()));
     connect(this->dialogConfig,SIGNAL(accepted()),_syntaxHighlighter,SLOT(rehighlight()));
 
-    dialogConfig->addEditableActions(this->findChildren<QAction *>());
+
+    {
+        QList<QAction *> actionsList = this->findChildren<QAction *>();
+        QSettings settings;
+        settings.beginGroup("shortcuts");
+        //foreach(QAction * action, actionsList) {
+        //    if(settings.contains(action->text()))
+            {
+                //action->setShortcut(QKeySequence(settings.value(action->text()).toString()));
+            }
+        //}
+        dialogConfig->addEditableActions(actionsList);
+    }
 
 
     this->newFile();
@@ -250,17 +285,17 @@ MainWindow::~MainWindow()
         settings.setValue("geometry", this->geometry());
 
         {
-            //IntegerList iList;
             QList<int> iList;
             iList = _mainSplitter->sizes();
-            settings.setValue("mainSplitterSizes", QVariant::fromValue(iList));
-//qDebug()<< settings.value("mainSplitterSizes").value<QList<int> >();
+            settings.setValue("mainSplitterEditorSize",iList[0]);
         }
         {
-            //IntegerList iList;
             QList<int> iList;
             iList = _leftSplitter->sizes();
-            settings.setValue("leftSplitterSizes", QVariant::fromValue(iList));
+            settings.setValue("leftSplitterEditorSize",iList[0]);
+            settings.setValue("leftSplitterReplaceSize",iList[1]);
+            settings.setValue("leftSplitterSimpleOutputSize",iList[2]);
+            settings.setValue("leftSplitterConsoleSize",iList[3]);
         }
         settings.endGroup();
     }
