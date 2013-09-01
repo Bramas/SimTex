@@ -50,6 +50,7 @@
 #include <QPalette>
 #include "configmanager.h"
 #include "widgetconsole.h"
+#include "widgetstatusbar.h"
 
 
 #include <QList>
@@ -145,7 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->actionBibtex,SIGNAL(triggered()),this,SLOT(bibtex()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(pdfChanged()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(updatePdf()));
     connect(this->ui->actionView, SIGNAL(triggered()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(jumpToPdfFromSource()));
-    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
+    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->statusBar(), SLOT(showMessage(QString)));
     //connect(this->widgetTextEdit->getCurrentFile()->getViewer(), SIGNAL(finished()), this, SLOT(focus()));
 
 
@@ -194,6 +195,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _leftSplitter->setCollapsible(3,true);
     _leftSplitter->setCollapsible(2,true);
+
+    _widgetStatusBar = new WidgetStatusBar(this,_leftSplitter);
+    this->setStatusBar(_widgetStatusBar);
+
+
 
     //Display only the editor :
     {
@@ -346,8 +352,7 @@ void MainWindow::newFile()
         return;
     }
     this->widgetTextEdit->getCurrentFile()->create();
-    this->widgetTextEdit->setText("");
-
+    this->widgetTextEdit->setText(" ");
 
 
     this->_widgetPdfViewer->widgetPdfDocument()->setFile(this->widgetTextEdit->getCurrentFile());
@@ -358,9 +363,8 @@ void MainWindow::newFile()
     this->widgetTextEdit->selectAll();
     this->widgetTextEdit->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
     QTextCursor cur(this->widgetTextEdit->textCursor());
-    cur.setPosition(pos);
+    cur.deletePreviousChar();
     this->widgetTextEdit->setTextCursor(cur);
-    this->_syntaxHighlighter->rehighlight();
 
     this->widgetTextEdit->getCurrentFile()->setModified(false);
 }
@@ -417,7 +421,7 @@ void MainWindow::open(QString filename)
     //udpate the widget
     //this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData());
 
-    this->ui->statusBar->showMessage(basename+" - "+this->widgetTextEdit->getCurrentFile()->codec());
+    this->statusBar()->showMessage(basename+" - "+this->widgetTextEdit->getCurrentFile()->codec());
 
 }
 void MainWindow::clearLastOpened()
@@ -448,7 +452,7 @@ void MainWindow::save()
     }
     this->widgetTextEdit->getCurrentFile()->setData(this->widgetTextEdit->toPlainText());
     this->widgetTextEdit->getCurrentFile()->save();
-    this->ui->statusBar->showMessage(tr(QString::fromUtf8("Sauvegardé").toLatin1()),2000);
+    this->statusBar()->showMessage(tr(QString::fromUtf8("Sauvegardé").toLatin1()),2000);
 }
 
 void MainWindow::saveAs()
@@ -498,14 +502,14 @@ void MainWindow::initTheme()
         this->setPalette(Pal);
     }
     {
-        QPalette Pal(this->ui->statusBar->palette());
+        QPalette Pal(this->statusBar()->palette());
         // set black background
         Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats("normal").background().color());
         Pal.setColor(QPalette::Window, ConfigManager::Instance.getTextCharFormats("normal").background().color());
         Pal.setColor(QPalette::WindowText, ConfigManager::Instance.getTextCharFormats("normal").foreground().color());
         this->setAutoFillBackground(true);
-        this->ui->statusBar->setPalette(Pal);
-        this->ui->statusBar->setStyleSheet("QStatusBar {background: "+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
+        this->statusBar()->setPalette(Pal);
+        this->statusBar()->setStyleSheet("QStatusBar {background: "+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
                                            "}");
     }
     this->widgetTextEdit->setStyleSheet(QString("QTextEdit { border: 1px solid ")+

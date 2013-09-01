@@ -37,6 +37,7 @@ class DialogConfig;
 class QVBoxLayout;
 class SyntaxHighlighter;
 class WidgetFindReplace;
+class WidgetStatusBar;
 
 namespace Ui {
 class MainWindow;
@@ -86,6 +87,7 @@ private:
     WidgetPdfViewer * _widgetPdfViewer;
     WidgetScroller * widgetScroller;
     WidgetSimpleOutput * _widgetSimpleOutput;
+    WidgetStatusBar * _widgetStatusBar;
     WidgetTextEdit * widgetTextEdit;
     int _editorWidth;
     bool _mousePressed;

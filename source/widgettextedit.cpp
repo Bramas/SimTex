@@ -89,7 +89,6 @@ void WidgetTextEdit::setText(const QString &text)
     //QtConcurrent::run(this,&WidgetTextEdit::initIndentation);
     this->initIndentation();
     this->updateIndentation();
-    this->update();
     this->viewport()->update();
 }
 void WidgetTextEdit::insertText(const QString &text)
@@ -98,7 +97,7 @@ void WidgetTextEdit::insertText(const QString &text)
 }
 void WidgetTextEdit::paintEvent(QPaintEvent *event)
 {
-    //QTextEdit::paintEvent(event);
+    QTextEdit::paintEvent(event);
     QPainter painter(viewport());
 
 

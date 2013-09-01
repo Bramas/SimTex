@@ -44,7 +44,11 @@ class MiniSplitter : public QSplitter
 public:
     MiniSplitter(QWidget *parent = 0);
     MiniSplitter(Qt::Orientation orientation);
+/*public slots:
+    void onResize(int pos, int index);
 
+signals:
+    isCollapse(bool, int);*/
 protected:
     QSplitterHandle *createHandle();
 };

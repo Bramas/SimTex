@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     stylehelper.cpp \
     minisplitter.cpp \
     widgetsimpleoutput.cpp \
-    dialogkeysequence.cpp
+    dialogkeysequence.cpp \
+    widgetstatusbar.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -77,7 +78,8 @@ HEADERS  += mainwindow.h \
     minisplitter.h \
     widgetsimpleoutput.h \
     zlib/zlib.h \
-    dialogkeysequence.h
+    dialogkeysequence.h \
+    widgetstatusbar.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
@@ -86,7 +88,8 @@ FORMS    += mainwindow.ui \
     dialogclose.ui \
     widgetinsertcommand.ui \
     widgetfindreplace.ui \
-    dialogkeysequence.ui
+    dialogkeysequence.ui \
+    widgetstatusbar.ui
 
 #LIBS         += -LG:\poppler -lpoppler-qt4
 #LIBS         += -LG:\poppler\cpp\bin -lpoppler-cpp

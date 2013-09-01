@@ -478,6 +478,13 @@ void ConfigManager::checkRevision()
             theme2.copy(dataLocation+dir.separator()+"light.sim-theme");
         }
 
+        settings.setValue("bibtex","bibtex \"%1\"");
+        #if OS_WINDOWS
+            settings.setValue("pdflatex", "pdflatex.exe -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+        #else
+            settings.setValue("pdflatex", "pdflatex -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+        #endif
+
 
         QString pdflatexCommand = "pdflatex";
 #ifdef OS_WINDOWS

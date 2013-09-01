@@ -118,11 +118,6 @@
    <addaction name="menuBuild"/>
    <addaction name="menuOptions"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="mouseTracking">
-    <bool>true</bool>
-   </property>
-  </widget>
   <action name="actionOpen">
    <property name="text">
     <string>Ouvrir</string>
