@@ -60,23 +60,8 @@ void DialogConfig::changePage(int currentRow)
 void DialogConfig::saveAndClose()
 {
     this->save();
-    /*if(this->ui->radioButtonLightTheme->isChecked())
-    {
-        settings.setValue("theme",QString("light"));
-    }
-    else
-    {
-        settings.setValue("theme",QString("dark"));
-    }*/
-
     this->accept();
 }
-/*
-void DialogConfig::toogleDefaultFont()
-{
-
-}
-*/
 void DialogConfig::save()
 {
     // Page Editor
@@ -96,6 +81,13 @@ void DialogConfig::save()
     ConfigManager::Instance.setBibtexCommand(this->ui->lineEdit_bibtex->text());
     ConfigManager::Instance.setPdflatexCommand(this->ui->lineEdit_pdflatex->text());
     ConfigManager::Instance.setLatexPath(this->ui->lineEdit_latexPath->text());
+
+    // Page Shortcut
+
+    for (int row = 0; row < this->ui->tableWidget_keyBinding->rowCount(); ++row) {
+        QAction *action = _actionsList[row];
+        action->setShortcut(QKeySequence(this->ui->tableWidget_keyBinding->item(row, 1)->text()));
+    }
 }
 void DialogConfig::show()
 {

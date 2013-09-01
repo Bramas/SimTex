@@ -474,8 +474,8 @@ void ConfigManager::checkRevision()
                         QFile theme(":/themes/dark.sim-theme");
                         QFile theme2(":/themes/light.sim-theme");
             //#endif
-                        theme.copy(dataLocation+dir.separator()+"dark.sim-theme");
-                        theme2.copy(dataLocation+dir.separator()+"light.sim-theme");
+            theme.copy(dataLocation+dir.separator()+"dark.sim-theme");
+            theme2.copy(dataLocation+dir.separator()+"light.sim-theme");
         }
 
 

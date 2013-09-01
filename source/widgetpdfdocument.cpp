@@ -57,7 +57,6 @@ WidgetPdfDocument::WidgetPdfDocument(QWidget *parent) :
     this->setMouseTracking(true);
     this->setCursor(Qt::OpenHandCursor);
     connect(&this->_timer, SIGNAL(timeout()),this, SLOT(update()));
-    Poppler::Document::load(" ");
 
     _scroll->setGeometry(this->width()-20,0,20,200);
     _scroll->setRange(0,1);
@@ -139,8 +138,12 @@ void WidgetPdfDocument::initDocument()
     if(_document)
     {
         delete _document;
+        _document = 0;
     }
-
+    if(!QFile::exists(_file->getPdfFilename()))
+    {
+        return;
+    }
     _document = Poppler::Document::load(_file->getPdfFilename());//PdfDocument::load(_file->getFilename());//new PdfDocument(_file->getFilename());
 
     if(!_document || _document->isLocked())
@@ -170,10 +173,12 @@ void WidgetPdfDocument::initDocument()
     this->initScroll();
 
     QString syncFile = QFileInfo(this->_file->getFilename()).canonicalFilePath();
-    scanner = synctex_scanner_new_with_output_file(syncFile.toLatin1().data(), NULL, 1);
-
-    jumpToPdfFromSource();
-    update();
+    if(QFile::exists(syncFile+".synctex.gz"))
+    {
+        scanner = synctex_scanner_new_with_output_file(syncFile.toLatin1().data(), NULL, 1);
+        jumpToPdfFromSource();
+        update();
+    }
 }
 
 void WidgetPdfDocument::initScroll()
