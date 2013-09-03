@@ -24,6 +24,8 @@
 #include <QColor>
 #include <QSettings>
 #include <QDesktopServices>
+#include <QProcess>
+#include <QFileDialog>
 #if QT_VERSION < 0x050000
     #include <QDesktopServices>
 #else
@@ -46,13 +48,16 @@ ConfigManager::ConfigManager() :
     textCharFormats(new QMap<QString,QTextCharFormat>())
 {
 
-    qDebug()<<"Init ConfigManager";
-
     QCoreApplication::setOrganizationName("Ultratools");
     QCoreApplication::setOrganizationDomain("ultratools.org");
     QCoreApplication::setApplicationName("SimTex");
     QSettings::setDefaultFormat(QSettings::IniFormat);
+ }
 
+void ConfigManager::init()
+{
+
+    qDebug()<<"Init ConfigManager";
     checkRevision();
 
     QSettings settings;
@@ -76,6 +81,27 @@ ConfigManager::ConfigManager() :
         charFormat.setBackground(QColor(250,250,250));
         textCharFormats->insert("normal",charFormat);
     }
+    settings.endGroup();
+    settings.beginGroup("builder");
+#if __MAC_10_6
+    if(!settings.contains("latexPath"))
+    {
+        settings.setValue("latexPath","/usr/texbin/");
+    }
+#endif
+    if(!settings.contains("bibtex"))
+    {
+        settings.setValue("bibtex","bibtex \"%1\"");
+    }
+    if(!settings.contains("pdflatex"))
+    {
+#if OS_WINDOWS
+    settings.setValue("pdflatex", "pdflatex.exe -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+#else
+    settings.setValue("pdflatex", "pdflatex -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+#endif
+    }
+    settings.endGroup();
     return;
 
 }
@@ -213,6 +239,8 @@ QTextCharFormat ConfigManager::stringToTextCharFormat(QString string, QTextCharF
 
 void ConfigManager::changePointSizeBy(int delta)
 {
+    this->setPointSize(this->pointSize()+(delta>0?1:-1));
+    /*
     foreach(const QString &key, this->textCharFormats->keys())
     {
         QTextCharFormat format(this->textCharFormats->value(key));
@@ -220,11 +248,42 @@ void ConfigManager::changePointSizeBy(int delta)
         font.setPointSize(font.pointSize()+delta);
         format.setFont(font);
         this->textCharFormats->insert(key,format);
+    }*/
+}
+void ConfigManager::setReplaceDefaultFont(bool replace)
+{
+    QSettings settings;
+    settings.beginGroup("theme");
+    settings.setValue("replaceDefaultFont",replace);
+}
+void ConfigManager::replaceDefaultFont()
+{
+    QSettings settings;
+    settings.beginGroup("theme");
+    QString family = settings.value("fontFamily").toString();
+    foreach(const QString &key, this->textCharFormats->keys())
+    {
+        QTextCharFormat format(this->textCharFormats->value(key));
+        QFont font(format.font());
+        font.setFamily(family);
+        format.setFont(font);
+        this->textCharFormats->insert(key,format);
     }
+}
+
+void ConfigManager::setFontFamily(QString family)
+{
+    QSettings settings;
+    settings.beginGroup("theme");
+    settings.setValue("fontFamily",family);
+    this->replaceDefaultFont();
 }
 
 void ConfigManager::setPointSize(int size)
 {
+    QSettings settings;
+    settings.beginGroup("theme");
+    settings.setValue("pointSize",size);
     foreach(const QString &key, this->textCharFormats->keys())
     {
         QTextCharFormat format(this->textCharFormats->value(key));
@@ -307,8 +366,12 @@ bool ConfigManager::load(QString theme)
 
     QStringList keys = file.allKeys();
 
+    QSettings settings;
     DEBUG_THEME_PARSER(qDebug()<<"Style normal :");
     QTextCharFormat normal = this->stringToTextCharFormat(file.value("normal").toString());
+    QFont normalFont = normal.font();
+    normalFont.setPointSize(settings.value("theme/pointSize").toInt());
+    normal.setFont(normalFont);
     this->textCharFormats->insert("normal", normal);
     foreach(const QString& key, keys)
     {
@@ -320,6 +383,15 @@ bool ConfigManager::load(QString theme)
         DEBUG_THEME_PARSER(qDebug()<<"Style "<<key<<" :");
         QTextCharFormat val = ConfigManager::stringToTextCharFormat(file.value(key).toString(), normal);
         this->textCharFormats->insert(key, val);
+    }
+
+    {
+        QSettings settings;
+        settings.beginGroup("theme");
+        if(settings.value("replaceDefaultFont").toBool())
+        {
+            this->replaceDefaultFont();
+        }
     }
 
     return true;
@@ -365,33 +437,87 @@ void ConfigManager::checkRevision()
 
     int fromVersion = settings.value("revision",0).toInt();
 
+    QString dataLocation("");
+    QString documentLocation("");
+    QString programLocation("");
+#if QT_VERSION < 0x050000
+    dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    documentLocation = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    programLocation = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation);
+#else
+    dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    documentLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    programLocation = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+#endif
     switch(fromVersion)
     {
-
         case 0:
             qDebug()<<"First launch of SimTex";
-            QString dataLocation("");
-            QString documentLocation("");
-        #if QT_VERSION < 0x050000
-            dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-            documentLocation = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
-        #else
-            dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-            documentLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-        #endif
-            if(dataLocation.isEmpty())
-            {
-                return;
-            }
+        if(dataLocation.isEmpty())
+        {
+            return;
+        }
+        settings.setValue("lastFolder",documentLocation);
+
+       {
             QDir dir;
             dir.mkpath(dataLocation);
-            QFile theme;
-            theme.copy(":data/theme/dark.sim-theme", dataLocation+dir.separator()+"dark.sim-theme");
-            theme.copy(":data/theme/light.sim-theme", dataLocation+dir.separator()+"light.sim-theme");
+        }
+        case 1:
+        qDebug()<<"SimTex 1=>2";
+        {
+            QDir dir;
+            //#ifdef OS_LINUX //do not know why but theme in the resource file does not work
+            //            QFile theme("./themes/dark.sim-theme");
+            //            QFile theme2("./themes/light.sim-theme");
+            //#else
+                        QFile theme(":/themes/dark.sim-theme");
+                        QFile theme2(":/themes/light.sim-theme");
+            //#endif
+            theme.copy(dataLocation+dir.separator()+"dark.sim-theme");
+            theme2.copy(dataLocation+dir.separator()+"light.sim-theme");
+        }
 
-            settings.setValue("lastFolder",documentLocation);
+        settings.setValue("bibtex","bibtex \"%1\"");
+        #if OS_WINDOWS
+            settings.setValue("pdflatex", "pdflatex.exe -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+        #else
+            settings.setValue("pdflatex", "pdflatex -synctex=1 -shell-escape -interaction=nonstopmode -enable-write18 \"%1\"");
+        #endif
 
+
+        QString pdflatexCommand = "pdflatex";
+#ifdef OS_WINDOWS
+        pdflatexCommand = "pdflatex.exe";
+        {
+            QDir dir(programLocation);
+            if(!dir.exists())
+            {
+                QStringList miktexDirs = dir.entryList(QDir::Dirs).filter(QRegExp("miktex",Qt::CaseInsensitive));
+                if(!miktexDirs.isEmpty())
+                {
+                    if(dir.cd(miktexDirs.first()) && dir.cd("miktex") && dir.cd("bin"))
+                    {
+                        settings.setValue("builder/latexPath",dir.path()+dir.separator());
+                    }
+
+                }
+
+
+            }
+        }
+#endif
+        if(-2 == QProcess::execute(settings.value("latexPath").toString()+pdflatexCommand+" --version"))
+        {
+            qDebug()<<"latex not found ask for a the path";
+            //this->_latexFound = false;
+        }
+        else
+        {
+            qDebug()<<"latex found";
+            //qDebug()<<QFileDialog::getExistingDirectory(0, QObject::trUtf8("Choisir l'emplacement contenant l'executable latex."),programLocation);
+        }
      }
-     settings.setValue("revision",1);
+     settings.setValue("revision",CURRENT_CONFIG_REVISION);
 }
 

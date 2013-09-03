@@ -12,6 +12,16 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = simtex
 TEMPLATE = app
 
+APPLICATION_NAME = \\\"'SimTex'\\\"
+DEFINES += "APPLICATION_NAME=$${APPLICATION_NAME}"
+VERSION = \\\"'0.2.3'\\\"
+DEFINES += "CURRENT_VERSION=$${VERSION}"
+
+# config_revision is used to make so task for migration
+# we increment it each time we need to make a task for those who update the soft
+# see configManager::checkRevision() for more information
+DEFINES += "CURRENT_CONFIG_REVISION=2"
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     widgetlinenumber.cpp \
@@ -37,7 +47,9 @@ SOURCES += main.cpp\
     widgetfindreplace.cpp \
     stylehelper.cpp \
     minisplitter.cpp \
-    widgetsimpleoutput.cpp
+    widgetsimpleoutput.cpp \
+    dialogkeysequence.cpp \
+    widgetstatusbar.cpp
 
 HEADERS  += mainwindow.h \
     widgetlinenumber.h \
@@ -64,7 +76,10 @@ HEADERS  += mainwindow.h \
     widgetfindreplace.h \
     stylehelper.h \
     minisplitter.h \
-    widgetsimpleoutput.h
+    widgetsimpleoutput.h \
+    zlib/zlib.h \
+    dialogkeysequence.h \
+    widgetstatusbar.h
 
 FORMS    += mainwindow.ui \
     dialogwelcome.ui \
@@ -72,7 +87,9 @@ FORMS    += mainwindow.ui \
     widgetpdfviewer.ui \
     dialogclose.ui \
     widgetinsertcommand.ui \
-    widgetfindreplace.ui
+    widgetfindreplace.ui \
+    dialogkeysequence.ui \
+    widgetstatusbar.ui
 
 #LIBS         += -LG:\poppler -lpoppler-qt4
 #LIBS         += -LG:\poppler\cpp\bin -lpoppler-cpp
@@ -94,15 +111,15 @@ RESOURCES += \
     completion.qrc
 
 win32 {
-
-    INCLUDEPATH += C:/dev/Tools/poppler/include/poppler/qt4
-    INCLUDEPATH += C:/dev/Qt/Tools/zlib/include
     LIBS += -LC:/dev/Tools/poppler/lib -lpoppler-qt4
 
     RC_FILE = win.rc
+
+    DEFINES += OS_WINDOWS
 }
 unix:!mac{
     LIBS += -lz -L/usr/local/lib -lpoppler-qt4
+    DEFINES += OS_LINUX
 }
 mac{
     LIBS += -lz -L/usr/local/lib -lpoppler-qt4

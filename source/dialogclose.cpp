@@ -26,10 +26,12 @@
 DialogClose::DialogClose(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogClose),
-    _confirmed(false)
+    _confirmed(false),
+    _saved(true)
 {
     ui->setupUi(this);
 
+    connect(this->ui->save, SIGNAL(clicked()), this, SLOT(saveAndClose()));
     connect(this->ui->confirmAndClose, SIGNAL(clicked()), this, SLOT(confirmAndClose()));
     connect(this->ui->cancel, SIGNAL(clicked()), this, SLOT(close()));
 }
@@ -43,6 +45,13 @@ DialogClose::~DialogClose()
 void DialogClose::confirmAndClose()
 {
     _confirmed = true;
+    _saved = false;
+    this->close();
+}
+void DialogClose::saveAndClose()
+{
+    _confirmed = true;
+    _saved = true;
     this->close();
 }
 void DialogClose::setMessage(QString message)

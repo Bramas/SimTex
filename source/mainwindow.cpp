@@ -39,7 +39,6 @@
 #include "widgetsimpleoutput.h"
 
 #include <QAction>
-#include <QList>
 #include <QScrollBar>
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -51,6 +50,24 @@
 #include <QPalette>
 #include "configmanager.h"
 #include "widgetconsole.h"
+#include "widgetstatusbar.h"
+
+
+#include <QList>
+
+typedef QList<int> IntegerList;
+/*
+class IntegerList
+{
+public:
+    QList<int> list;
+};*/
+//QDataStream &operator<<(QDataStream &out, const IntegerList &myObj);
+//QDataStream &operator>>(QDataStream &in, IntegerList &myObj);
+
+//Q_DECLARE_METATYPE(IntegerList)
+Q_DECLARE_METATYPE(IntegerList)
+//qRegisterMetaType<IntegerList>("IntegerList");
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -71,6 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ConfigManager::Instance.setMainWindow(this);
+    ConfigManager::Instance.init();
     //setWindowFlags(Qt::FramelessWindowHint);
     widgetLineNumber->setWidgetTextEdit(widgetTextEdit);
     widgetScroller->setWidgetTextEdit(widgetTextEdit);
@@ -84,7 +102,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QSettings settings;
     settings.beginGroup("mainwindow");
-    if(settings.contains("geometry")) this->setGeometry(settings.value("geometry").toRect());
+    if(settings.contains("geometry"))
+    {
+        this->setGeometry(settings.value("geometry").toRect());
+    }
 
 
     //define background
@@ -125,13 +146,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->actionBibtex,SIGNAL(triggered()),this,SLOT(bibtex()));
     connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(pdfChanged()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(updatePdf()));
     connect(this->ui->actionView, SIGNAL(triggered()),this->_widgetPdfViewer->widgetPdfDocument(),SLOT(jumpToPdfFromSource()));
-    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->ui->statusBar, SLOT(showMessage(QString)));
+    connect(this->widgetTextEdit->getCurrentFile()->getBuilder(), SIGNAL(statusChanged(QString)), this->statusBar(), SLOT(showMessage(QString)));
     //connect(this->widgetTextEdit->getCurrentFile()->getViewer(), SIGNAL(finished()), this, SLOT(focus()));
+
 
     QAction * lastAction = this->ui->menuTh_me->actions().last();
     foreach(const QString& theme, ConfigManager::Instance.themesList())
     {
         QAction * action = new QAction(theme.left(theme.size()-10), this->ui->menuTh_me);
+        action->setPriority(QAction::LowPriority);
         action->setCheckable(true);
         if(!theme.left(theme.size()-10).compare(ConfigManager::Instance.theme()))
         {
@@ -148,6 +171,7 @@ MainWindow::MainWindow(QWidget *parent) :
     foreach(const QString& file, lastFiles)
     {
         QAction * action = new QAction(file, this->ui->menuOuvrir_R_cent);
+        action->setPriority(QAction::LowPriority);
         this->ui->menuOuvrir_R_cent->insertAction(lastAction,action);
         connect(action, SIGNAL(triggered()), this, SLOT(openLast()));
     }
@@ -170,12 +194,65 @@ MainWindow::MainWindow(QWidget *parent) :
     _leftSplitter->addWidget(this->_widgetConsole);
 
     _leftSplitter->setCollapsible(3,true);
+    _leftSplitter->setCollapsible(2,true);
+
+    _widgetStatusBar = new WidgetStatusBar(this,_leftSplitter);
+    this->setStatusBar(_widgetStatusBar);
+
+
 
     //Display only the editor :
     {
+        qRegisterMetaType<IntegerList>("IntegerList");
+        qRegisterMetaTypeStreamOperators<IntegerList>("IntegerList");
+        QSettings settings;
+        settings.beginGroup("mainwindow");
+
         QList<int> sizes;
-        sizes<<800<<0<<0<<0;
+        if(settings.contains("leftSplitterEditorSize"))
+        {
+            sizes << settings.value("leftSplitterEditorSize").toInt();
+        }
+        else
+        {
+            sizes<<800;
+        }
+        if(settings.contains("leftSplitterReplaceSize"))
+        {
+            sizes << settings.value("leftSplitterReplaceSize").toInt();
+        }
+        else
+        {
+            sizes<<0;
+        }
+        if(settings.contains("leftSplitterSimpleOutputSize"))
+        {
+            sizes << settings.value("leftSplitterSimpleOutputSize").toInt();
+        }
+        else
+        {
+            sizes<<0;
+        }
+        if(settings.contains("leftSplitterConsoleSize"))
+        {
+            sizes << settings.value("leftSplitterConsoleSize").toInt();
+        }
+        else
+        {
+            sizes<<0;
+        }
         _leftSplitter->setSizes(sizes);
+        QList<int> mainSizes;
+        if(settings.contains("mainSplitterEditorSize"))
+        {
+            mainSizes << settings.value("mainSplitterEditorSize").toInt();
+            mainSizes << width() - settings.value("mainSplitterEditorSize").toInt();
+        }
+        else
+        {
+            mainSizes << width() / 2 << width() / 2;
+        }
+        _mainSplitter->setSizes(mainSizes);
     }
 
     ui->gridLayout->setColumnMinimumWidth(0,40);
@@ -185,17 +262,47 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->dialogConfig,SIGNAL(accepted()),_syntaxHighlighter,SLOT(rehighlight()));
 
 
+    {
+        QList<QAction *> actionsList = this->findChildren<QAction *>();
+        QSettings settings;
+        settings.beginGroup("shortcuts");
+        //foreach(QAction * action, actionsList) {
+        //    if(settings.contains(action->text()))
+            {
+                //action->setShortcut(QKeySequence(settings.value(action->text()).toString()));
+            }
+        //}
+        dialogConfig->addEditableActions(actionsList);
+    }
+
+
     this->newFile();
 
 }
 
 MainWindow::~MainWindow()
 {
+    qRegisterMetaType<IntegerList>("IntegerList");
+     qRegisterMetaTypeStreamOperators<IntegerList>("IntegerList");
     // Save settings
     {
         QSettings settings;
         settings.beginGroup("mainwindow");
         settings.setValue("geometry", this->geometry());
+
+        {
+            QList<int> iList;
+            iList = _mainSplitter->sizes();
+            settings.setValue("mainSplitterEditorSize",iList[0]);
+        }
+        {
+            QList<int> iList;
+            iList = _leftSplitter->sizes();
+            settings.setValue("leftSplitterEditorSize",iList[0]);
+            settings.setValue("leftSplitterReplaceSize",iList[1]);
+            settings.setValue("leftSplitterSimpleOutputSize",iList[2]);
+            settings.setValue("leftSplitterConsoleSize",iList[3]);
+        }
         settings.endGroup();
     }
     delete ui;
@@ -207,7 +314,7 @@ void MainWindow::focus()
 }
 bool MainWindow::closeCurrentFile()
 {
-    if(widgetTextEdit->toPlainText().isEmpty() || !widgetTextEdit->getCurrentFile()->isModified())
+    if(!widgetTextEdit->getCurrentFile()->isModified())
     {
         return true;
     }
@@ -216,6 +323,11 @@ bool MainWindow::closeCurrentFile()
     dialogClose.exec();
     if(dialogClose.confirmed())
     {
+        if(dialogClose.saved())
+        {
+            this->save();
+            return this->closeCurrentFile();
+        }
         return true;
     }
     return false;
@@ -240,12 +352,21 @@ void MainWindow::newFile()
         return;
     }
     this->widgetTextEdit->getCurrentFile()->create();
-    this->widgetTextEdit->setText("");
+    this->widgetTextEdit->setText(" ");
 
 
     this->_widgetPdfViewer->widgetPdfDocument()->setFile(this->widgetTextEdit->getCurrentFile());
     this->_widgetConsole->setBuilder(this->widgetTextEdit->getCurrentFile()->getBuilder());
     this->_widgetSimpleOutput->setBuilder(this->widgetTextEdit->getCurrentFile()->getBuilder());
+
+    int pos = this->widgetTextEdit->textCursor().position();
+    this->widgetTextEdit->selectAll();
+    this->widgetTextEdit->textCursor().setBlockCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
+    QTextCursor cur(this->widgetTextEdit->textCursor());
+    cur.deletePreviousChar();
+    this->widgetTextEdit->setTextCursor(cur);
+
+    this->widgetTextEdit->getCurrentFile()->setModified(false);
 }
 
 void MainWindow::openLast()
@@ -300,7 +421,7 @@ void MainWindow::open(QString filename)
     //udpate the widget
     //this->widgetTextEdit->setText(this->widgetTextEdit->getCurrentFile()->getData());
 
-    this->ui->statusBar->showMessage(basename+" - "+this->widgetTextEdit->getCurrentFile()->codec());
+    this->statusBar()->showMessage(basename+" - "+this->widgetTextEdit->getCurrentFile()->codec());
 
 }
 void MainWindow::clearLastOpened()
@@ -331,7 +452,7 @@ void MainWindow::save()
     }
     this->widgetTextEdit->getCurrentFile()->setData(this->widgetTextEdit->toPlainText());
     this->widgetTextEdit->getCurrentFile()->save();
-    this->ui->statusBar->showMessage(tr(QString::fromUtf8("Sauvegardé").toLatin1()),2000);
+    this->statusBar()->showMessage(tr(QString::fromUtf8("Sauvegardé").toLatin1()),2000);
 }
 
 void MainWindow::saveAs()
@@ -353,15 +474,20 @@ void MainWindow::saveAs()
 void MainWindow::changeTheme()
 {
     QString text = dynamic_cast<QAction*>(this->sender())->text();
+    this->setTheme(text);
+
+}
+void MainWindow::setTheme(QString theme)
+{
     foreach(QAction * action, this->ui->menuTh_me->actions())
     {
-        if(action->text().compare(text))
+        if(action->text().compare(theme))
             action->setChecked(false);
         else
             action->setChecked(true);
 
     }
-    ConfigManager::Instance.load(text);
+    ConfigManager::Instance.load(theme);
     this->_syntaxHighlighter->rehighlight();
     this->initTheme();
     this->widgetTextEdit->onCursorPositionChange();
@@ -376,14 +502,14 @@ void MainWindow::initTheme()
         this->setPalette(Pal);
     }
     {
-        QPalette Pal(this->ui->statusBar->palette());
+        QPalette Pal(this->statusBar()->palette());
         // set black background
         Pal.setColor(QPalette::Background, ConfigManager::Instance.getTextCharFormats("normal").background().color());
         Pal.setColor(QPalette::Window, ConfigManager::Instance.getTextCharFormats("normal").background().color());
         Pal.setColor(QPalette::WindowText, ConfigManager::Instance.getTextCharFormats("normal").foreground().color());
         this->setAutoFillBackground(true);
-        this->ui->statusBar->setPalette(Pal);
-        this->ui->statusBar->setStyleSheet("QStatusBar {background: "+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
+        this->statusBar()->setPalette(Pal);
+        this->statusBar()->setStyleSheet("QStatusBar {background: "+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
                                            "}");
     }
     this->widgetTextEdit->setStyleSheet(QString("QTextEdit { border: 1px solid ")+
@@ -395,7 +521,7 @@ void MainWindow::initTheme()
     QTextCursor cur = this->widgetTextEdit->textCursor();
     cur.setCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
     this->widgetTextEdit->setTextCursor(cur);
-
+    this->widgetTextEdit->setCurrentFont(ConfigManager::Instance.getTextCharFormats("normal").font());
 
     {
         QPalette Pal(palette());
@@ -420,3 +546,4 @@ void MainWindow::closeFindReplaceWidget()
     this->_widgetFindReplace->setMaximumHeight(0);
     this->_widgetFindReplace->setMinimumHeight(0);
 }
+

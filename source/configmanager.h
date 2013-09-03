@@ -54,6 +54,10 @@ public:
 
     void changePointSizeBy(int delta);
     void setPointSize(int size);
+    void setReplaceDefaultFont(bool replace);
+    bool isDefaultFontReplaced() { QSettings settings; return settings.value("theme/replaceDefaultFont").toBool(); }
+    int pointSize() { QSettings settings; return settings.value("theme/pointSize").toInt(); }
+    void setFontFamily(QString family);
 
     void setMainWindow(QWidget * mainWindow);
     void save(void);
@@ -68,17 +72,27 @@ public:
 
     void checkRevision();
 
+    QString bibtexCommand(bool fullPath = false) { QSettings settings; return (fullPath ? settings.value("builder/latexPath").toString() : QString(""))+settings.value("builder/bibtex").toString(); }
+    QString pdflatexCommand(bool fullPath = false) { QSettings settings; return (fullPath ? settings.value("builder/latexPath").toString() : QString(""))+settings.value("builder/pdflatex").toString(); }
+    QString latexPath() { QSettings settings; return settings.value("builder/latexPath").toString(); }
+
+    void setBibtexCommand(QString command) { QSettings settings; settings.setValue("builder/bibtex", command); }
+    void setPdflatexCommand(QString command) { QSettings settings; settings.setValue("builder/pdflatex", command); }
+    void setLatexPath(QString path) { QSettings settings; settings.setValue("builder/latexPath", path); }
+
+    void init();
 public slots:
     void openThemeFolder();
 
 private:
+    void replaceDefaultFont();
     ConfigManager();
 
     QMutex _charFormatMutex;
     QWidget * mainWindow;
-    QSettings settings;
     QMap<QString,QTextCharFormat> * textCharFormats;
     QString _theme;
+    QString _pdflatexExe;
 };
 
 

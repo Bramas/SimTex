@@ -256,7 +256,7 @@ void _synctex_free_leaf(synctex_node_t node) {
 #	ifdef	__SYNCTEX_WORK__
 #		include "/usr/include/zlib.h"
 #	else
-#		include <zlib.h>
+#		include "zlib/zlib.h"
 #	endif
 
 /*  The synctex scanner is the root object.
@@ -2566,41 +2566,41 @@ synctex_scanner_t synctex_scanner_new_with_output_file(const char * output, cons
 	gzFile file = NULL;
 	char * synctex = NULL;
 	synctex_scanner_t scanner = NULL;
-	synctex_io_mode_t io_mode = 0;
+    synctex_io_mode_t io_mode = 0;
 	/*  Here we assume that int are smaller than void * */
 	if (sizeof(int)>sizeof(void*)) {
 		_synctex_error("INTERNAL INCONSISTENCY: int's are unexpectedly bigger than pointers, bailing out.");
 		return NULL;
-	}
+    }
 	/*  We ensure that SYNCTEX_BUFFER_SIZE < UINT_MAX, I don't know if it makes sense... */
 	if (SYNCTEX_BUFFER_SIZE >= UINT_MAX) {
 		_synctex_error("SyncTeX BUG: Internal inconsistency, bad SYNCTEX_BUFFER_SIZE (1)");
 		return NULL;
-	}
+    }
 	/*  for integers: */
 	if (SYNCTEX_BUFFER_SIZE < SYNCTEX_BUFFER_MIN_SIZE) {
 		_synctex_error("SyncTeX BUG: Internal inconsistency, bad SYNCTEX_BUFFER_SIZE (2)");
 		return NULL;
-	}
-	/*  now open the synctex file */
-	if (_synctex_open(output,build_directory,&synctex,&file,synctex_ADD_QUOTES,&io_mode) || !file) {
-		if (_synctex_open(output,build_directory,&synctex,&file,synctex_DONT_ADD_QUOTES,&io_mode) || !file) {
+    }
+    /*  now open the synctex file */
+    if (_synctex_open(output,build_directory,&synctex,&file,synctex_ADD_QUOTES,&io_mode) || !file) {
+        if (_synctex_open(output,build_directory,&synctex,&file,synctex_DONT_ADD_QUOTES,&io_mode) || !file) {
 			return NULL;
 		}
-	}
+    }
 	scanner = (synctex_scanner_t)_synctex_malloc(sizeof(_synctex_scanner_t));
 	if (NULL == scanner) {
 		_synctex_error("SyncTeX: malloc problem");
 		free(synctex);
 		gzclose(file);
 		return NULL;
-	}
+    }
 	/*  make a private copy of output for the scanner */
 	if (NULL == (scanner->output = (char *)malloc(strlen(output)+1))){
 		_synctex_error("!  synctex_scanner_new_with_output_file: Memory problem (2), scanner's output is not reliable.");
 	} else if (scanner->output != strcpy(scanner->output,output)) {
 		_synctex_error("!  synctex_scanner_new_with_output_file: Copy problem, scanner's output is not reliable.");
-	}
+    }
 	scanner->synctex = synctex;/*  Now the scanner owns synctex */
 	SYNCTEX_FILE = file;
 	return parse? synctex_scanner_parse(scanner):scanner;
@@ -2615,7 +2615,7 @@ int __synctex_open(const char * output, char ** synctex_name_ref, gzFile * file_
  *  All the reference arguments will take a value on return. They must be non NULL.
  *	0 on success, non 0 on error. */
 int __synctex_open(const char * output, char ** synctex_name_ref, gzFile * file_ref, synctex_bool_t add_quotes, synctex_io_mode_t * io_mode_ref) {
-	if (synctex_name_ref && file_ref && io_mode_ref) {
+    if (synctex_name_ref && file_ref && io_mode_ref) {
         /*  1 local variables that uses dynamic memory */
         char * synctex_name = NULL;
         gzFile the_file = NULL;
@@ -2627,12 +2627,12 @@ int __synctex_open(const char * output, char ** synctex_name_ref, gzFile * file_
 		size = strlen(output)+strlen(synctex_suffix)+strlen(synctex_suffix_gz)+1;
 		synctex_name = (char *)malloc(size);
 		if (NULL == synctex_name) {
-			_synctex_error("!  __synctex_open: Memory problem (1)\n");
+            _synctex_error("!  __synctex_open: Memory problem (1)\n");
 			return 1;
 		}
 		/*  we have reserved for synctex enough memory to copy output (including its 2 eventual quotes), both suffices,
 		 *  including the terminating character. size is free now. */
-		if (synctex_name != strcpy(synctex_name,output)) {
+        if (synctex_name != strcpy(synctex_name,output)) {
 			_synctex_error("!  __synctex_open: Copy problem\n");
 return_on_error:
 			free(synctex_name);
@@ -2641,21 +2641,21 @@ return_on_error:
 		}
 		/*  remove the last path extension if any */
 		_synctex_strip_last_path_extension(synctex_name);
-		if (!strlen(synctex_name)) {
+        if (!strlen(synctex_name)) {
 			goto return_on_error;		
 		}
 		/*  now insert quotes. */
 		if (add_quotes) {
 			char * quoted = NULL;
 			if (_synctex_copy_with_quoting_last_path_component(synctex_name,&quoted,size) || (NULL == quoted)) {
-				/*	There was an error or quoting does not make sense: */
+                /*	There was an error or quoting does not make sense: */
 				goto return_on_error;
 			}
 			quoteless_synctex_name = synctex_name;
 			synctex_name = quoted;
 		}
 		/*	Now add to synctex_name the first path extension. */
-		if (synctex_name != strcat(synctex_name,synctex_suffix)){
+        if (synctex_name != strcat(synctex_name,synctex_suffix)){
 			_synctex_error("!  __synctex_open: Concatenation problem (can't add suffix '%s')\n",synctex_suffix);
 			goto return_on_error;
 		}
@@ -2668,12 +2668,12 @@ return_on_error:
 			/*  Could not open this file */
 			if (errno != ENOENT) {
 				/*  The file does exist, this is a lower level error, I can't do anything. */
-				_synctex_error("SyncTeX: could not open %s, error %i\n",synctex_name,errno);
+                _synctex_error("SyncTeX: could not open %s, error %i\n",synctex_name,errno);
 				goto return_on_error;
 			}
 			/*  Apparently, there is no uncompressed synctex file. Try the compressed version */
 			if (synctex_name != strcat(synctex_name,synctex_suffix_gz)){
-				_synctex_error("!  __synctex_open: Concatenation problem (can't add suffix '%s')\n",synctex_suffix_gz);
+                _synctex_error("!  __synctex_open: Concatenation problem (can't add suffix '%s')\n",synctex_suffix_gz);
 				goto return_on_error;
 			}
 			io_mode |= synctex_io_gz_mask;
@@ -2688,10 +2688,10 @@ return_on_error:
 				if (errno != ENOENT) {
 					/*  The file does exist, this is a lower level error, I can't do anything. */
 					_synctex_error("SyncTeX: could not open %s, error %i\n",synctex_name,errno);
-				}
+                }
 				goto return_on_error;
 			}
-		}
+        }
 		/*	At this point, the file is properly open.
 		 *  If we are in the add_quotes mode, we change the file name by removing the quotes. */
 		if (quoteless_synctex_name) {
@@ -2738,8 +2738,8 @@ return_on_error:
 int _synctex_open(const char * output, const char * build_directory, char ** synctex_name_ref, gzFile * file_ref, synctex_bool_t add_quotes, synctex_io_mode_t * io_mode_ref) {
 #	define synctex_name (*synctex_name_ref)
 #	define the_file (*file_ref)
-	int result = __synctex_open(output,synctex_name_ref,file_ref,add_quotes,io_mode_ref);
-	if ((result || !*file_ref) && build_directory && strlen(build_directory)) {
+    int result = __synctex_open(output,synctex_name_ref,file_ref,add_quotes,io_mode_ref);
+    if ((result || !*file_ref) && build_directory && strlen(build_directory)) {
 		char * build_output;
 		const char *lpc;
 		size_t size;

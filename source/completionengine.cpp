@@ -106,7 +106,7 @@ void CompletionEngine::proposeCommand(int left, int top, int lineHeight, QString
     QRect geo = this->geometry();
     left = qMin(left,parentWidget()->width()-geo.width());
     geo.moveTo(QPoint(left, top));
-    qDebug()<<left<<" , "<<top;
+    //qDebug()<<left<<" , "<<top;
     if(geo.bottom() > parentWidget()->height())
     {
         geo.translate(QPoint(0,-geo.height()-lineHeight-6));

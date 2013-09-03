@@ -17,14 +17,14 @@
 # norootforbuild
 
 Name:           simtex
-Version:        0.1.10
-Release:        1
+Version:        0.2.2
+Release:        2
 Summary:        Simple and Powerful Latex Editor
 
 Group:          Productivity/Publishing/PDF
 License:        GPL-3
 Url:            https://github.com/Bramas/SimTex
-Source:         %{name}-%{version}.tar.gz
+Source:         %{name}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 #BuildRoot: 		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 

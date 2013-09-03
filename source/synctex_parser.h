@@ -52,6 +52,7 @@ Thu Jun 19 09:39:21 UTC 2008
 
 */
 
+
 #ifndef __SYNCTEX_PARSER__
 #   define __SYNCTEX_PARSER__
 

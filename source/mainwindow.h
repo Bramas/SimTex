@@ -37,10 +37,12 @@ class DialogConfig;
 class QVBoxLayout;
 class SyntaxHighlighter;
 class WidgetFindReplace;
+class WidgetStatusBar;
 
 namespace Ui {
 class MainWindow;
 }
+
 
 class MainWindow : public QMainWindow
 {
@@ -49,6 +51,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     bool closeCurrentFile();
+    void setTheme(QString theme);
     ~MainWindow();
 
 public slots:
@@ -84,6 +87,7 @@ private:
     WidgetPdfViewer * _widgetPdfViewer;
     WidgetScroller * widgetScroller;
     WidgetSimpleOutput * _widgetSimpleOutput;
+    WidgetStatusBar * _widgetStatusBar;
     WidgetTextEdit * widgetTextEdit;
     int _editorWidth;
     bool _mousePressed;

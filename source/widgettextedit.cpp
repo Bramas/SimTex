@@ -71,7 +71,8 @@ WidgetTextEdit::WidgetTextEdit(QWidget * parent) :
 
 
 
-    this->setText("");
+    this->setText(" ");
+    this->currentFile->setModified(false);
 
 }
 
@@ -88,7 +89,6 @@ void WidgetTextEdit::setText(const QString &text)
     //QtConcurrent::run(this,&WidgetTextEdit::initIndentation);
     this->initIndentation();
     this->updateIndentation();
-    this->update();
     this->viewport()->update();
 }
 void WidgetTextEdit::insertText(const QString &text)
@@ -315,25 +315,41 @@ void WidgetTextEdit::wheelEvent(QWheelEvent * event)
 
         QTextCursor cur(this->textCursor());
         cur.setPosition(pos);
+        cur.setCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
         this->setTextCursor(cur);
+
+        this->setCurrentCharFormat(ConfigManager::Instance.getTextCharFormats("normal"));
+        this->setCurrentFont(ConfigManager::Instance.getTextCharFormats("normal").font());
+        this->setStyleSheet(QString("QTextEdit { border: 1px solid ")+
+                                            ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("textedit-border").foreground().color())+"; "+QString("color: ")+
+                                            ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").foreground().color())+"; "+
+                                            QString("background-color: ")+ConfigManager::Instance.colorToString(ConfigManager::Instance.getTextCharFormats("normal").background().color())+
+                                    "; }");
 
         if(this->_syntaxHighlighter)
         {
             this->_syntaxHighlighter->rehighlight();
         }
-        /*QTextBlock tb = this->document()->begin();
-        for(int i = 0; i < this->document()->blockCount(); ++i)
+
+        int lastFirstVisibleBlock = this->firstVisibleBlock;
+        this->firstVisibleBlock = -1;
+        for(int i=1; i < this->document()->blockCount(); ++i)
         {
-            QList<QTextLayout::FormatRange> formats;
-            QTextLayout::FormatRange r;
-            r.start = -1;
-            r.length=2;
-            r.format = ConfigManager::Instance.getTextCharFormats("normal");
-            formats.append(r);
-            tb.layout()->setAdditionalFormats(formats);
-            tb.clearLayout();
-            tb.next();
-        }*/
+            if(this->firstVisibleBlock == -1 && this->blockBottom(i) > this->verticalScrollBar()->value())
+            {
+                this->firstVisibleBlock = i;
+            }
+
+        }
+        if(lastFirstVisibleBlock != this->firstVisibleBlock)
+        {
+            emit updateFirstVisibleBlock(this->firstVisibleBlock,this->blockTop(this->firstVisibleBlock));
+        }
+        else
+        {
+            emit updateFirstVisibleBlock(this->firstVisibleBlock,this->blockTop(this->firstVisibleBlock));
+            //emit updatedWithSameFirstVisibleBlock();
+        }
     }
     else
     {
@@ -753,8 +769,10 @@ void WidgetTextEdit::goToLine(int line, QString stringSelected)
     if(!stringSelected.isEmpty())
     {
         int index;
+        qDebug()<<"search : "<<stringSelected;
         if((index = this->document()->findBlockByNumber(line - 1).text().indexOf(stringSelected)) != -1)
         {
+            qDebug()<<"found : "<<index;
             QList<QTextEdit::ExtraSelection> extraSelections = this->extraSelections();
             QTextEdit::ExtraSelection selection;
             selection.format.setBackground(QColor(255,0,0));
@@ -819,7 +837,6 @@ void WidgetTextEdit::highlightSyncedLine(int line)
 int WidgetTextEdit::centerBlockNumber()
 {
     int centerBlockNumber = this->firstVisibleBlock;
-
     while(centerBlockNumber < this->document()->blockCount())
     {
         if(this->blockTop(centerBlockNumber) - this->verticalScrollBar()->value() > this->height() / 2)
@@ -828,7 +845,6 @@ int WidgetTextEdit::centerBlockNumber()
         }
         ++centerBlockNumber;
     }
-
     return centerBlockNumber - 1;
 
 }
