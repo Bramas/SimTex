@@ -172,12 +172,25 @@ void WidgetPdfDocument::initDocument()
     this->initLinks();
     this->initScroll();
 
-    QString syncFile = QFileInfo(this->_file->getFilename()).canonicalFilePath();
+    QFileInfo fileInfo(this->_file->getFilename());
+    QString syncFile = fileInfo.canonicalPath() + QDir().separator() + fileInfo.baseName();
     if(QFile::exists(syncFile+".synctex.gz"))
     {
-        scanner = synctex_scanner_new_with_output_file(syncFile.toLatin1().data(), NULL, 1);
+        scanner = synctex_scanner_new_with_output_file(syncFile.toUtf8().data(), NULL, 1);
+        if( scanner == NULL )
+        {
+            scanner = synctex_scanner_new_with_output_file(syncFile.toLatin1().data(), NULL, 1);
+        }
+        if( scanner == NULL )
+        {
+            qDebug()<<"scanner is NULL, cannot open "<<syncFile+".synctex.gz"<<" -> Maybe some special character that make it fails?";
+        }
         jumpToPdfFromSource();
         update();
+    }
+    else
+    {
+        qDebug()<<"Sync file does not exists : "<<syncFile+".synctex.gz";
     }
 }
 
