@@ -98,6 +98,7 @@ private:
     void resizeEvent(QResizeEvent * event);
     void wheelEvent(QWheelEvent * event);
     void highlightCurrentLine(void);
+    bool selectNextArgument(void);
 
     void setBlockLeftMargin(const QTextBlock & textBlock, int leftMargin);
 

@@ -92,7 +92,7 @@ void CompletionEngine::proposeCommand(int left, int top, int lineHeight, QString
     {
         if((dieseIndex = word.indexOf(QRegExp("#"))) != -1)
         {
-            this->insertItem(idx++,word.left(word.length() - dieseIndex - 1));
+            this->insertItem(idx++,word.left(dieseIndex));
         }
         else
         {

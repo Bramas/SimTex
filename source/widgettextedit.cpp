@@ -219,6 +219,16 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
         this->_completionEngine->setFocus();
         return;
     }
+    if(e->key() == Qt::Key_Tab)
+    {
+        if(-1 == this->textCursor().block().text().left(this->textCursor().positionInBlock()).indexOf(QRegExp("^[ \t]*$")))
+        {
+            if(this->selectNextArgument())
+            {
+                return;
+            }
+        }
+    }
 
     if(this->focusWidget() != this)
     {
@@ -235,6 +245,16 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
             cur.removeSelectedText();
             this->insertPlainText(insertWord);
             this->setFocus();
+             // place the cursor at the begin of the command in order to search some argumuments
+            cur = this->textCursor();
+            cur.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, insertWord.length());
+            this->setTextCursor(cur);
+            if(!this->selectNextArgument()) // if no argument are found, place the cursor at the end of the command
+            {
+                cur = this->textCursor();
+                cur.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, insertWord.length());
+                this->setTextCursor(cur);
+            }
         }
         return;
     }
@@ -291,6 +311,19 @@ void WidgetTextEdit::keyPressEvent(QKeyEvent *e)
 
     }*/
 }
+
+bool WidgetTextEdit::selectNextArgument()
+{
+    //([\{\[\(,])
+    QTextCursor cur = this->document()->find(QRegExp("@[^\\}\\]\\),]*"),this->textCursor().position());
+    if(cur.isNull())
+    {
+        return false;
+    }
+    this->setTextCursor(cur);
+    return true;
+}
+
 void WidgetTextEdit::wheelEvent(QWheelEvent * event)
 {
 
